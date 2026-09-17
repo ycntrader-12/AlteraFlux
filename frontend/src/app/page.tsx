@@ -178,7 +178,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 sm:p-8 lg:p-12 items-center justify-center relative select-none">
+    <div className="flex flex-col min-h-screen p-4 sm:p-6 lg:p-8 items-center justify-center relative select-none">
       {/* Input de fichier caché */}
       <input
         ref={fileInputRef}
@@ -187,7 +187,7 @@ export default function Home() {
         onChange={handleFileSelect}
       />
 
-      <div className="w-full max-w-6xl flex flex-col gap-6">
+      <div className="w-full max-w-4xl flex flex-col gap-5">
         {/* ==========================================================
             1. BARRE DE NAVIGATION SUPÉRIEURE FLOTTANTE VECTRAMORPH
             ========================================================== */}
@@ -245,81 +245,81 @@ export default function Home() {
         </header>
 
         {/* ==========================================================
-            2. GRILLE PRINCIPALE (CARTE CONVERSION + ACTIVITY FEED)
+            2. CARTE PRINCIPALE CENTRÉE VECTRAMORPH (AJUSTÉE ET CENTRÉE)
             ========================================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* ========================================================
-              PANNEAU GAUCHE : CARTE PRINCIPALE "CONVERT ANYTHING"
-              ======================================================== */}
-          <div className="lg:col-span-8 vectra-glass-panel p-6 sm:p-8 flex flex-col gap-6">
-            {/* Titre "Convert Anything to Anything." : #0B1021 avec lisibilité maximale */}
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1021]">
-                Convert Anything to Anything.
-              </h1>
-            </div>
-
-            {/* Deux sélecteurs en pilules 3D : haute lisibilité */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="relative">
-                <select
-                  value={sourceFilter}
-                  onChange={(e) => setSourceFilter(e.target.value)}
-                  className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
-                >
-                  <option>Select file type</option>
-                  <option>Video (*.mp4, *.mov, *.avi)</option>
-                  <option>Audio (*.mp3, *.wav, *.flac)</option>
-                  <option>Document (*.pdf, *.docx)</option>
-                  <option>Code (*.py, *.ts, *.js)</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
+        {activeTab === "Convert" && (
+          <main className="w-full vectra-glass-panel p-6 sm:p-8 flex flex-col gap-6 shadow-2xl">
+            {/* Entête avec Titre et Sélecteurs */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+              <div>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B1021]">
+                  Convert Anything to Anything.
+                </h1>
+                <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
+                  Moteur de conversion universel ultra-rapide accéléré par AlteraFlux
+                </p>
               </div>
 
-              <div className="relative">
-                <select
-                  value={targetCategory}
-                  onChange={(e) => setTargetCategory(e.target.value)}
-                  className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
-                >
-                  <option>Select file type</option>
-                  <option>All formats</option>
-                  <option>WebM Video HD</option>
-                  <option>Lossless Audio Master</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
+              {/* Deux sélecteurs en pilules 3D : haute lisibilité */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative">
+                  <select
+                    value={sourceFilter}
+                    onChange={(e) => setSourceFilter(e.target.value)}
+                    className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
+                  >
+                    <option>Select file type</option>
+                    <option>Video (*.mp4, *.mov, *.avi)</option>
+                    <option>Audio (*.mp3, *.wav, *.flac)</option>
+                    <option>Document (*.pdf, *.docx)</option>
+                    <option>Code (*.py, *.ts, *.js)</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={targetCategory}
+                    onChange={(e) => setTargetCategory(e.target.value)}
+                    className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
+                  >
+                    <option>Select file type</option>
+                    <option>All formats</option>
+                    <option>WebM Video HD</option>
+                    <option>Lossless Audio Master</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            {/* ========================================================
-                CARTE INTERNE BLANCHE (#FFFFFF) AVEC FICHIER & DROPDOWN
-                ======================================================== */}
-            <div className="vectra-file-card p-5 relative">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Carte interne blanche surélevée */}
+            <div className="vectra-file-card p-6 relative">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
                 {/* Métadonnées du fichier */}
                 <div
-                  className="flex items-center gap-3.5 cursor-pointer"
+                  className="flex items-center gap-4 cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {/* Icône violette carrée avec bouton play 3D */}
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-100 via-sky-50 to-blue-100 border border-purple-200/80 flex items-center justify-center text-purple-600 shadow-md relative overflow-hidden group">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
-                      <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-100 via-sky-50 to-blue-100 border border-purple-200/80 flex items-center justify-center text-purple-600 shadow-md relative overflow-hidden group-hover:scale-105 transition">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+                      <Play className="w-4 h-4 fill-white ml-0.5" />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-extrabold text-sm sm:text-base text-[#0B1021] tracking-tight hover:text-[#00D4FF] transition">
+                    <h3 className="font-extrabold text-base sm:text-lg text-[#0B1021] tracking-tight group-hover:text-[#0284C7] transition">
                       {fileName}
                     </h3>
                     <p className="text-xs text-[#334155] font-semibold mt-0.5">
-                      {fileSize} • type: {fileType}
+                      {fileSize} • type: {fileType} • <span className="text-[#0284C7] underline font-bold">Changer de fichier</span>
                     </p>
                   </div>
                 </div>
 
                 {/* Sélecteur "Convert To" avec bouton 3D tactile */}
-                <div className="relative w-full sm:w-40 self-end sm:self-auto">
+                <div className="relative w-full sm:w-44 self-end sm:self-auto">
                   <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left">
                     Convert To
                   </div>
@@ -327,9 +327,9 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full selector-3d rounded-xl px-3.5 py-2 text-xs font-bold text-[#0F172A] flex items-center justify-between transition"
+                    className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition"
                   >
-                    <span className="text-[#0284C7] font-extrabold">{targetFormat}</span>
+                    <span className="text-[#0284C7] font-extrabold text-sm">{targetFormat}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-[#0F172A] transition-transform ${
                         isDropdownOpen ? "rotate-180" : ""
@@ -348,7 +348,7 @@ export default function Home() {
                             setTargetFormat(item.id);
                             setIsDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3.5 py-2 transition flex items-center justify-between ${
+                          className={`w-full text-left px-4 py-2.5 transition flex items-center justify-between ${
                             targetFormat === item.id
                               ? "bg-sky-100 text-[#0284c7] font-extrabold"
                               : "hover:bg-slate-100 text-[#0F172A] font-bold"
@@ -364,16 +364,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ========================================================
-                CARTE DE PROGRESSION SOMBRE : #080C27
-                BARRE CYAN : #00D4FF | BOUTON 3D VIBRANT
-                ======================================================== */}
-            <div className="vectra-progress-card p-4 text-[#F8FAFC] relative overflow-hidden">
-              {/* Ligne de statut : Converting: 75% | WEBM (High Quality)... */}
-              <div className="flex items-center justify-between mb-3 text-xs font-mono">
+            {/* Carte de progression sombre #080C27 avec barre cyan et bouton 3D */}
+            <div className="vectra-progress-card p-5 sm:p-6 text-[#F8FAFC] relative overflow-hidden">
+              {/* Ligne de statut */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 text-xs sm:text-sm font-mono">
                 <div>
                   <span className="text-[#FFFFFF] font-bold">Converting: </span>
-                  <span className="text-[#00E5FF] font-black text-sm">{progress}%</span>
+                  <span className="text-[#00E5FF] font-black text-base">{progress}%</span>
                   <span className="text-[#94A3B8] font-medium"> | {stageText}</span>
                 </div>
 
@@ -381,9 +378,9 @@ export default function Home() {
                   <a
                     href={activeJob.download_url}
                     download
-                    className="btn-3d-cyan !py-1.5 !px-4 text-xs font-extrabold shadow-lg"
+                    className="btn-3d-cyan !py-2 !px-5 text-xs sm:text-sm font-extrabold shadow-lg"
                   >
-                    <Download className="w-3.5 h-3.5" />
+                    <Download className="w-4 h-4" />
                     <span>Download</span>
                   </a>
                 ) : (
@@ -391,16 +388,16 @@ export default function Home() {
                     type="button"
                     disabled={isConverting}
                     onClick={handleStartConversion}
-                    className="btn-3d-cyan !py-1.5 !px-4 text-xs font-extrabold shadow-lg"
+                    className="btn-3d-cyan !py-2 !px-5 text-xs sm:text-sm font-extrabold shadow-lg"
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isConverting ? "animate-spin" : ""}`} />
+                    <RefreshCw className={`w-4 h-4 ${isConverting ? "animate-spin" : ""}`} />
                     <span>{isConverting ? "Processing..." : "Convert Now"}</span>
                   </button>
                 )}
               </div>
 
-              {/* Barre de progression cyan : #00D4FF */}
-              <div className="w-full h-2.5 rounded-full bg-[#030614] overflow-hidden relative border border-cyan-900/40">
+              {/* Barre de progression cyan : #00D4FF avec lueur néon */}
+              <div className="w-full h-3 rounded-full bg-[#030614] overflow-hidden relative border border-cyan-900/40">
                 <div
                   className="h-full rounded-full vectra-progress-cyan transition-all duration-300"
                   style={{ width: `${progress}%` }}
@@ -408,116 +405,141 @@ export default function Home() {
               </div>
 
               {/* Effet visuel circuit en dégradé */}
-              <div className="absolute right-0 top-0 bottom-0 w-32 pointer-events-none opacity-20 bg-gradient-to-l from-[#00D4FF] to-transparent" />
+              <div className="absolute right-0 top-0 bottom-0 w-36 pointer-events-none opacity-20 bg-gradient-to-l from-[#00D4FF] to-transparent" />
             </div>
-          </div>
 
-          {/* ========================================================
-              PANNEAU DROIT : CARTE BLANCHE "ACTIVITY FEED"
-              LIENS BLEUS : #3B82F6
-              ======================================================== */}
-          <div className="lg:col-span-4 vectra-glass-panel p-6 flex flex-col gap-4">
-            <h2 className="font-extrabold text-lg text-[#0B1021] tracking-tight">
-              Activity Feed
-            </h2>
+            {/* Bandeau inférieur de spécifications et sécurité */}
+            <div className="flex flex-wrap items-center justify-between pt-3 text-xs text-[#475569] font-semibold border-t border-[#E2E8F0]">
+              <div className="flex items-center gap-3 sm:gap-6">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                  Moteur haute performance
+                </span>
+                <span>•</span>
+                <span>Qualité Lossless HD</span>
+                <span>•</span>
+                <span>Chiffrement AES-256</span>
+              </div>
+              <span className="text-[#0284C7] font-bold">AlteraFlux v1.0</span>
+            </div>
+          </main>
+        )}
 
-            {/* Liste d'activités avec icônes colorées et boutons 3D */}
+        {/* Onglet My Files */}
+        {activeTab === "My Files" && (
+          <main className="w-full vectra-glass-panel p-6 sm:p-10 flex flex-col gap-6 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1021]">
+                  My Converted Files
+                </h1>
+                <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
+                  Historique de vos conversions récentes
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab("Convert")}
+                className="btn-3d-cyan text-xs !py-2 !px-4"
+              >
+                + Convert New File
+              </button>
+            </div>
+
             <div className="flex flex-col gap-3">
-              {/* Item 1 */}
-              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 flex-shrink-0 shadow-sm">
-                  <Volume2 className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[#0F172A] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                      Completed
-                    </span>
-                    <a href="#" className="btn-3d-blue">Download</a>
-                  </div>
-                </div>
-              </div>
+              {recentJobs.length > 0 ? (
+                recentJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="vectra-file-card p-4 flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-100 to-blue-200 border border-blue-200 flex items-center justify-center text-blue-700">
+                        <Play className="w-4 h-4 fill-blue-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-sm text-[#0B1021]">{job.filename}</h4>
+                        <p className="text-xs text-[#475569] font-medium">
+                          {job.source_format.toUpperCase()} → {job.target_format.toUpperCase()} • Statut: {job.status}
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Item 2 */}
-              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-pink-100 border border-pink-200 flex items-center justify-center text-pink-700 flex-shrink-0 shadow-sm">
-                  <Music className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[#0F172A] truncate">interview_take1.flac → interview.mp3</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                      Completed
-                    </span>
-                    <a href="#" className="btn-3d-blue">Download</a>
+                    {job.download_url && (
+                      <a href={job.download_url} download className="btn-3d-blue">
+                        <Download className="w-3.5 h-3.5" /> Download
+                      </a>
+                    )}
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-12 text-[#475569]">
+                  <p className="font-bold text-base text-[#0B1021]">Aucun fichier récent pour le moment</p>
+                  <p className="text-xs mt-1">Lancez une conversion pour voir vos fichiers ici.</p>
                 </div>
-              </div>
+              )}
+            </div>
+          </main>
+        )}
 
-              {/* Item 3 */}
-              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 flex-shrink-0 shadow-sm">
-                  <Volume2 className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[#0F172A] truncate">ambient_drone.wav → ambient.mp3</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                      Completed
-                    </span>
-                    <a href="#" className="btn-3d-blue">Download</a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Item 4 */}
-              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 flex-shrink-0 shadow-sm">
-                  <Volume2 className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[#0F172A] truncate">promo_video.mov → promo.webm</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                      Completed
-                    </span>
-                    <a href="#" className="btn-3d-blue">Download</a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Item 5 */}
-              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-pink-100 border border-pink-200 flex items-center justify-center text-pink-700 flex-shrink-0 shadow-sm">
-                  <Music className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[#0F172A] truncate">bassline_loop.wav → bassline.mp3</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                      Completed
-                    </span>
-                    <a href="#" className="btn-3d-blue">Download</a>
-                  </div>
-                </div>
-              </div>
+        {/* Onglet API */}
+        {activeTab === "API" && (
+          <main className="w-full vectra-glass-panel p-6 sm:p-10 flex flex-col gap-6 shadow-2xl">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1021]">
+                API & Developer Access
+              </h1>
+              <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
+                Intégrez le moteur de conversion AlteraFlux dans vos applications
+              </p>
             </div>
 
-            <div className="mt-2 pt-3 border-t border-[#E2E8F0] flex items-center justify-between text-[11px] text-[#4B5563]">
-              <span>Auto-sync active</span>
-              <span className="text-[#00D4FF] font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00D4FF] animate-ping" />
-                Live Feed
-              </span>
+            <div className="vectra-progress-card p-5 text-[#F8FAFC] font-mono text-xs overflow-x-auto">
+              <p className="text-[#00E5FF] font-bold mb-2">// Exemple de requête cURL</p>
+              <code>curl -X POST http://localhost:8000/api/v1/conversions -H &quot;Content-Type: application/json&quot; -d &apos;&#123;&quot;filename&quot;: &quot;demo.mp4&quot;, &quot;target_format&quot;: &quot;webm&quot;&#125;&apos;</code>
             </div>
-          </div>
-        </div>
+
+            <div className="flex justify-end">
+              <a
+                href="http://localhost:8000/docs"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-3d-cyan text-xs !py-2 !px-4"
+              >
+                Ouvrir Swagger API Docs →
+              </a>
+            </div>
+          </main>
+        )}
+
+        {/* Onglet Profile */}
+        {activeTab === "Profile" && (
+          <main className="w-full vectra-glass-panel p-6 sm:p-10 flex flex-col gap-6 shadow-2xl">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1021]">
+                User Profile & Tier
+              </h1>
+              <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
+                Paramètres de compte et quotas de traitement
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="vectra-file-card p-4">
+                <p className="text-xs text-[#475569] font-bold">Plan Actuel</p>
+                <p className="text-lg font-black text-[#0B1021] mt-1">Pro Unlimited</p>
+              </div>
+              <div className="vectra-file-card p-4">
+                <p className="text-xs text-[#475569] font-bold">Vitesse de Traitement</p>
+                <p className="text-lg font-black text-[#00A3BD] mt-1">Hardware GPU Ultra</p>
+              </div>
+              <div className="vectra-file-card p-4">
+                <p className="text-xs text-[#475569] font-bold">Stockage Cloud</p>
+                <p className="text-lg font-black text-[#0B1021] mt-1">Éphémère 24h</p>
+              </div>
+            </div>
+          </main>
+        )}
       </div>
     </div>
   );
