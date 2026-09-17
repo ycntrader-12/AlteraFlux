@@ -2,178 +2,86 @@
 
 @layer base {
   :root {
-    --pro-blue: #2563eb;
-    --pro-blue-header: #1e40af;
-    --pro-blue-dark: #1e3a8a;
-    --pro-blue-light: #eff6ff;
-    --pro-gray-bg: #e2e8f0;
-    --pro-gray-panel: #ffffff;
-    --pro-gray-bar: #f1f5f9;
-    --pro-gray-border: #cbd5e1;
-    --pro-gray-text: #0f172a;
-    --pro-gray-muted: #64748b;
+    --brand-dark: #0f172a;
+    --brand-cyan: #06b6d4;
+    --brand-blue: #3b82f6;
+    --brand-purple: #8b5cf6;
+    --glass-card-bg: rgba(255, 255, 255, 0.82);
+    --glass-card-border: rgba(255, 255, 255, 0.6);
+    --glass-card-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.7);
   }
 
   body {
-    background-color: #dbe4ee;
-    color: var(--pro-gray-text);
+    background-color: #f1f5f9;
+    color: #0f172a;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    /* Dégradé iridescent cyan et violet exactement comme sur l'image */
     background-image: 
-      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
-      linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-    background-size: 100% 100%, 32px 32px, 32px 32px;
+      radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.35) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(192, 132, 252, 0.3) 0%, transparent 45%),
+      radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+      linear-gradient(135deg, #e0f2fe 0%, #f8fafc 40%, #f3e8ff 100%);
+    background-attachment: fixed;
   }
 }
 
-/* ==========================================================
-   SYSTÈME DE DESIGN 3D TACTILE & PROFONDEUR ISOMÉTRIQUE
-   ========================================================== */
+/* Carte en verre dépoli clair ultra-propre */
+.vectra-glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 20px 40px -8px rgba(30, 41, 59, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
+  border-radius: 1.5rem;
+}
 
-/* Fenêtre principale en élévation 3D */
-.window-3d {
-  background: #ffffff;
-  border-radius: 10px;
+/* Barre de navigation supérieure flottante en verre */
+.vectra-nav-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 20px 45px -10px rgba(15, 23, 42, 0.18),
-    0 0 0 1px rgba(148, 163, 184, 0.35);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+  border-radius: 1.25rem;
 }
 
-/* Carte avec profondeur 3D et effet de survol */
-.card-3d {
+/* Carte interne de fichier blanc épuré */
+.vectra-file-card {
   background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -2px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.card-3d:hover {
-  transform: translateY(-3px) scale(1.002);
-  box-shadow: 
-    0 12px 20px -3px rgba(37, 99, 235, 0.12),
-    0 4px 6px -4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-color: #93c5fd;
+  border-radius: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
 }
 
-/* Boutons physiques 3D avec enfoncement tactile réel */
-.btn-3d-primary {
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  border: 1px solid #1d4ed8;
-  color: #ffffff;
-  font-weight: 700;
-  border-radius: 8px;
-  box-shadow: 
-    0 5px 0 #1e40af,
-    0 8px 16px rgba(37, 99, 235, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transition: all 0.1s ease-in-out;
-  cursor: pointer;
-  position: relative;
-  top: 0;
-}
-.btn-3d-primary:hover {
-  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
-  box-shadow: 
-    0 6px 0 #1e40af,
-    0 12px 22px rgba(37, 99, 235, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
-  top: -1px;
-}
-.btn-3d-primary:active {
-  box-shadow: 
-    0 1px 0 #1e40af,
-    0 3px 6px rgba(37, 99, 235, 0.3),
-    inset 0 1px 0 rgba(0, 0, 0, 0.1);
-  top: 4px;
+/* Barre de conversion sombre contrastée */
+.vectra-progress-bar-card {
+  background: #080e1e;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(8, 14, 30, 0.25);
 }
 
-/* Bouton 3D secondaire clair */
-.btn-3d-secondary {
-  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-  border: 1px solid #cbd5e1;
-  color: #1e293b;
-  font-weight: 600;
-  border-radius: 6px;
-  box-shadow: 
-    0 3px 0 #94a3b8,
-    0 4px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  transition: all 0.1s ease;
-  position: relative;
-  top: 0;
-}
-.btn-3d-secondary:hover {
-  background: #ffffff;
-  border-color: #94a3b8;
-  top: -1px;
-  box-shadow: 
-    0 4px 0 #94a3b8,
-    0 6px 12px rgba(0, 0, 0, 0.09);
-}
-.btn-3d-secondary:active {
-  top: 2px;
-  box-shadow: 0 1px 0 #94a3b8, 0 2px 4px rgba(0, 0, 0, 0.05);
+/* Lueur néon cyan/bleue pour la progression */
+.progress-glow-cyan {
+  background: linear-gradient(90deg, #38bdf8 0%, #06b6d4 50%, #818cf8 100%);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.8), 0 0 30px rgba(56, 189, 248, 0.4);
 }
 
-/* Badges 3D en relief */
-.badge-3d {
-  border-radius: 6px;
-  box-shadow: 
-    0 2px 0 rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-/* Étapes numérotées 3D */
-.step-number-3d {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: white;
-  font-weight: bold;
-  font-size: 13px;
-  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-/* Animation rotation */
-@keyframes spin-3d {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.spin-3d {
-  animation: spin-3d 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-/* Barre de défilement stylée */
+/* Scrollbar discrète */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
-  border-radius: 4px;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-  border: 2px solid #e2e8f0;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: rgba(100, 116, 139, 0.5);
 }
