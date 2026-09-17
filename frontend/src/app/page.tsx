@@ -2,18 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Video,
-  Music,
-  FileText,
-  Code2,
   Download,
   ChevronDown,
-  UploadCloud,
-  CheckCircle2,
   RefreshCw,
   Play,
-  Volume2,
-  Check
+  Check,
+  Search,
+  Sparkles
 } from "lucide-react";
 import {
   fetchPresets,
@@ -24,6 +19,99 @@ import {
   listRecentJobs,
   JobResponse
 } from "@/lib/api";
+
+export interface FormatItem {
+  id: string;
+  label: string;
+  desc: string;
+  ext: string;
+  badgeColor: string;
+}
+
+export interface FormatCategory {
+  id: string;
+  name: string;
+  icon: string;
+  formats: FormatItem[];
+}
+
+export const FORMAT_CATEGORIES: FormatCategory[] = [
+  {
+    id: "video",
+    name: "Vidéo",
+    icon: "🎬",
+    formats: [
+      { id: "MP4", label: "MP4", desc: "H.264 / AAC Universel", ext: "mp4", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "WEBM", label: "WEBM", desc: "VP9 Web Streaming HD", ext: "webm", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "MKV", label: "MKV", desc: "Matroska Multi-pistes", ext: "mkv", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "MOV", label: "MOV", desc: "Apple QuickTime Pro", ext: "mov", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "AVI", label: "AVI", desc: "Audio Video Interleave", ext: "avi", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "FLV", label: "FLV", desc: "Flash Video Web", ext: "flv", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "WMV", label: "WMV", desc: "Windows Media Video", ext: "wmv", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "GIF", label: "GIF", desc: "Animation Boucle", ext: "gif", badgeColor: "bg-pink-100 text-pink-800" }
+    ]
+  },
+  {
+    id: "audio",
+    name: "Audio",
+    icon: "🎵",
+    formats: [
+      { id: "MP3", label: "MP3", desc: "MPEG-3 Haute Compatibilité", ext: "mp3", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "WAV", label: "WAV", desc: "Studio Master Lossless PCM", ext: "wav", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "FLAC", label: "FLAC", desc: "Free Lossless Audio Codec", ext: "flac", badgeColor: "bg-violet-100 text-violet-800" },
+      { id: "AAC", label: "AAC", desc: "Advanced Audio Coding", ext: "aac", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "OGG", label: "OGG", desc: "Vorbis Open Audio", ext: "ogg", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "M4A", label: "M4A", desc: "Apple Lossless / AAC", ext: "m4a", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "OPUS", label: "OPUS", desc: "Streaming Voix Ultra-HD", ext: "opus", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "WMA", label: "WMA", desc: "Windows Media Audio", ext: "wma", badgeColor: "bg-cyan-100 text-cyan-800" }
+    ]
+  },
+  {
+    id: "image",
+    name: "Images",
+    icon: "🖼️",
+    formats: [
+      { id: "PNG", label: "PNG", desc: "Transparence Sans Perte", ext: "png", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "JPG", label: "JPG", desc: "JPEG Standard Web & Photo", ext: "jpg", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "WEBP", label: "WEBP", desc: "WebP Ultra-léger Moderne", ext: "webp", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "AVIF", label: "AVIF", desc: "Next-Gen Compression HDR", ext: "avif", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "SVG", label: "SVG", desc: "Vectoriel Scalable XML", ext: "svg", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "ICO", label: "ICO", desc: "Favicon & Icône Windows", ext: "ico", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "BMP", label: "BMP", desc: "Bitmap Non Compressé", ext: "bmp", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "TIFF", label: "TIFF", desc: "Impression & Prépresse HD", ext: "tiff", badgeColor: "bg-pink-100 text-pink-800" }
+    ]
+  },
+  {
+    id: "document",
+    name: "Documents",
+    icon: "📄",
+    formats: [
+      { id: "PDF", label: "PDF", desc: "Document Vectoriel Universel", ext: "pdf", badgeColor: "bg-red-100 text-red-800" },
+      { id: "DOCX", label: "DOCX", desc: "Microsoft Word Éditable", ext: "docx", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "EPUB", label: "EPUB", desc: "Livre Numérique E-reader", ext: "epub", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "TXT", label: "TXT", desc: "Texte Brut UTF-8 Universel", ext: "txt", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "MD", label: "MD", desc: "Markdown GitHub Structuré", ext: "md", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "HTML", label: "HTML", desc: "Page Web Standalone", ext: "html", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "XLSX", label: "XLSX", desc: "Tableur Microsoft Excel", ext: "xlsx", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "CSV", label: "CSV", desc: "Données Tabulaires Export", ext: "csv", badgeColor: "bg-teal-100 text-teal-800" }
+    ]
+  },
+  {
+    id: "code",
+    name: "Code & Data",
+    icon: "💻",
+    formats: [
+      { id: "TS", label: "TypeScript", desc: "JavaScript Typé (Transpilation)", ext: "ts", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "JS", label: "JavaScript", desc: "ES6+ Web & Node.js", ext: "js", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "PY", label: "Python", desc: "Python 3 Scripting & ML", ext: "py", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "RS", label: "Rust", desc: "Système Sûr & Ultra-rapide", ext: "rs", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "GO", label: "Go", desc: "Golang Microservices & API", ext: "go", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "CPP", label: "C++", desc: "C++ 20 Code Natif Haute Vitesse", ext: "cpp", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "JSON", label: "JSON", desc: "Format d'Échange de Données", ext: "json", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "YAML", label: "YAML", desc: "Configuration YAML Développeur", ext: "yaml", badgeColor: "bg-rose-100 text-rose-800" }
+    ]
+  }
+];
 
 export default function Home() {
   // Fichier sélectionné
@@ -36,9 +124,11 @@ export default function Home() {
   const [sourceFilter, setSourceFilter] = useState<string>("Select file type");
   const [targetCategory, setTargetCategory] = useState<string>("Select file type");
 
-  // Format cible & Dropdown
+  // Format cible & Dropdown par catégories
   const [targetFormat, setTargetFormat] = useState<string>("WEBM");
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [selectedFormatCategory, setSelectedFormatCategory] = useState<string>("all");
+  const [formatSearch, setFormatSearch] = useState<string>("");
 
   // État de conversion & Progression
   const [isConverting, setIsConverting] = useState<boolean>(false);
@@ -52,17 +142,32 @@ export default function Home() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Liste des formats du dropdown exactement comme sur l'image
-  const formatList = [
-    { id: "WEBM", label: "WEBM" },
-    { id: "AVI", label: "AVI" },
-    { id: "MOV", label: "MOV" },
-    { id: "MP3", label: "MP3" },
-    { id: "WAV", label: "WAV" },
-    { id: "PDF", label: "PDF" },
-    { id: "DOCX", label: "DOCX" },
-    { id: "JS", label: "JS (Code)" }
-  ];
+  // Total des formats disponibles
+  const totalFormatsCount = FORMAT_CATEGORIES.reduce((acc, cat) => acc + cat.formats.length, 0);
+
+  // Catégories et formats filtrés dynamiquement
+  const filteredCategories = FORMAT_CATEGORIES.map((cat) => {
+    if (selectedFormatCategory !== "all" && cat.id !== selectedFormatCategory) {
+      return null;
+    }
+    const q = formatSearch.trim().toLowerCase();
+    const matchedFormats = cat.formats.filter((f) => {
+      if (!q) return true;
+      return (
+        f.id.toLowerCase().includes(q) ||
+        f.label.toLowerCase().includes(q) ||
+        f.desc.toLowerCase().includes(q) ||
+        f.ext.toLowerCase().includes(q)
+      );
+    });
+    if (matchedFormats.length === 0) return null;
+    return { ...cat, formats: matchedFormats };
+  }).filter(Boolean) as FormatCategory[];
+
+  // Trouver la catégorie actuelle du format cible
+  const currentCategoryOfTarget = FORMAT_CATEGORIES.find((cat) =>
+    cat.formats.some((f) => f.id.toUpperCase() === targetFormat.toUpperCase())
+  );
 
   useEffect(() => {
     loadRecentActivity();
@@ -85,18 +190,26 @@ export default function Home() {
       setFileSize(`${(f.size / (1024 * 1024)).toFixed(0)} MB`);
 
       const ext = f.name.split(".").pop()?.toLowerCase() || "";
-      if (["mp4", "mov", "avi", "webm", "mkv"].includes(ext)) {
+      if (["mp4", "mov", "avi", "webm", "mkv", "flv", "wmv"].includes(ext)) {
         setFileType("Video");
         setTargetFormat("WEBM");
-      } else if (["mp3", "wav", "aac", "flac"].includes(ext)) {
+        setSelectedFormatCategory("video");
+      } else if (["mp3", "wav", "aac", "flac", "ogg", "m4a", "opus"].includes(ext)) {
         setFileType("Audio");
         setTargetFormat("MP3");
-      } else if (["png", "jpg", "jpeg", "webp"].includes(ext)) {
+        setSelectedFormatCategory("audio");
+      } else if (["png", "jpg", "jpeg", "webp", "avif", "svg", "bmp", "tiff", "ico"].includes(ext)) {
         setFileType("Image");
-        setTargetFormat("PDF");
+        setTargetFormat("WEBP");
+        setSelectedFormatCategory("image");
+      } else if (["py", "js", "ts", "rs", "go", "cpp", "c", "json", "yaml", "sql"].includes(ext)) {
+        setFileType("Code");
+        setTargetFormat("TS");
+        setSelectedFormatCategory("code");
       } else {
         setFileType("Document");
         setTargetFormat("PDF");
+        setSelectedFormatCategory("document");
       }
     }
   };
@@ -268,25 +381,31 @@ export default function Home() {
                     onChange={(e) => setSourceFilter(e.target.value)}
                     className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                   >
-                    <option>Select file type</option>
-                    <option>Video (*.mp4, *.mov, *.avi)</option>
-                    <option>Audio (*.mp3, *.wav, *.flac)</option>
-                    <option>Document (*.pdf, *.docx)</option>
-                    <option>Code (*.py, *.ts, *.js)</option>
+                    <option value="Select file type">Tous les types sources</option>
+                    <option value="video">🎬 Vidéo (*.mp4, *.webm, *.mov, *.avi)</option>
+                    <option value="audio">🎵 Audio (*.mp3, *.wav, *.flac, *.aac)</option>
+                    <option value="image">🖼️ Images (*.png, *.jpg, *.webp, *.avif)</option>
+                    <option value="document">📄 Documents (*.pdf, *.docx, *.epub, *.md)</option>
+                    <option value="code">💻 Code (*.ts, *.py, *.js, *.rs, *.go)</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
                 </div>
 
                 <div className="relative">
                   <select
-                    value={targetCategory}
-                    onChange={(e) => setTargetCategory(e.target.value)}
+                    value={selectedFormatCategory}
+                    onChange={(e) => {
+                      setSelectedFormatCategory(e.target.value);
+                      setTargetCategory(e.target.value);
+                    }}
                     className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                   >
-                    <option>Select file type</option>
-                    <option>All formats</option>
-                    <option>WebM Video HD</option>
-                    <option>Lossless Audio Master</option>
+                    <option value="all">Toutes les catégories (40+ formats)</option>
+                    <option value="video">🎬 Vidéo (8 formats)</option>
+                    <option value="audio">🎵 Audio (8 formats)</option>
+                    <option value="image">🖼️ Images (8 formats)</option>
+                    <option value="document">📄 Documents (8 formats)</option>
+                    <option value="code">💻 Code & Data (8 formats)</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
                 </div>
@@ -318,10 +437,15 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Sélecteur "Convert To" avec bouton 3D tactile */}
-                <div className="relative w-full sm:w-44 self-end sm:self-auto">
-                  <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left">
-                    Convert To
+                {/* Sélecteur "Convert To" avec bouton 3D tactile & Menu déroulant par catégorie */}
+                <div className="relative w-full sm:w-56 self-end sm:self-auto">
+                  <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left flex items-center justify-between">
+                    <span>Convert To</span>
+                    {currentCategoryOfTarget && (
+                      <span className="text-[10px] text-[#0284C7] font-bold">
+                        {currentCategoryOfTarget.icon} {currentCategoryOfTarget.name}
+                      </span>
+                    )}
                   </div>
 
                   <button
@@ -329,7 +453,12 @@ export default function Home() {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition"
                   >
-                    <span className="text-[#0284C7] font-extrabold text-sm">{targetFormat}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#0284C7] font-black text-sm tracking-wide">{targetFormat}</span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">
+                        {currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"}
+                      </span>
+                    </div>
                     <ChevronDown
                       className={`w-4 h-4 text-[#0F172A] transition-transform ${
                         isDropdownOpen ? "rotate-180" : ""
@@ -337,27 +466,105 @@ export default function Home() {
                     />
                   </button>
 
-                  {/* Menu déroulant ouvert avec élévation 3D */}
+                  {/* Menu déroulant ouvert par Catégories */}
                   {isDropdownOpen && (
-                    <div className="absolute z-30 top-full mt-2 w-full bg-[#FFFFFF] border border-[#CBD5E1] rounded-xl shadow-2xl py-1.5 text-xs font-bold text-[#0F172A] animate-in fade-in zoom-in-95 duration-100">
-                      {formatList.map((item) => (
+                    <div className="absolute z-40 top-full mt-2 right-0 w-80 sm:w-96 bg-[#FFFFFF] border border-[#CBD5E1] rounded-2xl shadow-2xl p-3 text-xs text-[#0F172A] animate-in fade-in zoom-in-95 duration-150">
+                      {/* 1. Barre de recherche rapide */}
+                      <div className="relative mb-2.5">
+                        <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-2.5 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={formatSearch}
+                          onChange={(e) => setFormatSearch(e.target.value)}
+                          placeholder="Rechercher (ex: mp4, webp, pdf, ts...)"
+                          className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#00D4FF] text-[#0F172A] font-semibold"
+                        />
+                      </div>
+
+                      {/* 2. Onglets de Catégories (Pillules 3D) */}
+                      <div className="flex items-center gap-1 overflow-x-auto pb-2 mb-2 border-b border-[#E2E8F0] scrollbar-none">
                         <button
-                          key={item.id}
                           type="button"
-                          onClick={() => {
-                            setTargetFormat(item.id);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-4 py-2.5 transition flex items-center justify-between ${
-                            targetFormat === item.id
-                              ? "bg-sky-100 text-[#0284c7] font-extrabold"
-                              : "hover:bg-slate-100 text-[#0F172A] font-bold"
+                          onClick={() => setSelectedFormatCategory("all")}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition ${
+                            selectedFormatCategory === "all"
+                              ? "bg-[#080C27] text-white shadow-sm"
+                              : "bg-slate-100 text-[#475569] hover:bg-slate-200"
                           }`}
                         >
-                          <span>{item.label}</span>
-                          {targetFormat === item.id && <Check className="w-4 h-4 text-[#0284c7]" />}
+                          Tous ({totalFormatsCount})
                         </button>
-                      ))}
+                        {FORMAT_CATEGORIES.map((cat) => (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => setSelectedFormatCategory(cat.id)}
+                            className={`px-2 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition flex items-center gap-1 ${
+                              selectedFormatCategory === cat.id
+                                ? "bg-[#00E5FF] text-[#080C27] shadow-sm font-extrabold"
+                                : "bg-slate-100 text-[#475569] hover:bg-slate-200"
+                            }`}
+                          >
+                            <span>{cat.icon}</span>
+                            <span>{cat.name}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* 3. Liste des formats groupés par catégorie avec défilement */}
+                      <div className="max-h-52 overflow-y-auto flex flex-col gap-2.5 pr-1">
+                        {filteredCategories.length > 0 ? (
+                          filteredCategories.map((cat) => (
+                            <div key={cat.id} className="flex flex-col gap-1">
+                              {/* Header de catégorie */}
+                              <div className="flex items-center justify-between px-2.5 py-1 bg-slate-100/90 rounded-md text-[10px] font-extrabold text-[#334155] uppercase tracking-wider">
+                                <span className="flex items-center gap-1">
+                                  <span>{cat.icon}</span>
+                                  <span>{cat.name}</span>
+                                </span>
+                                <span className="text-[#64748B] font-bold">{cat.formats.length} formats</span>
+                              </div>
+
+                              {/* Formats de la catégorie */}
+                              <div className="grid grid-cols-1 gap-1">
+                                {cat.formats.map((item) => (
+                                  <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setTargetFormat(item.id);
+                                      setIsDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition flex items-center justify-between ${
+                                      targetFormat === item.id
+                                        ? "bg-sky-100 border border-sky-300 text-[#0284c7] font-extrabold"
+                                        : "hover:bg-slate-100 text-[#0F172A] font-semibold"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5">
+                                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-black ${item.badgeColor}`}>
+                                        {item.id}
+                                      </span>
+                                      <div>
+                                        <p className="text-xs font-bold leading-none">{item.label}</p>
+                                        <p className="text-[10px] text-[#64748B] font-medium mt-0.5">{item.desc}</p>
+                                      </div>
+                                    </div>
+                                    {targetFormat === item.id && (
+                                      <Check className="w-4 h-4 text-[#0284c7] flex-shrink-0" />
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-6 text-[#64748B]">
+                            <p className="font-bold text-xs">Aucun format trouvé</p>
+                            <p className="text-[10px] mt-0.5">Essayez un autre terme de recherche.</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
