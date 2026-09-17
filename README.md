@@ -60,7 +60,7 @@ Démarre l'intégralité de l'infrastructure (PostgreSQL, Redis, MinIO S3, Backe
 docker-compose up --build -d
 ```
 
-- **Frontend Web :** [http://localhost:3000](http://localhost:3000)
+- **Frontend Web :** [http://localhost:3001](http://localhost:3001)
 - **API Documentation (Swagger) :** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Console MinIO S3 :** [http://localhost:9001](http://localhost:9001) *(login: `altera_admin` / pass: `altera_secret_key`)*
 
@@ -89,7 +89,7 @@ cd frontend
 npm install
 npm run dev
 ```
-Accédez ensuite à `http://localhost:3000`.
+Accédez ensuite à `http://localhost:3001`.
 
 ---
 

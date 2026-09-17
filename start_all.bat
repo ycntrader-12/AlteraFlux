@@ -12,7 +12,7 @@ if %ERRORLEVEL% EQU 0 (
     docker-compose up -d
     echo.
     echo Tous les services sont demarres !
-    echo - Frontend Next.js : http://localhost:3000
+    echo - Frontend Next.js : http://localhost:3001
     echo - Backend API Docs : http://localhost:8000/docs
     echo - MinIO Console    : http://localhost:9001
     goto END
@@ -23,7 +23,7 @@ echo Docker non detecte ou non lance. Demarrage des serveurs locaux...
 echo Demarrage du Backend FastAPI (port 8000)...
 start "AlteraFlux Backend" cmd /k "cd /d %~dp0backend && ..\.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000"
 
-echo Demarrage du Frontend Next.js (port 3000)...
+echo Demarrage du Frontend Next.js (port 3001)...
 start "AlteraFlux Frontend" cmd /k "cd /d %~dp0frontend && npm run dev"
 
 :END

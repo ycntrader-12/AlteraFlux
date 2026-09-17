@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     LOCAL_STORAGE_PATH: str = "./storage_data"
 
     # Security
-    ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:3001,http://127.0.0.1:3001,http://localhost:3000"
     MAX_UPLOAD_SIZE_MB: int = 2048
     RATE_LIMIT_PER_MINUTE: int = 60
 
