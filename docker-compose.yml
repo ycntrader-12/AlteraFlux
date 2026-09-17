@@ -1,0 +1,144 @@
+services:
+  # Base de données relationnelle (PostgreSQL)
+  postgres:
+    image: postgres:16-alpine
+    container_name: alteraflux-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-alteraflux}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-alteraflux_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-alteraflux_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-alteraflux} -d ${POSTGRES_DB:-alteraflux_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Message Broker & Pub/Sub (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: alteraflux-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Stockage Objet S3 local (MinIO)
+  minio:
+    image: minio/minio:RELEASE.2024-04-18T19-09-19Z
+    container_name: alteraflux-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-altera_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-altera_secret_key}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Initialisation automatique du bucket MinIO
+  createbuckets:
+    image: minio/mc:latest
+    container_name: alteraflux-createbuckets
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER:-altera_admin} ${MINIO_ROOT_PASSWORD:-altera_secret_key};
+      /usr/bin/mc mb --ignore-existing myminio/${STORAGE_BUCKET_NAME:-alteraflux-storage};
+      /usr/bin/mc anonymous set download myminio/${STORAGE_BUCKET_NAME:-alteraflux-storage};
+      exit 0;
+      "
+
+  # API Gateway Backend (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: alteraflux-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-alteraflux}:${POSTGRES_PASSWORD:-alteraflux_secret}@postgres:5432/${POSTGRES_DB:-alteraflux_db}
+      - REDIS_URL=redis://redis:6379/0
+      - S3_ENDPOINT_URL=http://minio:9000
+      - S3_PUBLIC_ENDPOINT_URL=http://localhost:9000
+      - S3_ACCESS_KEY=${MINIO_ROOT_USER:-altera_admin}
+      - S3_SECRET_KEY=${MINIO_ROOT_PASSWORD:-altera_secret_key}
+      - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME:-alteraflux-storage}
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      createbuckets:
+        condition: service_completed_successfully
+
+  # Worker de conversion distribué (Celery + FFmpeg + Pandoc + Pillow + AI)
+  worker:
+    build:
+      context: .
+      dockerfile: workers/Dockerfile
+    container_name: alteraflux-worker
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-alteraflux}:${POSTGRES_PASSWORD:-alteraflux_secret}@postgres:5432/${POSTGRES_DB:-alteraflux_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - S3_ENDPOINT_URL=http://minio:9000
+      - S3_PUBLIC_ENDPOINT_URL=http://localhost:9000
+      - S3_ACCESS_KEY=${MINIO_ROOT_USER:-altera_admin}
+      - S3_SECRET_KEY=${MINIO_ROOT_PASSWORD:-altera_secret_key}
+      - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME:-alteraflux-storage}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      createbuckets:
+        condition: service_completed_successfully
+
+  # Frontend Web (Next.js 14+)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: alteraflux-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000
+      - NEXT_PUBLIC_STORAGE_URL=http://localhost:9000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
