@@ -208,49 +208,38 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Onglets de navigation */}
-          <nav className="flex items-center gap-8 text-sm font-medium text-[#4B5563]">
+          {/* Onglets de navigation 3D aux couleurs de l'application */}
+          <nav className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold">
             <button
               type="button"
               onClick={() => setActiveTab("Convert")}
-              className={`relative py-1 transition ${
-                activeTab === "Convert" ? "text-[#00D4FF] font-semibold" : "hover:text-[#111827]"
-              }`}
+              className={activeTab === "Convert" ? "btn-3d-cyan" : "btn-3d-glass"}
             >
               <span>Convert</span>
-              {activeTab === "Convert" && (
-                <span className="absolute bottom-[-14px] left-0 right-0 h-[3px] bg-[#00D4FF] rounded-full shadow-[0_2px_10px_rgba(0,212,255,0.7)]" />
-              )}
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("My Files")}
-              className={`py-1 transition ${
-                activeTab === "My Files" ? "text-[#00D4FF] font-semibold" : "hover:text-[#111827]"
-              }`}
+              className={activeTab === "My Files" ? "btn-3d-cyan" : "btn-3d-glass"}
             >
-              My Files
+              <span>My Files</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("API")}
-              className={`py-1 transition ${
-                activeTab === "API" ? "text-[#00D4FF] font-semibold" : "hover:text-[#111827]"
-              }`}
+              className={activeTab === "API" ? "btn-3d-cyan" : "btn-3d-glass"}
             >
-              API
+              <span>API</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("Profile")}
-              className={`py-1 transition ${
-                activeTab === "Profile" ? "text-[#00D4FF] font-semibold" : "hover:text-[#111827]"
-              }`}
+              className={activeTab === "Profile" ? "btn-3d-cyan" : "btn-3d-glass"}
             >
-              Profile
+              <span>Profile</span>
             </button>
           </nav>
         </header>
@@ -263,20 +252,20 @@ export default function Home() {
               PANNEAU GAUCHE : CARTE PRINCIPALE "CONVERT ANYTHING"
               ======================================================== */}
           <div className="lg:col-span-8 vectra-glass-panel p-6 sm:p-8 flex flex-col gap-6">
-            {/* Titre "Convert Anything to Anything." : #111827 */}
+            {/* Titre "Convert Anything to Anything." : #0B1021 avec lisibilité maximale */}
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111827]">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1021]">
                 Convert Anything to Anything.
               </h1>
             </div>
 
-            {/* Deux sélecteurs en pilules : #4B5563 */}
+            {/* Deux sélecteurs en pilules 3D : haute lisibilité */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
                 <select
                   value={sourceFilter}
                   onChange={(e) => setSourceFilter(e.target.value)}
-                  className="bg-white/80 hover:bg-white border border-[#E2E8F0] rounded-lg px-4 py-2 text-xs font-medium text-[#4B5563] appearance-none pr-8 cursor-pointer shadow-sm focus:outline-none"
+                  className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                 >
                   <option>Select file type</option>
                   <option>Video (*.mp4, *.mov, *.avi)</option>
@@ -284,21 +273,21 @@ export default function Home() {
                   <option>Document (*.pdf, *.docx)</option>
                   <option>Code (*.py, *.ts, *.js)</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-[#4B5563] absolute right-2.5 top-3 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
               </div>
 
               <div className="relative">
                 <select
                   value={targetCategory}
                   onChange={(e) => setTargetCategory(e.target.value)}
-                  className="bg-white/80 hover:bg-white border border-[#E2E8F0] rounded-lg px-4 py-2 text-xs font-medium text-[#4B5563] appearance-none pr-8 cursor-pointer shadow-sm focus:outline-none"
+                  className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                 >
                   <option>Select file type</option>
                   <option>All formats</option>
                   <option>WebM Video HD</option>
                   <option>Lossless Audio Master</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-[#4B5563] absolute right-2.5 top-3 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
               </div>
             </div>
 
@@ -312,45 +301,45 @@ export default function Home() {
                   className="flex items-center gap-3.5 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {/* Icône violette carrée avec bouton play */}
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-100 via-sky-50 to-blue-100 border border-purple-200/60 flex items-center justify-center text-purple-600 shadow-sm relative overflow-hidden group">
+                  {/* Icône violette carrée avec bouton play 3D */}
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-100 via-sky-50 to-blue-100 border border-purple-200/80 flex items-center justify-center text-purple-600 shadow-md relative overflow-hidden group">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
                       <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-sm text-[#111827] tracking-tight hover:text-[#00D4FF] transition">
+                    <h3 className="font-extrabold text-sm sm:text-base text-[#0B1021] tracking-tight hover:text-[#00D4FF] transition">
                       {fileName}
                     </h3>
-                    <p className="text-xs text-[#4B5563] font-medium">
-                      {fileSize} | type: {fileType}
+                    <p className="text-xs text-[#334155] font-semibold mt-0.5">
+                      {fileSize} • type: {fileType}
                     </p>
                   </div>
                 </div>
 
-                {/* Sélecteur "Convert To" avec Dropdown déplié */}
-                <div className="relative w-full sm:w-36 self-end sm:self-auto">
-                  <div className="text-[11px] font-medium text-[#4B5563] mb-1 text-right sm:text-left">
+                {/* Sélecteur "Convert To" avec bouton 3D tactile */}
+                <div className="relative w-full sm:w-40 self-end sm:self-auto">
+                  <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left">
                     Convert To
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full bg-[#f0f9ff] hover:bg-[#e0f2fe] border border-[#bae6fd] rounded-md px-3 py-1.5 text-xs font-semibold text-[#111827] flex items-center justify-between shadow-sm transition"
+                    className="w-full selector-3d rounded-xl px-3.5 py-2 text-xs font-bold text-[#0F172A] flex items-center justify-between transition"
                   >
-                    <span>{targetFormat}</span>
+                    <span className="text-[#0284C7] font-extrabold">{targetFormat}</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-[#4B5563] transition-transform ${
+                      className={`w-4 h-4 text-[#0F172A] transition-transform ${
                         isDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
 
-                  {/* Menu déroulant ouvert */}
+                  {/* Menu déroulant ouvert avec élévation 3D */}
                   {isDropdownOpen && (
-                    <div className="absolute z-30 top-full mt-1.5 w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-md shadow-xl py-1 text-xs text-[#111827] animate-in fade-in zoom-in-95 duration-100">
+                    <div className="absolute z-30 top-full mt-2 w-full bg-[#FFFFFF] border border-[#CBD5E1] rounded-xl shadow-2xl py-1.5 text-xs font-bold text-[#0F172A] animate-in fade-in zoom-in-95 duration-100">
                       {formatList.map((item) => (
                         <button
                           key={item.id}
@@ -359,14 +348,14 @@ export default function Home() {
                             setTargetFormat(item.id);
                             setIsDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-1.5 transition flex items-center justify-between ${
+                          className={`w-full text-left px-3.5 py-2 transition flex items-center justify-between ${
                             targetFormat === item.id
-                              ? "bg-[#e0f2fe] font-bold text-[#0284c7]"
-                              : "hover:bg-[#f8fafc]"
+                              ? "bg-sky-100 text-[#0284c7] font-extrabold"
+                              : "hover:bg-slate-100 text-[#0F172A] font-bold"
                           }`}
                         >
                           <span>{item.label}</span>
-                          {targetFormat === item.id && <Check className="w-3.5 h-3.5 text-[#0284c7]" />}
+                          {targetFormat === item.id && <Check className="w-4 h-4 text-[#0284c7]" />}
                         </button>
                       ))}
                     </div>
@@ -377,22 +366,22 @@ export default function Home() {
 
             {/* ========================================================
                 CARTE DE PROGRESSION SOMBRE : #080C27
-                BARRE CYAN : #00D4FF | TEXTE SOMBRE : #F8FAFC
+                BARRE CYAN : #00D4FF | BOUTON 3D VIBRANT
                 ======================================================== */}
             <div className="vectra-progress-card p-4 text-[#F8FAFC] relative overflow-hidden">
               {/* Ligne de statut : Converting: 75% | WEBM (High Quality)... */}
               <div className="flex items-center justify-between mb-3 text-xs font-mono">
                 <div>
-                  <span className="text-[#F8FAFC] font-medium">Converting: </span>
-                  <span className="text-[#00D4FF] font-bold">{progress}%</span>
-                  <span className="text-[#94a3b8]"> | {stageText}</span>
+                  <span className="text-[#FFFFFF] font-bold">Converting: </span>
+                  <span className="text-[#00E5FF] font-black text-sm">{progress}%</span>
+                  <span className="text-[#94A3B8] font-medium"> | {stageText}</span>
                 </div>
 
                 {activeJob?.download_url ? (
                   <a
                     href={activeJob.download_url}
                     download
-                    className="px-3 py-1 rounded bg-[#00D4FF] hover:bg-[#38bdf8] text-[#080C27] font-bold text-xs transition flex items-center gap-1.5 shadow-md shadow-[#00D4FF]/30"
+                    className="btn-3d-cyan !py-1.5 !px-4 text-xs font-extrabold shadow-lg"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download</span>
@@ -402,7 +391,7 @@ export default function Home() {
                     type="button"
                     disabled={isConverting}
                     onClick={handleStartConversion}
-                    className="px-3.5 py-1 rounded bg-[#00D4FF] hover:bg-[#38bdf8] text-[#080C27] font-bold text-xs transition flex items-center gap-1.5 shadow-md shadow-[#00D4FF]/25"
+                    className="btn-3d-cyan !py-1.5 !px-4 text-xs font-extrabold shadow-lg"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isConverting ? "animate-spin" : ""}`} />
                     <span>{isConverting ? "Processing..." : "Convert Now"}</span>
@@ -411,7 +400,7 @@ export default function Home() {
               </div>
 
               {/* Barre de progression cyan : #00D4FF */}
-              <div className="w-full h-2 rounded-full bg-[#0f172a] overflow-hidden relative">
+              <div className="w-full h-2.5 rounded-full bg-[#030614] overflow-hidden relative border border-cyan-900/40">
                 <div
                   className="h-full rounded-full vectra-progress-cyan transition-all duration-300"
                   style={{ width: `${progress}%` }}
@@ -428,74 +417,94 @@ export default function Home() {
               LIENS BLEUS : #3B82F6
               ======================================================== */}
           <div className="lg:col-span-4 vectra-glass-panel p-6 flex flex-col gap-4">
-            <h2 className="font-bold text-base text-[#111827]">
+            <h2 className="font-extrabold text-lg text-[#0B1021] tracking-tight">
               Activity Feed
             </h2>
 
-            {/* Liste d'activités avec icônes colorées */}
+            {/* Liste d'activités avec icônes colorées et boutons 3D */}
             <div className="flex flex-col gap-3">
               {/* Item 1 */}
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50/80 transition text-xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 flex-shrink-0">
-                  <Volume2 className="w-4 h-4" />
+              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 flex-shrink-0 shadow-sm">
+                  <Volume2 className="w-5 h-5" />
                 </div>
-                <div className="truncate">
-                  <p className="font-medium text-[#111827] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <p className="text-[11px] text-[#4B5563]">
-                    | Completed | <a href="#" className="vectra-link-blue">Download</a>
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-extrabold text-[#0F172A] truncate">soundtrack.wav → soundtrack.mp3</p>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                      Completed
+                    </span>
+                    <a href="#" className="btn-3d-blue">Download</a>
+                  </div>
                 </div>
               </div>
 
               {/* Item 2 */}
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50/80 transition text-xs">
-                <div className="w-9 h-9 rounded-xl bg-pink-50 border border-pink-200 flex items-center justify-center text-pink-600 flex-shrink-0">
-                  <Music className="w-4 h-4" />
+              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-pink-100 border border-pink-200 flex items-center justify-center text-pink-700 flex-shrink-0 shadow-sm">
+                  <Music className="w-5 h-5" />
                 </div>
-                <div className="truncate">
-                  <p className="font-medium text-[#111827] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <p className="text-[11px] text-[#4B5563]">
-                    | Completed | <a href="#" className="vectra-link-blue">Download</a>
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-extrabold text-[#0F172A] truncate">interview_take1.flac → interview.mp3</p>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                      Completed
+                    </span>
+                    <a href="#" className="btn-3d-blue">Download</a>
+                  </div>
                 </div>
               </div>
 
               {/* Item 3 */}
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50/80 transition text-xs">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 flex-shrink-0">
-                  <Volume2 className="w-4 h-4" />
+              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 flex-shrink-0 shadow-sm">
+                  <Volume2 className="w-5 h-5" />
                 </div>
-                <div className="truncate">
-                  <p className="font-medium text-[#111827] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <p className="text-[11px] text-[#4B5563]">
-                    | Completed | <a href="#" className="vectra-link-blue">Download</a>
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-extrabold text-[#0F172A] truncate">ambient_drone.wav → ambient.mp3</p>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                      Completed
+                    </span>
+                    <a href="#" className="btn-3d-blue">Download</a>
+                  </div>
                 </div>
               </div>
 
               {/* Item 4 */}
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50/80 transition text-xs">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 flex-shrink-0">
-                  <Volume2 className="w-4 h-4" />
+              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 flex-shrink-0 shadow-sm">
+                  <Volume2 className="w-5 h-5" />
                 </div>
-                <div className="truncate">
-                  <p className="font-medium text-[#111827] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <p className="text-[11px] text-[#4B5563]">
-                    | Completed | <a href="#" className="vectra-link-blue">Download</a>
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-extrabold text-[#0F172A] truncate">promo_video.mov → promo.webm</p>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                      Completed
+                    </span>
+                    <a href="#" className="btn-3d-blue">Download</a>
+                  </div>
                 </div>
               </div>
 
               {/* Item 5 */}
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50/80 transition text-xs">
-                <div className="w-9 h-9 rounded-xl bg-pink-50 border border-pink-200 flex items-center justify-center text-pink-600 flex-shrink-0">
-                  <Music className="w-4 h-4" />
+              <div className="p-2.5 rounded-xl hover:bg-slate-50/80 transition text-xs border border-transparent hover:border-[#E2E8F0] flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-pink-100 border border-pink-200 flex items-center justify-center text-pink-700 flex-shrink-0 shadow-sm">
+                  <Music className="w-5 h-5" />
                 </div>
-                <div className="truncate">
-                  <p className="font-medium text-[#111827] truncate">soundtrack.wav → soundtrack.mp3</p>
-                  <p className="text-[11px] text-[#4B5563]">
-                    | Completed | <a href="#" className="vectra-link-blue">Download</a>
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-extrabold text-[#0F172A] truncate">bassline_loop.wav → bassline.mp3</p>
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-[#334155] font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                      Completed
+                    </span>
+                    <a href="#" className="btn-3d-blue">Download</a>
+                  </div>
                 </div>
               </div>
             </div>
