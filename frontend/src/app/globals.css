@@ -3,85 +3,177 @@
 @layer base {
   :root {
     --pro-blue: #2563eb;
-    --pro-blue-header: #2b5ec1;
-    --pro-blue-dark: #1d4ed8;
+    --pro-blue-header: #1e40af;
+    --pro-blue-dark: #1e3a8a;
     --pro-blue-light: #eff6ff;
-    --pro-gray-bg: #f1f5f9;
+    --pro-gray-bg: #e2e8f0;
     --pro-gray-panel: #ffffff;
-    --pro-gray-bar: #eef2f6;
+    --pro-gray-bar: #f1f5f9;
     --pro-gray-border: #cbd5e1;
-    --pro-gray-text: #1e293b;
+    --pro-gray-text: #0f172a;
     --pro-gray-muted: #64748b;
   }
 
   body {
-    background-color: var(--pro-gray-bg);
+    background-color: #dbe4ee;
     color: var(--pro-gray-text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
+      linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
   }
 }
 
-/* Style fenêtre logicielle professionnelle */
-.window-frame {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--pro-gray-border);
-  border-radius: 6px;
+/* ==========================================================
+   SYSTÈME DE DESIGN 3D TACTILE & PROFONDEUR ISOMÉTRIQUE
+   ========================================================== */
+
+/* Fenêtre principale en élévation 3D */
+.window-3d {
   background: #ffffff;
-  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 20px 45px -10px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(148, 163, 184, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.pro-btn-primary {
+/* Carte avec profondeur 3D et effet de survol */
+.card-3d {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card-3d:hover {
+  transform: translateY(-3px) scale(1.002);
+  box-shadow: 
+    0 12px 20px -3px rgba(37, 99, 235, 0.12),
+    0 4px 6px -4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  border-color: #93c5fd;
+}
+
+/* Boutons physiques 3D avec enfoncement tactile réel */
+.btn-3d-primary {
   background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
   border: 1px solid #1d4ed8;
   color: #ffffff;
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: all 0.15s ease-in-out;
+  font-weight: 700;
+  border-radius: 8px;
+  box-shadow: 
+    0 5px 0 #1e40af,
+    0 8px 16px rgba(37, 99, 235, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: all 0.1s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  top: 0;
 }
-.pro-btn-primary:hover {
-  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+.btn-3d-primary:hover {
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+  box-shadow: 
+    0 6px 0 #1e40af,
+    0 12px 22px rgba(37, 99, 235, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  top: -1px;
+}
+.btn-3d-primary:active {
+  box-shadow: 
+    0 1px 0 #1e40af,
+    0 3px 6px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
+  top: 4px;
 }
 
-.pro-btn-secondary {
-  background: #ffffff;
+/* Bouton 3D secondaire clair */
+.btn-3d-secondary {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
   border: 1px solid #cbd5e1;
-  color: #334155;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.15s ease-in-out;
+  color: #1e293b;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: 
+    0 3px 0 #94a3b8,
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 0.1s ease;
+  position: relative;
+  top: 0;
 }
-.pro-btn-secondary:hover {
-  background: #f8fafc;
+.btn-3d-secondary:hover {
+  background: #ffffff;
   border-color: #94a3b8;
-  color: #0f172a;
+  top: -1px;
+  box-shadow: 
+    0 4px 0 #94a3b8,
+    0 6px 12px rgba(0, 0, 0, 0.09);
+}
+.btn-3d-secondary:active {
+  top: 2px;
+  box-shadow: 0 1px 0 #94a3b8, 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Animations légères */
-@keyframes spin-slow {
+/* Badges 3D en relief */
+.badge-3d {
+  border-radius: 6px;
+  box-shadow: 
+    0 2px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Étapes numérotées 3D */
+.step-number-3d {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Animation rotation */
+@keyframes spin-3d {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-.spin-anim {
-  animation: spin-slow 2s linear infinite;
+.spin-3d {
+  animation: spin-3d 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* Scrollbars sobres et pros */
+/* Barre de défilement stylée */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #e2e8f0;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb {
   background: #94a3b8;
+  border-radius: 4px;
+  border: 2px solid #e2e8f0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
