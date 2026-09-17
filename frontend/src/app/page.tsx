@@ -2,26 +2,30 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Zap,
-  UploadCloud,
-  FileText,
-  Video,
-  Music,
-  Image as ImageIcon,
-  Code,
+  FilePlus,
+  Wand2,
+  Scissors,
+  Box,
+  Sliders,
+  Play,
+  Pause,
+  Square,
+  SkipBack,
+  SkipForward,
+  Camera,
+  Folder,
+  Volume2,
+  RefreshCw,
   Download,
+  Trash2,
+  Settings,
   CheckCircle2,
   AlertCircle,
-  RefreshCw,
-  Trash2,
-  ExternalLink,
-  Shield,
-  Cpu,
+  FolderOpen,
+  HelpCircle,
   Layers,
-  Clock,
-  ChevronRight,
-  Terminal,
-  Settings2
+  ChevronDown,
+  X
 } from "lucide-react";
 import {
   fetchPresets,
@@ -35,147 +39,253 @@ import {
   PresetCategory
 } from "@/lib/api";
 
-export default function Home() {
-  // --- États généraux ---
-  const [presets, setPresets] = useState<PresetCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [recentJobs, setRecentJobs] = useState<JobResponse[]>([]);
-  const [systemOnline, setSystemOnline] = useState<boolean>(true);
+interface QueuedFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
+  ext: string;
+  category: string;
+  targetFormat: string;
+  previewUrl?: string;
+  status: "READY" | "UPLOADING" | "PROCESSING" | "COMPLETED" | "FAILED";
+  progress: number;
+  stage: string;
+  jobId?: string;
+  downloadUrl?: string;
+  errorMessage?: string;
+}
 
-  // --- État du fichier & sélection ---
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [detectedCategory, setDetectedCategory] = useState<string>("video");
-  const [detectedExt, setDetectedExt] = useState<string>("");
-  const [targetFormat, setTargetFormat] = useState<string>("");
-  const [conversionOptions, setConversionOptions] = useState<Record<string, any>>({
+export default function Home() {
+  const [files, setFiles] = useState<QueuedFile[]>([]);
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
+  const [presets, setPresets] = useState<PresetCategory[]>([]);
+  const [globalProfile, setGlobalProfile] = useState<string>("mp4");
+  const [destinationPath, setDestinationPath] = useState<string>("/AlteraFlux/Exports/Converted/");
+  const [mergeFiles, setMergeFiles] = useState<boolean>(false);
+  const [isConvertingAll, setIsConvertingAll] = useState<boolean>(false);
+
+  // Lecteur Aperçu
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(100);
+  const [volume, setVolume] = useState<number>(80);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Modal Paramètres
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+  const [options, setOptions] = useState({
     quality: "high",
+    resolution: "original",
     audio_bitrate: "192k",
-    ai_translation: true
+    ai_translation: true,
+    include_comments: true
   });
 
-  // --- État d'exécution & progression ---
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [currentJob, setCurrentJob] = useState<JobResponse | null>(null);
-  const [progressLog, setProgressLog] = useState<string[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [dragActive, setDragActive] = useState<boolean>(false);
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
 
-  // Chargement des presets et historique au démarrage
   useEffect(() => {
-    loadPresetsAndHistory();
-    const interval = setInterval(loadHistory, 8000);
-    return () => clearInterval(interval);
+    loadPresets();
+    loadHistory();
   }, []);
 
-  const loadPresetsAndHistory = async () => {
-    try {
-      const data = await fetchPresets();
-      setPresets(data);
-      setSystemOnline(true);
-    } catch {
-      setSystemOnline(false);
-    }
-    await loadHistory();
+  const loadPresets = async () => {
+    const data = await fetchPresets();
+    setPresets(data);
   };
 
   const loadHistory = async () => {
     try {
-      const jobs = await listRecentJobs();
-      setRecentJobs(jobs);
+      const recent = await listRecentJobs();
+      if (recent.length > 0 && files.length === 0) {
+        // Optionnel : afficher les jobs récents déjà complétés
+      }
     } catch {
-      // Backend potentiellement en cours de démarrage
+      // Ignorer si en démarrage
     }
   };
 
-  // Détection automatique du type de fichier
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-    setErrorMessage("");
-    setCurrentJob(null);
-    setProgressLog([]);
+  // Ajout de fichiers
+  const handleAddFiles = (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
 
-    const ext = file.name.split(".").pop()?.toLowerCase() || "";
-    setDetectedExt(ext);
+    const newItems: QueuedFile[] = Array.from(fileList).map((f) => {
+      const ext = f.name.split(".").pop()?.toLowerCase() || "";
+      let cat = "document";
+      if (["mp4", "mkv", "avi", "mov", "webm", "flv"].includes(ext)) cat = "video";
+      else if (["mp3", "wav", "aac", "flac", "ogg", "m4a"].includes(ext)) cat = "audio";
+      else if (["png", "jpg", "jpeg", "webp", "avif", "gif", "ico"].includes(ext)) cat = "image";
+      else if (["py", "js", "ts", "cpp", "rs", "go", "json", "yaml", "toml"].includes(ext)) cat = "code";
 
-    // Détection de catégorie
-    let cat = "document";
-    if (["mp4", "mkv", "avi", "mov", "webm", "flv"].includes(ext)) cat = "video";
-    else if (["mp3", "wav", "aac", "flac", "ogg", "m4a"].includes(ext)) cat = "audio";
-    else if (["png", "jpg", "jpeg", "webp", "avif", "gif", "ico", "bmp"].includes(ext)) cat = "image";
-    else if (["py", "js", "ts", "jsx", "tsx", "cpp", "rs", "go", "java", "json", "yaml", "yml", "toml"].includes(ext)) cat = "code";
+      let defaultTarget = "mp4";
+      if (cat === "video") defaultTarget = "mp4";
+      else if (cat === "audio") defaultTarget = "mp3";
+      else if (cat === "image") defaultTarget = "webp";
+      else if (cat === "code") defaultTarget = ext === "py" ? "ts" : "py";
+      else defaultTarget = "pdf";
 
-    setDetectedCategory(cat);
+      const previewUrl = f.type.startsWith("video") || f.type.startsWith("audio") || f.type.startsWith("image")
+        ? URL.createObjectURL(f)
+        : undefined;
 
-    // Trouver un format cible par défaut pertinent
-    if (cat === "video") setTargetFormat("mp3");
-    else if (cat === "audio") setTargetFormat("wav");
-    else if (cat === "image") setTargetFormat("webp");
-    else if (cat === "code") setTargetFormat(ext === "py" ? "ts" : (ext === "json" ? "yaml" : "py"));
-    else setTargetFormat("pdf");
-  };
+      return {
+        id: Math.random().toString(36).substring(2, 9),
+        file: f,
+        name: f.name,
+        size: f.size,
+        ext,
+        category: cat,
+        targetFormat: defaultTarget,
+        previewUrl,
+        status: "READY",
+        progress: 0,
+        stage: "Prêt"
+      };
+    });
 
-  // Gestion du Drag & Drop
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-    else if (e.type === "dragleave") setDragActive(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelect(e.dataTransfer.files[0]);
+    setFiles((prev) => [...prev, ...newItems]);
+    if (!selectedFileId && newItems.length > 0) {
+      setSelectedFileId(newItems[0].id);
     }
   };
 
-  // Établissement du WebSocket temps réel
-  const connectJobWebSocket = (jobId: string) => {
+  const selectedItem = files.find((f) => f.id === selectedFileId) || files[0] || null;
+
+  // Gestion du lecteur vidéo
+  const togglePlay = () => {
+    if (!videoRef.current) {
+      setIsPlaying(!isPlaying);
+      return;
+    }
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+      setDuration(videoRef.current.duration || 100);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setCurrentTime(val);
+    if (videoRef.current) {
+      videoRef.current.currentTime = val;
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds)) return "00:00:00";
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Lancement de conversion d'un fichier ou de tous
+  const startConversionForFile = async (fileItem: QueuedFile) => {
+    setFiles((prev) =>
+      prev.map((f) => (f.id === fileItem.id ? { ...f, status: "UPLOADING", stage: "Téléversement...", progress: 5 } : f))
+    );
+
+    try {
+      // 1. Demande d'URL présignée
+      const presigned = await requestUploadUrl(fileItem.name, fileItem.file.type, fileItem.size);
+
+      // 2. Upload direct
+      setFiles((prev) =>
+        prev.map((f) => (f.id === fileItem.id ? { ...f, stage: "Envoi direct vers stockage...", progress: 20 } : f))
+      );
+      await uploadFileDirect(presigned.upload_url, fileItem.file, presigned.headers);
+
+      // 3. Création du Job
+      setFiles((prev) =>
+        prev.map((f) => (f.id === fileItem.id ? { ...f, status: "PROCESSING", stage: "Traitement en file...", progress: 35 } : f))
+      );
+      const job = await createConversionJob({
+        filename: fileItem.name,
+        source_key: presigned.key,
+        source_format: fileItem.ext,
+        target_format: fileItem.targetFormat,
+        category: fileItem.category,
+        source_size_bytes: fileItem.size,
+        options
+      });
+
+      // 4. Écoute WebSocket ou Polling
+      listenToJob(fileItem.id, job.id);
+    } catch (err: any) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.id === fileItem.id
+            ? { ...f, status: "FAILED", stage: "Échec", errorMessage: err.message || "Erreur de conversion" }
+            : f
+        )
+      );
+    }
+  };
+
+  const listenToJob = (fileId: string, jobId: string) => {
     const wsUrl = (process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000") + `/ws/jobs/${jobId}`;
     try {
       const ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
-
-      ws.onmessage = (event) => {
+      ws.onmessage = (evt) => {
         try {
-          const data = JSON.parse(event.data);
-          if (data.stage) {
-            setProgressLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] ${data.stage}`]);
-          }
-          setCurrentJob((prev) => (prev ? { ...prev, ...data } : data));
-
+          const data = JSON.parse(evt.data);
+          setFiles((prev) =>
+            prev.map((f) => {
+              if (f.id !== fileId) return f;
+              const isDone = data.status === "COMPLETED";
+              const isFail = data.status === "FAILED";
+              return {
+                ...f,
+                status: isDone ? "COMPLETED" : isFail ? "FAILED" : "PROCESSING",
+                progress: data.progress ?? f.progress,
+                stage: data.stage || f.stage,
+                downloadUrl: data.download_url || f.downloadUrl,
+                errorMessage: data.error_message || f.errorMessage
+              };
+            })
+          );
           if (data.status === "COMPLETED" || data.status === "FAILED") {
-            loadHistory();
             ws.close();
           }
-        } catch (err) {
-          console.error("Erreur parsing WS:", err);
-        }
+        } catch {}
       };
-
-      ws.onerror = () => {
-        // Fallback par polling si WebSocket non disponible
-        pollJobStatus(jobId);
-      };
+      ws.onerror = () => pollSingleJob(fileId, jobId);
     } catch {
-      pollJobStatus(jobId);
+      pollSingleJob(fileId, jobId);
     }
   };
 
-  // Polling de secours
-  const pollJobStatus = (jobId: string) => {
+  const pollSingleJob = (fileId: string, jobId: string) => {
     const timer = setInterval(async () => {
       try {
-        const job = await getJobStatus(jobId);
-        setCurrentJob(job);
-        if (job.status === "COMPLETED" || job.status === "FAILED") {
+        const res = await getJobStatus(jobId);
+        setFiles((prev) =>
+          prev.map((f) => {
+            if (f.id !== fileId) return f;
+            const isDone = res.status === "COMPLETED";
+            const isFail = res.status === "FAILED";
+            return {
+              ...f,
+              status: isDone ? "COMPLETED" : isFail ? "FAILED" : "PROCESSING",
+              progress: res.progress,
+              stage: res.stage,
+              downloadUrl: res.download_url,
+              errorMessage: res.error_message
+            };
+          })
+        );
+        if (res.status === "COMPLETED" || res.status === "FAILED") {
           clearInterval(timer);
-          loadHistory();
         }
       } catch {
         clearInterval(timer);
@@ -183,473 +293,627 @@ export default function Home() {
     }, 1000);
   };
 
-  // Lancement du cycle de conversion
-  const handleStartConversion = async () => {
-    if (!selectedFile || !targetFormat) return;
-
-    setIsUploading(true);
-    setErrorMessage("");
-    setProgressLog([`[${new Date().toLocaleTimeString()}] Préparation de la requête de téléversement sécurisée...`]);
-
-    try {
-      // 1. Demande de Presigned URL à FastAPI
-      const presigned = await requestUploadUrl(selectedFile.name, selectedFile.type, selectedFile.size);
-      setProgressLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] URL présignée allouée pour la clé ${presigned.key}`]);
-
-      // 2. Upload direct vers S3/MinIO
-      setProgressLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] Téléversement direct du fichier source...`]);
-      await uploadFileDirect(presigned.upload_url, selectedFile, presigned.headers);
-
-      // 3. Création du Job de conversion dans la file
-      setProgressLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] Fichier téléversé. Envoi de la tâche dans la file Redis...`]);
-      const job = await createConversionJob({
-        filename: selectedFile.name,
-        source_key: presigned.key,
-        source_format: detectedExt,
-        target_format: targetFormat,
-        category: detectedCategory,
-        source_size_bytes: selectedFile.size,
-        options: conversionOptions
-      });
-
-      setCurrentJob(job);
-      setIsUploading(false);
-
-      // 4. Connexion au streaming temps réel
-      connectJobWebSocket(job.id);
-    } catch (err: any) {
-      console.error(err);
-      setIsUploading(false);
-      setErrorMessage(err.message || "Une erreur est survenue pendant l'opération.");
-      setProgressLog((prev) => [...prev, `[ERREUR] ${err.message}`]);
+  const handleConvertAll = async () => {
+    if (files.length === 0) return;
+    setIsConvertingAll(true);
+    for (const f of files) {
+      if (f.status !== "COMPLETED") {
+        await startConversionForFile(f);
+      }
     }
+    setIsConvertingAll(false);
   };
 
-  // Formats cibles disponibles pour le fichier courant
-  const currentCategoryPresets = presets.find((p) => p.category === detectedCategory);
-  const availableTargetFormats = currentCategoryPresets?.target_formats || [
-    { id: "mp3", label: "MP3 Audio", description: "Audio universel", popular: true },
-    { id: "pdf", label: "PDF Document", description: "Document vectoriel", popular: true },
-    { id: "webp", label: "WebP Moderne", description: "Image optimisée", popular: true },
-    { id: "ts", label: "TypeScript", description: "Code typé", popular: true }
-  ];
+  const handleApplyToAll = () => {
+    setFiles((prev) => prev.map((f) => ({ ...f, targetFormat: globalProfile })));
+  };
+
+  const removeFile = (id: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+    if (selectedFileId === id) setSelectedFileId(null);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* --- NAVBAR SUPÉRIEURE --- */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#06080f]/80 border-b border-slate-800/80 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-white font-mono">AlteraFlux</span>
-                <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  Universal Engine v1.0
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">Architecture Asynchrone Découplée & Multi-Moteurs</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300">
-              <span className={`w-2 h-2 rounded-full ${systemOnline ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
-              <span>{systemOnline ? "FastAPI & Redis Connectés" : "Mode Standalone Local"}</span>
-            </div>
-
-            <a
-              href="https://github.com/ycntrader-12/AlteraFlux.git"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 transition"
+    <div className="flex flex-col min-h-screen bg-[#dce4ec] text-[#1e293b] font-sans antialiased select-none">
+      {/* --- EN-TÊTE SUPÉRIEUR BLEU PRO STUDIO --- */}
+      <header className="bg-[#2b5ec1] text-white shadow-md border-b border-[#214a9b] px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Bouton Ajouter Fichier avec Dropdown */}
+          <div className="relative group">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 border border-white/25 text-white text-xs font-semibold tracking-wide transition shadow-sm"
             >
-              <span>GitHub</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+              <FilePlus className="w-4 h-4 text-white" />
+              <span>Ajouter Fichier</span>
+              <ChevronDown className="w-3.5 h-3.5 opacity-75" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => handleAddFiles(e.target.files)}
+            />
           </div>
+
+          {/* Outils secondaires de la barre supérieure */}
+          <div className="hidden md:flex items-center gap-1 border-l border-white/20 pl-4">
+            <button
+              type="button"
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-white/10 text-xs text-white/90 transition"
+            >
+              <Wand2 className="w-3.5 h-3.5 text-cyan-200" />
+              <span>Améliorer la vidéo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-white/10 text-xs text-white/90 transition"
+            >
+              <Scissors className="w-3.5 h-3.5 text-amber-200" />
+              <span>Couper</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-white/10 text-xs text-white/90 transition"
+            >
+              <Box className="w-3.5 h-3.5 text-emerald-200" />
+              <span className="bg-white/20 px-1 py-0.2 rounded text-[10px] font-bold">3D</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-white/10 text-xs text-white/90 transition"
+            >
+              <Sliders className="w-3.5 h-3.5 text-purple-200" />
+              <span>Édition</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Titre / Statut / Aide */}
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-2 text-white/90 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-semibold tracking-wide">AlteraFlux Studio Pro</span>
+          </div>
+          <a
+            href="https://github.com/ycntrader-12/AlteraFlux.git"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline text-white/80 hidden sm:inline"
+          >
+            GitHub
+          </a>
         </div>
       </header>
 
-      {/* --- CONTENU PRINCIPAL --- */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
-        {/* HERO BANNER */}
-        <section className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Convertissez Tout. <span className="gradient-text">Sans Limite.</span> En Temps Réel.
-          </h1>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-8">
-            Traitement asynchrone découplé pour vidéos, audios, documents riches, images WebP/AVIF et transpilation de code assistée par IA.
-          </p>
-
-          {/* BADGES D'INFRASTRUCTURE */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-            <div className="glass-panel p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
-                <UploadCloud className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Upload Direct S3</p>
-                <p className="text-sm font-semibold text-slate-200">Presigned URLs</p>
-              </div>
-            </div>
-
-            <div className="glass-panel p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Workers Dédiés</p>
-                <p className="text-sm font-semibold text-slate-200">Celery + Redis</p>
-              </div>
-            </div>
-
-            <div className="glass-panel p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
-                <Shield className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Éphéméralité 24h</p>
-                <p className="text-sm font-semibold text-slate-200">Purge Automatique</p>
-              </div>
-            </div>
-
-            <div className="glass-panel p-4 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-                <Layers className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Moteurs Natifs</p>
-                <p className="text-sm font-semibold text-slate-200">FFmpeg, Pandoc, IA</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- ZONE DU CONVERTISSEUR PRINCIPAL --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* SECTION GAUCHE: UPLOAD & FORMAT */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            {/* DROPZONE */}
+      {/* --- ZONE PRINCIPALE DE TRAVAIL (2 COLONNES) --- */}
+      <div className="flex-1 flex flex-col md:flex-row p-3 gap-3 max-w-[1700px] w-full mx-auto overflow-hidden">
+        {/* COLONNE GAUCHE: LISTE DES FICHIERS / MISE EN ROUTE */}
+        <div className="flex-1 bg-white border border-[#cbd5e1] rounded shadow-sm flex flex-col overflow-hidden min-h-[440px]">
+          {files.length === 0 ? (
+            /* --- VUE REPRODUITE MISE EN ROUTE (VIDE) --- */
             <div
-              className={`glass-panel p-8 text-center border-2 border-dashed transition-all cursor-pointer relative overflow-hidden ${
-                dragActive ? "border-cyan-400 bg-cyan-500/5 glow-cyan" : "border-slate-700/80 hover:border-slate-600"
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
+              className="flex-1 flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-slate-50 transition border-2 border-transparent border-dashed hover:border-blue-300"
               onClick={() => fileInputRef.current?.click()}
             >
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-              />
+              <div className="max-w-xl text-left bg-white p-8 rounded-lg">
+                <div className="flex items-center gap-2 mb-6">
+                  <h1 className="text-2xl font-bold text-slate-800">Mise en route</h1>
+                  <span className="px-2 py-0.5 rounded border border-blue-400 text-blue-600 text-xs font-bold">4K</span>
+                  <span className="px-2 py-0.5 rounded border border-blue-400 text-blue-600 text-xs font-bold">UHD</span>
+                  <span className="px-2 py-0.5 rounded border border-blue-400 text-blue-600 text-xs font-bold">HEVC</span>
+                  <span className="px-2 py-0.5 rounded border border-indigo-400 text-indigo-600 text-xs font-bold">IA</span>
+                </div>
 
-              <div className="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 mx-auto flex items-center justify-center mb-4 text-cyan-400">
-                <UploadCloud className="w-8 h-8" />
+                <div className="space-y-4 text-sm text-slate-700">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-500 w-5">1.</span>
+                    <p>
+                      Cliquez sur <span className="inline-flex items-center gap-1 font-semibold px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-xs text-blue-700"><FilePlus className="w-3 h-3" /> Ajouter Fichier</span> pour importer vos vidéos, audios, documents ou code.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-500 w-5">2.</span>
+                    <p>
+                      Cliquez sur <Wand2 className="w-3.5 h-3.5 inline text-blue-600" /> , <Scissors className="w-3.5 h-3.5 inline text-blue-600" /> , <Box className="w-3.5 h-3.5 inline text-blue-600" /> et <Sliders className="w-3.5 h-3.5 inline text-blue-600" /> pour éditer et configurer vos paramètres.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-500 w-5">3.</span>
+                    <p>
+                      Sélectionnez le format de sortie souhaité à partir de la liste <span className="font-semibold text-slate-900">&quot;Profil&quot;</span> en bas.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-500 w-5">4.</span>
+                    <p>
+                      Cliquez sur le bouton bleu <span className="inline-flex items-center gap-1 font-semibold px-2 py-0.5 bg-blue-600 text-white rounded text-xs"><RefreshCw className="w-3 h-3" /> Convertir</span> pour lancer la conversion.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-slate-200 text-xs text-slate-400 text-center">
+                  Ou glissez-déposez vos fichiers directement ici dans cette fenêtre.
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* --- VUE LISTE DES FICHIERS IMPORTEURS --- */
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="bg-[#f8fafc] border-b border-[#cbd5e1] px-4 py-2 flex items-center justify-between text-xs font-semibold text-slate-600">
+                <span>Fichiers à convertir ({files.length})</span>
+                <span className="text-slate-400">Cliquez sur un fichier pour l&apos;afficher dans l&apos;aperçu</span>
               </div>
 
-              {selectedFile ? (
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
-                    <span>{detectedCategory.toUpperCase()}</span>
-                    <span>•</span>
-                    <span>.{detectedExt.toUpperCase()}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white break-all">{selectedFile.name}</h3>
-                  <p className="text-xs text-slate-400">{(selectedFile.size / (1024 * 1024)).toFixed(2)} Mo</p>
-                  <p className="text-xs text-cyan-400 underline pt-2">Cliquer pour choisir un autre fichier</p>
-                </div>
-              ) : (
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
-                    Glissez-déposez votre fichier ici
-                  </h3>
-                  <p className="text-xs text-slate-400 mb-4">
-                    Prise en charge universelle : MP4, MP3, DOCX, PDF, PNG, Python, TypeScript, etc.
-                  </p>
-                  <button
-                    type="button"
-                    className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs tracking-wide shadow-lg shadow-cyan-500/20 transition"
-                  >
-                    Parcourir les fichiers
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* SÉLECTEUR DE FORMAT CIBLE */}
-            {selectedFile && (
-              <div className="glass-panel p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-cyan-400" />
-                    Format cible recommandé :
-                  </label>
-                  <span className="text-xs text-slate-400">Catégorie : {detectedCategory}</span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {availableTargetFormats.map((fmt) => {
-                    const isSelected = targetFormat === fmt.id;
-                    return (
-                      <button
-                        key={fmt.id}
-                        type="button"
-                        onClick={() => setTargetFormat(fmt.id)}
-                        className={`p-3 rounded-xl text-left border transition-all ${
-                          isSelected
-                            ? "bg-cyan-500/15 border-cyan-400 text-white glow-cyan"
-                            : "bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-sm">{fmt.label}</span>
-                          {fmt.popular && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-medium">
-                              Top
-                            </span>
+              <div className="divide-y divide-slate-200">
+                {files.map((item) => {
+                  const isSelected = item.id === selectedFileId;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedFileId(item.id)}
+                      className={`p-3 flex items-center justify-between cursor-pointer transition ${
+                        isSelected ? "bg-blue-50/80 border-l-4 border-blue-600" : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded bg-[#e2e8f0] border border-[#cbd5e1] flex items-center justify-center font-bold text-xs uppercase text-slate-600">
+                          {item.ext}
+                        </div>
+                        <div className="truncate">
+                          <p className="font-semibold text-xs text-slate-800 truncate">{item.name}</p>
+                          <p className="text-[11px] text-slate-500">
+                            {(item.size / (1024 * 1024)).toFixed(2)} Mo • Format cible :{" "}
+                            <span className="font-bold text-blue-600 uppercase">{item.targetFormat}</span>
+                          </p>
+                          {item.stage && (
+                            <p className="text-[10px] text-slate-500 italic mt-0.5">
+                              {item.stage} {item.progress > 0 && `(${Math.round(item.progress)}%)`}
+                            </p>
                           )}
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-tight">{fmt.description}</p>
-                      </button>
-                    );
-                  })}
-                </div>
+                      </div>
 
-                {/* BOUTON D'ACTION PRINCIPAL */}
-                <button
-                  type="button"
-                  disabled={isUploading || !targetFormat}
-                  onClick={handleStartConversion}
-                  className={`w-full py-3.5 rounded-xl font-bold text-sm tracking-wide transition shadow-xl flex items-center justify-center gap-2 ${
-                    isUploading
-                      ? "bg-slate-800 text-slate-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white hover:opacity-95 shadow-cyan-500/25"
-                  }`}
-                >
-                  {isUploading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Téléversement et mise en file...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      <span>Lancer la conversion ({detectedExt.toUpperCase()} $\rightarrow$ {targetFormat.toUpperCase()})</span>
-                    </>
-                  )}
-                </button>
+                      <div className="flex items-center gap-3">
+                        {/* Barre de progression si actif */}
+                        {item.status === "PROCESSING" && (
+                          <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-600 transition-all duration-300"
+                              style={{ width: `${item.progress}%` }}
+                            />
+                          </div>
+                        )}
+
+                        {item.status === "COMPLETED" && (
+                          <span className="flex items-center gap-1 text-emerald-600 text-xs font-semibold">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span>Terminé</span>
+                          </span>
+                        )}
+
+                        {item.status === "FAILED" && (
+                          <span className="flex items-center gap-1 text-rose-600 text-xs font-semibold">
+                            <AlertCircle className="w-4 h-4" />
+                            <span>Erreur</span>
+                          </span>
+                        )}
+
+                        {/* Sélecteur de format individuel */}
+                        <select
+                          value={item.targetFormat}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const val = e.target.value;
+                            setFiles((prev) =>
+                              prev.map((f) => (f.id === item.id ? { ...f, targetFormat: val } : f))
+                            );
+                          }}
+                          className="bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-700 focus:outline-none focus:border-blue-500"
+                        >
+                          <option value="mp4">MP4 Video</option>
+                          <option value="mp3">MP3 Audio</option>
+                          <option value="webm">WebM Video</option>
+                          <option value="gif">GIF Animé</option>
+                          <option value="webp">WebP Image</option>
+                          <option value="pdf">PDF Document</option>
+                          <option value="docx">Word DOCX</option>
+                          <option value="ts">TypeScript</option>
+                          <option value="py">Python</option>
+                        </select>
+
+                        {item.downloadUrl && (
+                          <a
+                            href={item.downloadUrl}
+                            download
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition"
+                            title="Télécharger"
+                          >
+                            <Download className="w-4 h-4" />
+                          </a>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(item.id);
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 transition"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* COLONNE DROITE: PANNEAU APERÇU (PLAYER STUDIO) */}
+        <div className="w-full md:w-[380px] lg:w-[420px] bg-white border border-[#cbd5e1] rounded shadow-sm flex flex-col overflow-hidden">
+          <div className="bg-[#f8fafc] border-b border-[#cbd5e1] px-3 py-2 text-xs font-bold text-slate-700 flex items-center justify-between">
+            <span>Aperçu</span>
+            {selectedItem && <span className="text-[11px] font-normal text-slate-500 truncate max-w-[200px]">{selectedItem.name}</span>}
+          </div>
+
+          {/* Écran de lecture noir studio */}
+          <div className="relative bg-[#0b1329] aspect-video flex items-center justify-center overflow-hidden">
+            {selectedItem?.previewUrl && selectedItem.file.type.startsWith("video") ? (
+              <video
+                ref={videoRef}
+                src={selectedItem.previewUrl}
+                className="w-full h-full object-contain"
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={() => setIsPlaying(false)}
+              />
+            ) : selectedItem?.previewUrl && selectedItem.file.type.startsWith("image") ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={selectedItem.previewUrl} alt="Preview" className="w-full h-full object-contain" />
+            ) : (
+              /* Écran par défaut style AnyMP4 */
+              <div className="text-center p-6 select-none">
+                <div className="w-24 h-24 mx-auto rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center mb-3 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+                  <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-inner">
+                    AF
+                  </div>
+                </div>
+                <h3 className="text-white font-bold text-sm tracking-wider font-mono">ALTERAFLUX</h3>
+                <p className="text-[10px] text-blue-300">Lecteur & Transcodeur Universel</p>
               </div>
             )}
           </div>
 
-          {/* SECTION DROITE: MONITEUR TEMPS RÉEL & TERMINAL */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="glass-panel p-6 flex flex-col h-full">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-                <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-cyan-400" />
-                  <span className="font-bold text-sm text-slate-200">Moniteur de Traitement Live</span>
-                </div>
-                {currentJob && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
-                    ID: {currentJob.id.slice(0, 8)}
-                  </span>
-                )}
+          {/* Timeline & Durée */}
+          <div className="bg-[#f8fafc] px-3 pt-2 pb-1 border-t border-[#cbd5e1] flex items-center justify-between text-[11px] text-slate-600 font-mono">
+            <span>{formatTime(currentTime)}</span>
+            <input
+              type="range"
+              min={0}
+              max={duration || 100}
+              value={currentTime}
+              onChange={handleSeek}
+              className="flex-1 mx-2 h-1 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            />
+            <span>{formatTime(duration)}</span>
+          </div>
+
+          {/* Barre de contrôle média classique */}
+          <div className="bg-[#f1f5f9] px-3 py-2 border-t border-[#cbd5e1] flex items-center justify-between text-slate-600">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTime(0);
+                  if (videoRef.current) videoRef.current.currentTime = 0;
+                }}
+                className="p-1 hover:bg-slate-200 rounded text-slate-600"
+                title="Début"
+              >
+                <SkipBack className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={togglePlay}
+                className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm"
+                title={isPlaying ? "Pause" : "Lecture"}
+              >
+                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPlaying(false);
+                  setCurrentTime(0);
+                  if (videoRef.current) {
+                    videoRef.current.pause();
+                    videoRef.current.currentTime = 0;
+                  }
+                }}
+                className="p-1 hover:bg-slate-200 rounded text-slate-600"
+                title="Stop"
+              >
+                <Square className="w-3.5 h-3.5 fill-slate-600" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTime((t) => Math.min(t + 5, duration));
+                  if (videoRef.current) videoRef.current.currentTime += 5;
+                }}
+                className="p-1 hover:bg-slate-200 rounded text-slate-600"
+                title="Avancer 5s"
+              >
+                <SkipForward className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Outils snapshot & dossier */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => alert("Capture instantanée enregistrée dans le dossier d'export.")}
+                className="p-1 hover:bg-slate-200 rounded text-slate-600"
+                title="Instantané photo"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => alert(`Dossier cible : ${destinationPath}`)}
+                className="p-1 hover:bg-slate-200 rounded text-slate-600"
+                title="Ouvrir le dossier cible"
+              >
+                <Folder className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Volume */}
+              <div className="flex items-center gap-1 pl-1 border-l border-slate-300">
+                <Volume2 className="w-3.5 h-3.5 text-slate-500" />
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={volume}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    setVolume(v);
+                    if (videoRef.current) videoRef.current.volume = v / 100;
+                  }}
+                  className="w-14 h-1 bg-slate-300 rounded appearance-none cursor-pointer accent-blue-600"
+                />
               </div>
-
-              {/* CARTE D'ÉTAT D'EXÉCUTION */}
-              {currentJob ? (
-                <div className="space-y-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                        {currentJob.stage}
-                      </span>
-                      <span className="text-sm font-mono font-bold text-cyan-400">
-                        {currentJob.progress}%
-                      </span>
-                    </div>
-
-                    {/* BARRE DE PROGRESSION ANIMÉE */}
-                    <div className="w-full h-3 rounded-full bg-slate-800 overflow-hidden relative">
-                      <div
-                        className={`h-full rounded-full transition-all duration-300 ${
-                          currentJob.status === "COMPLETED"
-                            ? "bg-emerald-400"
-                            : currentJob.status === "FAILED"
-                            ? "bg-rose-500"
-                            : "shimmer-bar"
-                        }`}
-                        style={{ width: `${currentJob.progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* FLUX DE LOGS DU TERMINAL */}
-                  <div className="bg-[#03060c] border border-slate-800/80 rounded-xl p-4 font-mono text-xs text-slate-300 h-48 overflow-y-auto space-y-1.5">
-                    {progressLog.length === 0 ? (
-                      <p className="text-slate-500 italic">En attente des signaux du worker...</p>
-                    ) : (
-                      progressLog.map((log, idx) => (
-                        <p key={idx} className="leading-tight">
-                          <span className="text-cyan-400 font-semibold">{`>`}</span> {log}
-                        </p>
-                      ))
-                    )}
-                  </div>
-
-                  {/* ACTIONS RÉSULTAT */}
-                  {currentJob.status === "COMPLETED" && (
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-3">
-                      <div className="flex items-center justify-center gap-2 text-emerald-400 font-semibold text-sm">
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>Fichier converti avec succès !</span>
-                      </div>
-                      <a
-                        href={currentJob.download_url || "#"}
-                        download={currentJob.result_filename || "converted_file"}
-                        className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>Télécharger ({currentJob.result_filename})</span>
-                      </a>
-                    </div>
-                  )}
-
-                  {currentJob.status === "FAILED" && (
-                    <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center space-y-2">
-                      <div className="flex items-center justify-center gap-2 text-rose-400 font-semibold text-sm">
-                        <AlertCircle className="w-5 h-5" />
-                        <span>Échec du traitement</span>
-                      </div>
-                      <p className="text-xs text-rose-300">{currentJob.error_message || "Erreur interne"}</p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-500">
-                  <Cpu className="w-12 h-12 mb-3 text-slate-700 stroke-1" />
-                  <p className="text-sm font-medium text-slate-400">Aucune tâche en cours</p>
-                  <p className="text-xs text-slate-500 mt-1 max-w-xs">
-                    Déposez un fichier à gauche pour visualiser la progression du transcodage et les logs d'exécution en direct.
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* --- SECTION HISTORIQUE DES CONVERSIONS RÉCENTES --- */}
-        <section className="mt-14">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Clock className="w-5 h-5 text-cyan-400" />
-                Historique des Conversions (Éphémère 24h)
-              </h2>
-              <p className="text-xs text-slate-400">Les fichiers originaux et convertis sont purgés automatiquement après 24 heures.</p>
+      {/* --- BARRE INFÉRIEURE : PROFIL, PARAMÈTRES & BOUTON CONVERTIR --- */}
+      <footer className="bg-[#eef2f6] border-t border-[#cbd5e1] p-3 shadow-inner">
+        <div className="max-w-[1700px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+          {/* Bloc des réglages (Lignes 1 & 2) */}
+          <div className="flex-1 w-full flex flex-col gap-2 text-xs">
+            {/* Ligne Profil */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-slate-700 w-20">Profil :</span>
+              <div className="relative flex-1 max-w-md">
+                <select
+                  value={globalProfile}
+                  onChange={(e) => setGlobalProfile(e.target.value)}
+                  className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1.5 text-xs text-slate-800 font-medium shadow-sm focus:outline-none focus:border-blue-500"
+                >
+                  <optgroup label="Formats Vidéo">
+                    <option value="mp4">MPEG-4 Video (*.mp4) - Standard Universel</option>
+                    <option value="webm">WebM Video (*.webm) - Optimisé Web</option>
+                    <option value="mkv">MKV Video (*.mkv) - Matroska HD</option>
+                    <option value="gif">GIF Animé (*.gif) - Boucle courte</option>
+                  </optgroup>
+                  <optgroup label="Formats Audio">
+                    <option value="mp3">MP3 Audio (*.mp3) - Haute Compatibilité</option>
+                    <option value="wav">WAV Audio (*.wav) - Qualité Studio Lossless</option>
+                    <option value="flac">FLAC Audio (*.flac) - Sans perte</option>
+                  </optgroup>
+                  <optgroup label="Formats Image">
+                    <option value="webp">WebP Image (*.webp) - Compression W3C</option>
+                    <option value="png">PNG Image (*.png) - Avec transparence</option>
+                    <option value="ico">ICO Favicon (*.ico) - Multi-résolution</option>
+                  </optgroup>
+                  <optgroup label="Formats Document">
+                    <option value="pdf">PDF Document (*.pdf) - Rendu vectoriel</option>
+                    <option value="docx">Microsoft Word (*.docx)</option>
+                    <option value="md">Markdown (*.md)</option>
+                  </optgroup>
+                  <optgroup label="Transpilation Code & IA">
+                    <option value="ts">TypeScript (*.ts) - Typage strict</option>
+                    <option value="py">Python (*.py) - Script propre</option>
+                    <option value="cpp">C++ 20 (*.cpp) - Performance native</option>
+                    <option value="rs">Rust (*.rs) - Sécurité mémoire</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(true)}
+                className="px-3 py-1.5 rounded bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-medium shadow-sm transition"
+              >
+                Paramètres
+              </button>
+
+              <button
+                type="button"
+                onClick={handleApplyToAll}
+                className="px-3 py-1.5 rounded bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-medium shadow-sm transition"
+              >
+                Appliquer à Tous
+              </button>
             </div>
+
+            {/* Ligne Destination */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-slate-700 w-20">Destination :</span>
+              <input
+                type="text"
+                value={destinationPath}
+                onChange={(e) => setDestinationPath(e.target.value)}
+                className="flex-1 max-w-md bg-white border border-[#cbd5e1] rounded px-3 py-1.5 text-xs text-slate-800 shadow-sm focus:outline-none focus:border-blue-500 font-mono"
+              />
+
+              <button
+                type="button"
+                onClick={() => alert("Sélectionnez un nouveau dossier de destination.")}
+                className="px-3 py-1.5 rounded bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-medium shadow-sm transition"
+              >
+                Parcourir
+              </button>
+
+              <button
+                type="button"
+                onClick={() => alert(`Dossier ouvert : ${destinationPath}`)}
+                className="px-3 py-1.5 rounded bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-medium shadow-sm transition"
+              >
+                Ouvrir le dossier
+              </button>
+
+              <label className="flex items-center gap-1.5 ml-2 cursor-pointer text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={mergeFiles}
+                  onChange={(e) => setMergeFiles(e.target.checked)}
+                  className="rounded text-blue-600 focus:ring-0"
+                />
+                <span>Fusionner en un seul fichier</span>
+              </label>
+            </div>
+          </div>
+
+          {/* GROS BOUTON BLEU "CONVERTIR" STYLE STUDIO */}
+          <div>
             <button
               type="button"
-              onClick={loadHistory}
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition"
-              title="Rafraîchir"
+              disabled={files.length === 0 || isConvertingAll}
+              onClick={handleConvertAll}
+              className={`px-8 py-4 rounded-md font-bold text-sm text-white flex items-center justify-center gap-2.5 shadow-md transition ${
+                files.length === 0
+                  ? "bg-slate-400 cursor-not-allowed"
+                  : isConvertingAll
+                  ? "bg-blue-700 cursor-wait"
+                  : "bg-blue-600 hover:bg-blue-700 active:scale-98 shadow-blue-500/30"
+              }`}
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className={`w-5 h-5 ${isConvertingAll ? "spin-anim" : ""}`} />
+              <span className="text-base tracking-wide">
+                {isConvertingAll ? "Conversion en cours..." : "Convertir"}
+              </span>
             </button>
-          </div>
-
-          <div className="glass-panel overflow-hidden">
-            {recentJobs.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-xs">
-                Aucune conversion enregistrée pour le moment.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-800/60">
-                {recentJobs.map((job) => (
-                  <div key={job.id} className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300">
-                        {job.category === "video" && <Video className="w-4 h-4 text-cyan-400" />}
-                        {job.category === "audio" && <Music className="w-4 h-4 text-purple-400" />}
-                        {job.category === "image" && <ImageIcon className="w-4 h-4 text-emerald-400" />}
-                        {job.category === "code" && <Code className="w-4 h-4 text-amber-400" />}
-                        {job.category === "document" && <FileText className="w-4 h-4 text-blue-400" />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">{job.filename}</p>
-                        <p className="text-xs text-slate-400">
-                          {job.source_format.toUpperCase()} $\rightarrow$ {job.target_format.toUpperCase()} • {job.stage}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                          job.status === "COMPLETED"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : job.status === "FAILED"
-                            ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                            : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-                        }`}
-                      >
-                        {job.status}
-                      </span>
-
-                      {job.download_url && (
-                        <a
-                          href={job.download_url}
-                          download={job.result_filename || "download"}
-                          className="p-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 transition"
-                          title="Télécharger"
-                        >
-                          <Download className="w-4 h-4" />
-                        </a>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          await deleteJob(job.id);
-                          loadHistory();
-                        }}
-                        className="p-2 rounded-lg hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 transition"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
-
-      {/* --- PIED DE PAGE --- */}
-      <footer className="border-t border-slate-800/80 bg-[#04060b] py-6 px-6 mt-16 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 AlteraFlux. Moteur de conversion universel asynchrone et découplé.</p>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>FastAPI 0.110+</span>
-            <span>•</span>
-            <span>Next.js 16</span>
-            <span>•</span>
-            <span>Celery 5</span>
-            <span>•</span>
-            <span>FFmpeg</span>
           </div>
         </div>
       </footer>
+
+      {/* --- MODAL DE PARAMÈTRES AVANCÉS --- */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-300 rounded-lg shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in duration-150">
+            <div className="bg-[#2b5ec1] text-white px-4 py-3 flex items-center justify-between font-bold text-sm">
+              <span className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Paramètres de Sortie & d&apos;Optimisation
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(false)}
+                className="hover:bg-white/20 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Qualité d&apos;encodage :</label>
+                <select
+                  value={options.quality}
+                  onChange={(e) => setOptions({ ...options, quality: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-800"
+                >
+                  <option value="high">Élevée (CRF 18 / Master)</option>
+                  <option value="medium">Moyenne (Recommandé standard web)</option>
+                  <option value="low">Compressée (Poids minimum)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Résolution vidéo :</label>
+                <select
+                  value={options.resolution}
+                  onChange={(e) => setOptions({ ...options, resolution: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-800"
+                >
+                  <option value="original">Originale (Conserver)</option>
+                  <option value="1080p">Full HD 1080p (1920x1080)</option>
+                  <option value="720p">HD 720p (1280x720)</option>
+                  <option value="480p">SD 480p (854x480)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Débit binaire Audio (Bitrate) :</label>
+                <select
+                  value={options.audio_bitrate}
+                  onChange={(e) => setOptions({ ...options, audio_bitrate: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-800"
+                >
+                  <option value="320k">320 kbps (Excellente qualité)</option>
+                  <option value="192k">192 kbps (Standard équilibré)</option>
+                  <option value="128k">128 kbps (Économique)</option>
+                </select>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={options.ai_translation}
+                    onChange={(e) => setOptions({ ...options, ai_translation: e.target.checked })}
+                    className="rounded text-blue-600"
+                  />
+                  <span>Activer la traduction sémantique IA pour le code (Gemini)</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="bg-slate-100 px-4 py-3 border-t border-slate-200 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(false)}
+                className="px-4 py-1.5 rounded bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition"
+              >
+                Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

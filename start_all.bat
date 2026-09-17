@@ -1,34 +1,39 @@
 @echo off
+setlocal enabledelayedexpansion
 title AlteraFlux Launcher
+
 echo ========================================================
 echo        AlteraFlux - Universal Conversion Engine
 echo ========================================================
 echo.
 
-echo [1] Verifier ou lancer l'infrastructure complete avec Docker Compose...
-docker-compose --version >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    echo Docker detecte ! Lancement des conteneurs (FastAPI, Redis, Postgres, MinIO, Celery, Next.js)...
+where docker >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [INFO] Docker detecte. Tentative de lancement via Docker Compose...
     docker-compose up -d
-    echo.
-    echo Tous les services sont demarres !
-    echo - Frontend Next.js : http://localhost:3001
-    echo - Backend API Docs : http://localhost:8000/docs
-    echo - MinIO Console    : http://localhost:9001
-    goto END
+    if !errorlevel! equ 0 (
+        echo.
+        echo Tous les services sont demarres via Docker :
+        echo   - Frontend Web   : http://localhost:3001
+        echo   - Backend API    : http://localhost:8000/docs
+        echo   - MinIO Console  : http://localhost:9001
+        goto READY
+    )
 )
 
-echo Docker non detecte ou non lance. Demarrage des serveurs locaux...
+echo [INFO] Demarrage direct des serveurs locaux...
 
-echo Demarrage du Backend FastAPI (port 8000)...
-start "AlteraFlux Backend" cmd /k "cd /d %~dp0backend && ..\.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000"
+echo Demarrage du Backend FastAPI sur le port 8000...
+start "AlteraFlux Backend" cmd /k "cd /d "%~dp0backend" && ..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000 --host 0.0.0.0"
 
-echo Demarrage du Frontend Next.js (port 3001)...
-start "AlteraFlux Frontend" cmd /k "cd /d %~dp0frontend && npm run dev"
+echo Demarrage du Frontend Next.js sur le port 3001...
+start "AlteraFlux Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
-:END
+:READY
 echo.
 echo ========================================================
 echo   AlteraFlux est pret !
+echo   Frontend : http://localhost:3001
+echo   Backend  : http://localhost:8000
 echo ========================================================
 pause
