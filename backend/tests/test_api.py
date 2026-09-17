@@ -1,6 +1,6 @@
 import pytest
 import asyncio
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.database import init_db
 
@@ -12,7 +12,8 @@ def event_loop():
 
 @pytest.mark.asyncio
 async def test_root_endpoint():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         response = await ac.get("/")
     assert response.status_code == 200
     data = response.json()
@@ -21,7 +22,8 @@ async def test_root_endpoint():
 
 @pytest.mark.asyncio
 async def test_presets_endpoint():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         response = await ac.get("/api/v1/presets")
     assert response.status_code == 200
     presets = response.json()
@@ -35,7 +37,8 @@ async def test_presets_endpoint():
 @pytest.mark.asyncio
 async def test_create_and_get_job():
     await init_db()
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         # Création d'une URL de téléversement
         presigned_res = await ac.post("/api/v1/storage/upload-url", json={
             "filename": "sample_video.mp4",
