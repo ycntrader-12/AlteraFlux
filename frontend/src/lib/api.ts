@@ -100,25 +100,39 @@ export async function uploadFileDirect(
   }
 
   // Upload PUT direct vers MinIO / S3 / Supabase
-  const res = await fetch(targetUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": file.type || "application/octet-stream",
-      ...headers
-    },
-    body: file
-  });
-
-  if (!res.ok) {
-    // Si l'upload S3 direct échoue (ex: CORS MinIO en local), on tente le fallback upload-direct
-    console.warn("Upload S3 direct échoué, essai du fallback direct multipart...");
-    const formData = new FormData();
-    formData.append("file", file);
-    const fallbackRes = await fetch(`${API_BASE}/api/v1/storage/upload-direct`, {
-      method: "POST",
-      body: formData
+  let putSuccess = false;
+  try {
+    const res = await fetch(targetUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        ...headers
+      },
+      body: file
     });
-    if (!fallbackRes.ok) throw new Error("Échec du téléversement du fichier.");
+    if (res.ok) {
+      putSuccess = true;
+    } else {
+      console.warn(`Upload S3 direct échoué (${res.status}), essai du fallback direct...`);
+    }
+  } catch (netErr) {
+    console.warn("Upload S3 direct non joignable (réseau/CORS), bascule automatique sur upload-direct:", netErr);
+  }
+
+  if (putSuccess) {
+    return;
+  }
+
+  // Si l'upload S3 direct a échoué, on tente le fallback upload-direct côté serveur
+  const formData = new FormData();
+  formData.append("file", file);
+  const fallbackRes = await fetch(`${API_BASE}/api/v1/storage/upload-direct`, {
+    method: "POST",
+    body: formData
+  });
+  if (!fallbackRes.ok) {
+    const errText = await fallbackRes.text().catch(() => "");
+    throw new Error(`Échec du téléversement du fichier (${fallbackRes.status}) ${errText}`);
   }
 }
 
@@ -165,4 +179,12 @@ export async function deleteJob(jobId: string): Promise<void> {
   await fetch(`${API_BASE}/api/v1/conversions/jobs/${jobId}`, {
     method: "DELETE"
   });
+}
+
+export function getDownloadUrl(job: JobResponse): string {
+  if (job.download_url) {
+    if (job.download_url.startsWith("http")) return job.download_url;
+    return `${API_BASE}${job.download_url}`;
+  }
+  return `${API_BASE}/api/v1/conversions/jobs/${job.id}/download`;
 }

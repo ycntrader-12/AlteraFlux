@@ -1,9 +1,11 @@
 import uuid
 import logging
 import asyncio
+import os
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from app.database import get_db
@@ -116,7 +118,21 @@ async def list_conversion_jobs(
     stmt = select(ConversionJob).order_by(desc(ConversionJob.created_at)).limit(limit)
     result = await db.execute(stmt)
     jobs = result.scalars().all()
-    return [JobResponse(**j.to_dict()) for j in jobs]
+    storage = get_storage_provider()
+    job_dicts = []
+    for j in jobs:
+        d = j.to_dict()
+        if j.status == "COMPLETED" and not d.get("download_url"):
+            key_to_use = j.result_key or j.source_key
+            if key_to_use and hasattr(storage, "generate_presigned_download_url"):
+                d["download_url"] = storage.generate_presigned_download_url(
+                    key=key_to_use,
+                    filename=j.result_filename or j.filename
+                )
+            else:
+                d["download_url"] = f"/api/v1/conversions/jobs/{j.id}/download"
+        job_dicts.append(d)
+    return [JobResponse(**d) for d in job_dicts]
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)
 async def get_conversion_job(
@@ -130,15 +146,51 @@ async def get_conversion_job(
     if not job:
         raise HTTPException(status_code=404, detail="Conversion non trouvée.")
 
-    # Si le job est terminé et a un result_key mais pas de download_url présignée
-    if job.status == "COMPLETED" and job.result_key and not job.download_url:
+    d = job.to_dict()
+    if job.status == "COMPLETED" and not d.get("download_url"):
         storage = get_storage_provider()
-        job.download_url = storage.generate_presigned_download_url(
-            key=job.result_key,
-            filename=job.result_filename
-        )
+        key_to_use = job.result_key or job.source_key
+        if key_to_use and hasattr(storage, "generate_presigned_download_url"):
+            d["download_url"] = storage.generate_presigned_download_url(
+                key=key_to_use,
+                filename=job.result_filename or job.filename
+            )
+        else:
+            d["download_url"] = f"/api/v1/conversions/jobs/{job.id}/download"
 
-    return JobResponse(**job.to_dict())
+    return JobResponse(**d)
+
+@router.get("/jobs/{job_id}/download")
+async def download_conversion_job(
+    job_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Télécharge le fichier issu de la conversion ou le fichier source"""
+    stmt = select(ConversionJob).where(ConversionJob.id == job_id)
+    result = await db.execute(stmt)
+    job = result.scalars().first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Conversion non trouvée.")
+
+    key_to_use = job.result_key or job.source_key
+    if not key_to_use:
+        raise HTTPException(status_code=404, detail="Aucun fichier disponible pour cette tâche.")
+
+    filename = job.result_filename or job.filename or f"converted_{job.id}.{job.target_format}"
+    storage = get_storage_provider()
+
+    if hasattr(storage, "_get_abs_path"):
+        abs_path = storage._get_abs_path(key_to_use)
+        if not os.path.exists(abs_path):
+            raise HTTPException(status_code=404, detail="Fichier physique introuvable sur le stockage local.")
+        return FileResponse(
+            path=abs_path,
+            filename=filename,
+            media_type="application/octet-stream"
+        )
+    else:
+        url = storage.generate_presigned_download_url(key=key_to_use, filename=filename)
+        return RedirectResponse(url=url)
 
 @router.delete("/jobs/{job_id}")
 async def delete_conversion_job(

@@ -1,6 +1,8 @@
 import uuid
+import os
+from typing import Optional
 from fastapi import APIRouter, HTTPException, UploadFile, File, Query
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, RedirectResponse
 from app.schemas.job import PresignedUrlRequest, PresignedUrlResponse
 from app.storage import get_storage_provider
 from app.security.validator import sanitize_filename, detect_category, get_content_type
@@ -70,3 +72,28 @@ async def upload_direct_fallback(
     except Exception as e:
         logger.error(f"Erreur lors de l'upload direct: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/download")
+async def download_file(
+    key: str = Query(..., description="Clé du fichier stocké"),
+    filename: Optional[str] = Query(None, description="Nom de téléchargement proposé")
+):
+    """
+    Permet de télécharger un fichier converti depuis le stockage local ou redirige vers S3.
+    """
+    storage = get_storage_provider()
+    safe_name = sanitize_filename(filename or os.path.basename(key) or "converted_file")
+
+    if hasattr(storage, "_get_abs_path"):
+        abs_path = storage._get_abs_path(key)
+        if not os.path.exists(abs_path):
+            logger.warning(f"Fichier local non trouvé: {abs_path}")
+            raise HTTPException(status_code=404, detail="Fichier introuvable sur le stockage local.")
+        return FileResponse(
+            path=abs_path,
+            filename=safe_name,
+            media_type="application/octet-stream"
+        )
+    else:
+        url = storage.generate_presigned_download_url(key=key, filename=safe_name)
+        return RedirectResponse(url=url)

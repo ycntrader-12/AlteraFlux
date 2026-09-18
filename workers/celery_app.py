@@ -1,5 +1,7 @@
 import os
+# pyrefly: ignore [missing-import]
 from celery import Celery
+# pyrefly: ignore [missing-import]
 from celery.schedules import crontab
 
 BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")

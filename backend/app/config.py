@@ -30,7 +30,9 @@ class Settings(BaseSettings):
     S3_REGION_NAME: str = "us-east-1"
 
     # Local storage fallback directory
-    LOCAL_STORAGE_PATH: str = "./storage_data"
+    LOCAL_STORAGE_PATH: str = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "storage_data")
+    )
 
     # Security
     ALLOWED_ORIGINS: str = "http://localhost:3001,http://127.0.0.1:3001,http://localhost:3000"

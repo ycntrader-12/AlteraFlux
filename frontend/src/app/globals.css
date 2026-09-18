@@ -230,7 +230,7 @@
   color: #FFFFFF !important;
   font-weight: 700;
   border-radius: 0.5rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.35rem 0.8rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -257,6 +257,76 @@
   transform: translateY(1.5px);
   border-bottom-width: 1px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+/* 4. Bouton 3D Danger / Suppression Rouge Rosé (#EF4444) */
+.btn-3d-danger {
+  background: linear-gradient(180deg, #F43F5E 0%, #E11D48 60%, #BE123C 100%);
+  color: #FFFFFF !important;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 2.5px solid #9F1239;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 2px 5px rgba(225, 29, 72, 0.35);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  font-size: 11px;
+}
+.btn-3d-danger:hover {
+  background: linear-gradient(180deg, #FB7185 0%, #F43F5E 60%, #E11D48 100%);
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 4px 8px rgba(225, 29, 72, 0.45);
+}
+.btn-3d-danger:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(225, 29, 72, 0.2);
+}
+
+/* 5. Bouton 3D Cyan Compact */
+.btn-3d-cyan-sm {
+  background: linear-gradient(180deg, #00E5FF 0%, #00C2E0 60%, #00A3BD 100%);
+  color: #080C27 !important;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 2.5px solid #007D94;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 2px 6px rgba(0, 229, 255, 0.35);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  font-size: 11px;
+}
+.btn-3d-cyan-sm:hover {
+  background: linear-gradient(180deg, #33EBFF 0%, #00D4F0 60%, #00B4D0 100%);
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 4px 10px rgba(0, 229, 255, 0.5);
+}
+.btn-3d-cyan-sm:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 3px rgba(0, 229, 255, 0.2);
 }
 
 /* 4. Pilule Sélecteur 3D */

@@ -9,7 +9,12 @@ import {
   Check,
   Search,
   Sparkles,
-  X
+  X,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Trash2
 } from "lucide-react";
 import {
   fetchPresets,
@@ -18,10 +23,12 @@ import {
   createConversionJob,
   getJobStatus,
   listRecentJobs,
+  deleteJob,
+  getDownloadUrl,
   JobResponse
 } from "@/lib/api";
 
-export interface FormatItem {
+interface FormatItem {
   id: string;
   label: string;
   desc: string;
@@ -29,14 +36,14 @@ export interface FormatItem {
   badgeColor: string;
 }
 
-export interface FormatCategory {
+interface FormatCategory {
   id: string;
   name: string;
   icon: string;
   formats: FormatItem[];
 }
 
-export const FORMAT_CATEGORIES: FormatCategory[] = [
+const FORMAT_CATEGORIES: FormatCategory[] = [
   {
     id: "video",
     name: "Vidéo",
@@ -269,6 +276,22 @@ export default function Home() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Boîte de dialogue centrée Alter@Flux (remplaçant alert() navigateur)
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    type: "error" | "warning" | "success" | "info";
+    title: string;
+    message: string;
+    details?: string;
+    confirmText?: string;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+  });
+
   // Total des formats disponibles
   const totalFormatsCount = FORMAT_CATEGORIES.reduce((acc, cat) => acc + cat.formats.length, 0);
 
@@ -298,16 +321,20 @@ export default function Home() {
     cat.formats.some((f) => f.id.toUpperCase() === targetFormat.toUpperCase())
   );
 
-  // Écoute de la touche Échap pour fermer le modal
+  // Écoute de la touche Échap pour fermer les modaux
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isDropdownOpen) {
-        setIsDropdownOpen(false);
+      if (e.key === "Escape") {
+        if (dialog.isOpen) {
+          setDialog((prev) => ({ ...prev, isOpen: false }));
+        } else if (isDropdownOpen) {
+          setIsDropdownOpen(false);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, dialog.isOpen]);
 
   useEffect(() => {
     loadRecentActivity();
@@ -392,7 +419,14 @@ export default function Home() {
 
   const handleStartConversion = async () => {
     if (!selectedFile) {
-      fileInputRef.current?.click();
+      setDialog({
+        isOpen: true,
+        type: "info",
+        title: "Sélectionnez un fichier",
+        message: "Veuillez choisir un fichier sur votre appareil afin de démarrer la conversion vers le format " + targetFormat + ".",
+        confirmText: "Parcourir mes fichiers",
+        onConfirm: () => fileInputRef.current?.click()
+      });
       return;
     }
 
@@ -420,7 +454,15 @@ export default function Home() {
       listenJob(job.id);
     } catch (err: any) {
       setIsConverting(false);
-      alert(err.message || "Erreur de conversion");
+      const errMsg = err?.message || String(err) || "Erreur de conversion";
+      setDialog({
+        isOpen: true,
+        type: "error",
+        title: "Erreur de conversion",
+        message: "Une erreur est survenue lors de l'envoi ou du traitement du fichier. Veuillez vérifier la connexion au serveur et réessayer.",
+        details: errMsg,
+        confirmText: "OK, Compris"
+      });
     }
   };
 
@@ -442,6 +484,16 @@ export default function Home() {
             setIsConverting(false);
             loadRecentActivity();
             ws.close();
+            if (data.status === "FAILED") {
+              setDialog({
+                isOpen: true,
+                type: "error",
+                title: "Échec du traitement",
+                message: data.error_message || "Le moteur de conversion a rencontré une anomalie lors du traitement.",
+                details: `Tâche ID: ${jobId}`,
+                confirmText: "Fermer"
+              });
+            }
           }
         } catch {}
       };
@@ -462,11 +514,42 @@ export default function Home() {
           setIsConverting(false);
           clearInterval(timer);
           loadRecentActivity();
+          if (j.status === "FAILED") {
+            setDialog({
+              isOpen: true,
+              type: "error",
+              title: "Échec du traitement",
+              message: j.error_message || "Le moteur de conversion a rencontré une anomalie lors du traitement.",
+              details: `Tâche ID: ${jobId}`,
+              confirmText: "Fermer"
+            });
+          }
         }
       } catch {
         clearInterval(timer);
       }
     }, 1000);
+  };
+
+  const handleDeleteJob = async (e: React.MouseEvent, job: JobResponse) => {
+    e.stopPropagation();
+    setDialog({
+      isOpen: true,
+      type: "warning",
+      title: "Supprimer la conversion ?",
+      message: `Voulez-vous vraiment supprimer "${job.filename}" de votre historique et effacer le fichier associé ?`,
+      details: `Format cible: ${job.target_format.toUpperCase()} • Tâche ID: ${job.id}`,
+      confirmText: "Oui, Supprimer",
+      onConfirm: async () => {
+        try {
+          setRecentJobs((prev) => prev.filter((j) => j.id !== job.id));
+          await deleteJob(job.id);
+        } catch (err) {
+          console.error("Erreur suppression:", err);
+          loadRecentActivity();
+        }
+      }
+    });
   };
 
   return (
@@ -1036,30 +1119,82 @@ export default function Home() {
                   if (!cat) return true;
                   const ext = (job.target_format || "").toLowerCase();
                   return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
-                }).map((job) => (
-                  <div
-                    key={job.id}
-                    className="vectra-file-card p-4 flex items-center justify-between gap-4"
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-100 to-blue-200 border border-blue-200 flex items-center justify-center text-blue-700">
-                        <Play className="w-4 h-4 fill-blue-700" />
+                }).map((job) => {
+                  const getCategoryIcon = (category: string) => {
+                    switch (category) {
+                      case "video": return "🎬";
+                      case "audio": return "🎵";
+                      case "image": return "🖼️";
+                      case "document": return "📄";
+                      case "ebook": return "📚";
+                      case "archive": return "📦";
+                      case "code": return "💻";
+                      default: return "📄";
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={job.id}
+                      className="vectra-file-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:shadow-md border border-[#E2E8F0]"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-50 to-teal-100/70 border border-[#1A7A86]/25 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                          <span>{getCategoryIcon(job.category)}</span>
+                        </div>
+                        <div className="truncate">
+                          <h4 className="font-extrabold text-sm sm:text-base text-[#0B1021] truncate max-w-md" title={job.filename}>
+                            {job.filename}
+                          </h4>
+                          <div className="text-xs text-[#475569] font-semibold flex items-center gap-2 flex-wrap mt-0.5">
+                            <span className="font-bold text-[#1A7A86] bg-teal-50 px-2 py-0.5 rounded border border-teal-200/60">
+                              {job.source_format.toUpperCase()} → {job.target_format.toUpperCase()}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                              job.status === "COMPLETED"
+                                ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                : job.status === "FAILED"
+                                ? "bg-rose-100 text-rose-800 border border-rose-300"
+                                : "bg-cyan-100 text-cyan-800 border border-cyan-300"
+                            }`}>
+                              {job.status === "COMPLETED" ? "Traité" : job.status}
+                            </span>
+                            {job.source_size_bytes > 0 && (
+                              <span className="text-slate-400 text-[11px]">
+                                {(job.source_size_bytes / (1024 * 1024)).toFixed(1)} MB
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-extrabold text-sm text-[#0B1021]">{job.filename}</h4>
-                        <p className="text-xs text-[#475569] font-medium">
-                          {job.source_format.toUpperCase()} → {job.target_format.toUpperCase()} • Statut: {job.status}
-                        </p>
+
+                      {/* Actions devant chaque fichier : Télécharger et Supprimer */}
+                      <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+                        <a
+                          href={getDownloadUrl(job)}
+                          download={job.result_filename || job.filename}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-3d-cyan-sm !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
+                          title="Télécharger le fichier traité"
+                        >
+                          <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Télécharger</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteJob(e, job)}
+                          className="btn-3d-danger !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
+                          title="Supprimer cette conversion"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                          <span>Supprimer</span>
+                        </button>
                       </div>
                     </div>
-
-                    {job.download_url && (
-                      <a href={job.download_url} download className="btn-3d-blue">
-                        <Download className="w-3.5 h-3.5" /> Download
-                      </a>
-                    )}
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-12 text-[#475569]">
                   <p className="font-bold text-base text-[#0B1021]">Aucun fichier dans cette catégorie</p>
@@ -1129,6 +1264,92 @@ export default function Home() {
           </main>
         )}
       </div>
+
+      {/* ==========================================================
+          BOÎTE DE DIALOGUE MODERNE SYNCHRONISÉE ALTER@FLUX (AJUSTAGE CENTRÉ)
+          ========================================================== */}
+      {dialog.isOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#050F29]/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setDialog((prev) => ({ ...prev, isOpen: false }))}
+        >
+          <div
+            className="w-full max-w-md vectra-glass-panel p-6 sm:p-8 flex flex-col items-center text-center gap-5 shadow-2xl border border-white/70 relative overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Lueur d'ambiance néon Alter@Flux */}
+            <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#00E5FF]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#1A7A86]/20 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Bouton fermeture Croix (X) */}
+            <button
+              type="button"
+              onClick={() => setDialog((prev) => ({ ...prev, isOpen: false }))}
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              aria-label="Fermer"
+            >
+              <X className="w-4 h-4 stroke-[2.5]" />
+            </button>
+
+            {/* Badge icône thématique centré */}
+            <div className="mt-1">
+              {dialog.type === "error" && (
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-rose-50 to-rose-100/80 border border-rose-200/90 flex items-center justify-center text-rose-600 shadow-lg shadow-rose-500/15">
+                  <AlertCircle className="w-8 h-8 stroke-[2.2]" />
+                </div>
+              )}
+              {dialog.type === "warning" && (
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-200/90 flex items-center justify-center text-amber-600 shadow-lg shadow-amber-500/15">
+                  <AlertTriangle className="w-8 h-8 stroke-[2.2]" />
+                </div>
+              )}
+              {dialog.type === "success" && (
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-teal-50 to-teal-100/80 border border-[#1A7A86]/30 flex items-center justify-center text-[#1A7A86] shadow-lg shadow-teal-500/15">
+                  <CheckCircle2 className="w-8 h-8 stroke-[2.2]" />
+                </div>
+              )}
+              {dialog.type === "info" && (
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-cyan-50 to-cyan-100/80 border border-[#00E5FF]/40 flex items-center justify-center text-[#00A3BD] shadow-lg shadow-cyan-500/15">
+                  <Info className="w-8 h-8 stroke-[2.2]" />
+                </div>
+              )}
+            </div>
+
+            {/* Titre et Message */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl sm:text-2xl font-black text-[#0B1021] tracking-tight">
+                {dialog.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#334155] font-semibold leading-relaxed max-w-sm">
+                {dialog.message}
+              </p>
+            </div>
+
+            {/* Détails techniques / Rapport d'erreur (si présent) */}
+            {dialog.details && (
+              <div className="w-full vectra-progress-card p-3 rounded-xl text-left font-mono text-[11px] text-[#00E5FF] border border-white/10 shadow-inner overflow-x-auto select-all">
+                <span className="text-slate-400 block text-[10px] mb-1 font-sans font-bold">// Rapport technique :</span>
+                <code>{dialog.details}</code>
+              </div>
+            )}
+
+            {/* Bouton tactile 3D centré */}
+            <div className="flex items-center justify-center w-full pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const cb = dialog.onConfirm;
+                  setDialog((prev) => ({ ...prev, isOpen: false }));
+                  if (cb) cb();
+                }}
+                className="btn-3d-cyan !px-8 !py-2.5 text-xs sm:text-sm font-extrabold shadow-md cursor-pointer"
+              >
+                <span>{dialog.confirmText || "OK, Compris"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
