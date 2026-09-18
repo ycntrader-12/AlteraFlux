@@ -4,14 +4,16 @@ import asyncio
 import os
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
+from app.config import settings
 from app.database import get_db
 from app.models.job import ConversionJob
 from app.schemas.job import JobCreate, JobResponse
 from app.security.validator import detect_category, sanitize_filename
+from app.security.rate_limiter import check_conversion_rate_limit, record_conversion_usage
 from app.storage import get_storage_provider
 from app.websocket.progress import manager
 
@@ -60,15 +62,40 @@ async def fallback_local_worker(job_id: str):
                     j.stage = "Terminé !" if p == 100 else f"Conversion ({p}%)..."
                     await session.commit()
 
+@router.get("/cooldown")
+async def get_conversion_cooldown(request: Request):
+    """
+    Renvoie le délai d'attente restant pour le client public (5 minutes entre 2 conversions).
+    """
+    is_allowed, remaining = check_conversion_rate_limit(request, settings.CONVERSION_COOLDOWN_SECONDS)
+    return {
+        "cooldown_seconds": settings.CONVERSION_COOLDOWN_SECONDS,
+        "remaining_seconds": remaining,
+        "is_allowed": is_allowed
+    }
+
 @router.post("/jobs", response_model=JobResponse)
 async def create_conversion_job(
     payload: JobCreate,
+    request: Request,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Crée une nouvelle tâche de conversion et l'ajoute à la file de traitement
+    Crée une nouvelle tâche de conversion et l'ajoute à la file de traitement.
+    Règle publique : Chaque utilisateur doit attendre 5 minutes avant de convertir à nouveau.
     """
+    is_allowed, remaining = check_conversion_rate_limit(request, settings.CONVERSION_COOLDOWN_SECONDS)
+    if not is_allowed:
+        minutes = remaining // 60
+        seconds = remaining % 60
+        time_str = f"{minutes}m {seconds:02d}s" if minutes > 0 else f"{seconds}s"
+        raise HTTPException(
+            status_code=429,
+            detail=f"Délai d'attente public actif : vous devez patienter 5 minutes entre chaque conversion. Temps restant : {time_str}.",
+            headers={"Retry-After": str(remaining)}
+        )
+
     safe_filename = sanitize_filename(payload.filename)
     source_ext, detected_cat = detect_category(safe_filename)
     
@@ -93,6 +120,9 @@ async def create_conversion_job(
     db.add(new_job)
     await db.commit()
     await db.refresh(new_job)
+
+    # Activer le délai de 5 minutes pour ce client
+    record_conversion_usage(request)
 
     # Notification initiale
     await manager.publish_progress(new_job.id, {

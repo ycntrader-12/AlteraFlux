@@ -14,7 +14,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Info,
-  Trash2
+  Trash2,
+  Clock
 } from "lucide-react";
 import {
   fetchPresets,
@@ -25,6 +26,7 @@ import {
   listRecentJobs,
   deleteJob,
   getDownloadUrl,
+  fetchCooldown,
   JobResponse
 } from "@/lib/api";
 
@@ -274,6 +276,15 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<string>("Convert");
   const [myFilesCategory, setMyFilesCategory] = useState<string>("all");
 
+  // Délai d'attente public : 5 minutes (300 secondes) entre chaque conversion
+  const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+
+  const formatCooldown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Boîte de dialogue centrée Alter@Flux (remplaçant alert() navigateur)
@@ -341,6 +352,43 @@ export default function Home() {
     const interval = setInterval(loadRecentActivity, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Synchronisation du délai de 5 minutes avec localStorage et le backend public
+  useEffect(() => {
+    const savedUntil = localStorage.getItem("alteraflux_cooldown_until");
+    if (savedUntil) {
+      const remainingMs = parseInt(savedUntil, 10) - Date.now();
+      if (remainingMs > 0) {
+        setCooldownRemaining(Math.ceil(remainingMs / 1000));
+      } else {
+        localStorage.removeItem("alteraflux_cooldown_until");
+      }
+    }
+
+    fetchCooldown()
+      .then((data) => {
+        if (data && data.remaining_seconds > 0) {
+          setCooldownRemaining(data.remaining_seconds);
+          localStorage.setItem("alteraflux_cooldown_until", (Date.now() + data.remaining_seconds * 1000).toString());
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Décrémentation seconde par seconde du compte à rebours de 5 min
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownRemaining((prev) => {
+        if (prev <= 1) {
+          localStorage.removeItem("alteraflux_cooldown_until");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownRemaining]);
 
   const loadRecentActivity = async () => {
     try {
@@ -418,6 +466,18 @@ export default function Home() {
   };
 
   const handleStartConversion = async () => {
+    if (cooldownRemaining > 0) {
+      setDialog({
+        isOpen: true,
+        type: "warning",
+        title: "Délai d'attente actif (5 min)",
+        message: "Afin de préserver les ressources du serveur public et garantir un accès gratuit et fluide à tous, chaque utilisateur doit patienter 5 minutes entre deux conversions.",
+        details: `Temps d'attente restant avant votre prochaine conversion : ${formatCooldown(cooldownRemaining)}`,
+        confirmText: "Compris"
+      });
+      return;
+    }
+
     if (!selectedFile) {
       setDialog({
         isOpen: true,
@@ -450,10 +510,29 @@ export default function Home() {
         source_size_bytes: selectedFile.size
       });
 
+      // Activer le compte à rebours public de 5 minutes (300 secondes)
+      const cooldownSec = 300;
+      setCooldownRemaining(cooldownSec);
+      localStorage.setItem("alteraflux_cooldown_until", (Date.now() + cooldownSec * 1000).toString());
+
       setActiveJob(job);
       listenJob(job.id);
     } catch (err: any) {
       setIsConverting(false);
+      if (err?.status === 429) {
+        const retryAfter = err.retryAfter || 300;
+        setCooldownRemaining(retryAfter);
+        localStorage.setItem("alteraflux_cooldown_until", (Date.now() + retryAfter * 1000).toString());
+        setDialog({
+          isOpen: true,
+          type: "warning",
+          title: "Délai d'attente actif (5 min)",
+          message: "Afin de préserver les ressources du serveur public, chaque utilisateur dispose d'une conversion toutes les 5 minutes.",
+          details: `Temps restant avant votre prochaine conversion : ${formatCooldown(retryAfter)}`,
+          confirmText: "Patienter"
+        });
+        return;
+      }
       const errMsg = err?.message || String(err) || "Erreur de conversion";
       setDialog({
         isOpen: true,
@@ -998,6 +1077,18 @@ export default function Home() {
                     <Download className="w-4 h-4" />
                     <span>Download</span>
                   </a>
+                ) : cooldownRemaining > 0 ? (
+                  <button
+                    type="button"
+                    onClick={handleStartConversion}
+                    className="btn-3d-glass !py-2 !px-5 text-xs sm:text-sm font-extrabold shadow-lg border border-cyan-400/50 cursor-pointer flex items-center gap-2"
+                    title={`Délai public actif : 1 conversion toutes les 5 minutes. Temps restant : ${formatCooldown(cooldownRemaining)}`}
+                  >
+                    <Clock className="w-4 h-4 text-[#00E5FF] animate-pulse" />
+                    <span className="font-mono font-black text-[#0B1021]">
+                      Attente : {formatCooldown(cooldownRemaining)}
+                    </span>
+                  </button>
                 ) : (
                   <button
                     type="button"
@@ -1025,13 +1116,21 @@ export default function Home() {
 
             {/* Bandeau inférieur de spécifications et sécurité */}
             <div className="flex flex-wrap items-center justify-between pt-3 text-xs text-[#475569] font-semibold border-t border-[#E2E8F0]">
-              <div className="flex items-center gap-3 sm:gap-6">
+              <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
                   Moteur haute performance
                 </span>
                 <span>•</span>
-                <span>Qualité Lossless HD</span>
+                <span className="flex items-center gap-1.5 text-[#1A7A86] font-bold">
+                  <Clock className="w-3.5 h-3.5 text-[#00E5FF]" />
+                  <span>Public : 1 conv. / 5 min</span>
+                  {cooldownRemaining > 0 && (
+                    <span className="font-mono text-[#0B1021] bg-cyan-100 border border-cyan-300 px-1.5 py-0.2 rounded text-[10px] font-extrabold">
+                      {formatCooldown(cooldownRemaining)}
+                    </span>
+                  )}
+                </span>
                 <span>•</span>
                 <span>Chiffrement AES-256</span>
               </div>

@@ -35,9 +35,10 @@ class Settings(BaseSettings):
     )
 
     # Security
-    ALLOWED_ORIGINS: str = "http://localhost:3001,http://127.0.0.1:3001,http://localhost:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:3001,http://127.0.0.1:3001,http://localhost:3000,*"
     MAX_UPLOAD_SIZE_MB: int = 2048
     RATE_LIMIT_PER_MINUTE: int = 60
+    CONVERSION_COOLDOWN_SECONDS: int = 300  # 5 minutes entre chaque conversion pour utilisation publique
 
     # AI API Keys
     GEMINI_API_KEY: str = ""

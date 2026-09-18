@@ -1,5 +1,21 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+export function getOrCreateClientId(): string {
+  if (typeof window === "undefined") return "server";
+  let cid = localStorage.getItem("alteraflux_client_id");
+  if (!cid) {
+    cid = "af_" + Math.random().toString(36).substring(2, 12) + "_" + Date.now().toString(36);
+    localStorage.setItem("alteraflux_client_id", cid);
+  }
+  return cid;
+}
+
+export interface CooldownResponse {
+  cooldown_seconds: number;
+  remaining_seconds: number;
+  is_allowed: boolean;
+}
+
 export interface PresignedUrlResponse {
   upload_url: string;
   key: string;
@@ -147,27 +163,53 @@ export async function createConversionJob(data: {
 }): Promise<JobResponse> {
   const res = await fetch(`${API_BASE}/api/v1/conversions/jobs`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-client-id": getOrCreateClientId()
+    },
     body: JSON.stringify(data)
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (res.status === 429) {
+      const retryAfter = res.headers.get("Retry-After") || "300";
+      const e = new Error(err.detail || "Veuillez patienter 5 minutes entre chaque conversion.") as any;
+      e.status = 429;
+      e.retryAfter = parseInt(retryAfter, 10);
+      throw e;
+    }
     throw new Error(err.detail || "Échec de création du job de conversion");
   }
 
   return await res.json();
 }
 
+export async function fetchCooldown(): Promise<CooldownResponse> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/conversions/cooldown`, {
+      headers: { "x-client-id": getOrCreateClientId() }
+    });
+    if (!res.ok) return { cooldown_seconds: 300, remaining_seconds: 0, is_allowed: true };
+    return await res.json();
+  } catch {
+    return { cooldown_seconds: 300, remaining_seconds: 0, is_allowed: true };
+  }
+}
+
 export async function getJobStatus(jobId: string): Promise<JobResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/conversions/jobs/${jobId}`);
+  const res = await fetch(`${API_BASE}/api/v1/conversions/jobs/${jobId}`, {
+    headers: { "x-client-id": getOrCreateClientId() }
+  });
   if (!res.ok) throw new Error("Job introuvable");
   return await res.json();
 }
 
 export async function listRecentJobs(): Promise<JobResponse[]> {
   try {
-    const res = await fetch(`${API_BASE}/api/v1/conversions/jobs?limit=20`);
+    const res = await fetch(`${API_BASE}/api/v1/conversions/jobs?limit=20`, {
+      headers: { "x-client-id": getOrCreateClientId() }
+    });
     if (!res.ok) return [];
     return await res.json();
   } catch {
