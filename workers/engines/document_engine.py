@@ -42,23 +42,24 @@ class DocumentEngine(BaseConversionEngine):
             except subprocess.CalledProcessError as e:
                 logger.warning(f"Échec Pandoc: {e.stderr}. Tentative fallback...")
 
-        # 2. Utilisation de LibreOffice Headless pour les formats bureautiques complexes (DOCX vers PDF)
-        if self.has_libreoffice and tgt_fmt == "pdf":
-            self.report_progress(45.0, "Conversion vectorielle avec LibreOffice Headless...")
+        # 2. Utilisation de LibreOffice Headless pour les formats bureautiques et documents
+        supported_lo_targets = ["pdf", "pdfa", "docx", "doc", "odt", "rtf", "txt", "html", "xlsx", "xls", "ods", "csv", "tsv", "pptx", "ppt", "odp"]
+        if self.has_libreoffice and (tgt_fmt in supported_lo_targets or src_fmt in ["doc", "docx", "docm", "dot", "dotx", "dotm", "odt", "ott", "rtf", "xls", "xlsx", "xlsm", "xlsb", "xlt", "xltx", "xltm", "ods", "ots", "ppt", "pptx", "pptm", "pps", "ppsx", "ppsm", "pot", "potx", "potm", "odp", "otp", "vsd", "vsdx"]):
+            self.report_progress(45.0, f"Conversion bureautique avec LibreOffice Headless vers {tgt_fmt.upper()}...")
             lo_bin = "libreoffice" if shutil.which("libreoffice") else "soffice"
             out_dir = os.path.dirname(output_path)
-            cmd = [lo_bin, "--headless", "--convert-to", "pdf", "--outdir", out_dir, input_path]
+            lo_target = "pdf" if tgt_fmt == "pdfa" else tgt_fmt
+            cmd = [lo_bin, "--headless", "--convert-to", lo_target, "--outdir", out_dir, input_path]
             try:
                 subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-                # LibreOffice nomme le fichier de sortie selon le nom d'entrée .pdf
                 base_name = os.path.splitext(os.path.basename(input_path))[0]
-                lo_out = os.path.join(out_dir, f"{base_name}.pdf")
+                lo_out = os.path.join(out_dir, f"{base_name}.{lo_target}")
                 if os.path.exists(lo_out) and lo_out != output_path:
                     shutil.move(lo_out, output_path)
                 self.report_progress(100.0, "Document converti avec succès !")
                 return output_path
             except Exception as e:
-                logger.warning(f"Échec LibreOffice: {e}")
+                logger.warning(f"Échec LibreOffice: {e}. Tentative fallback...")
 
         # 3. Fallback pur Python pour texte / HTML / Markdown
         self.report_progress(60.0, "Application du parseur textuel natif...")

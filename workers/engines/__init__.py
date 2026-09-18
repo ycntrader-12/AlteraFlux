@@ -5,12 +5,12 @@ from workers.engines.document_engine import DocumentEngine
 from workers.engines.code_engine import CodeEngine
 
 def get_engine_for_category(category: str, progress_callback=None) -> BaseConversionEngine:
-    cat = category.lower()
+    cat = (category or "").lower().replace("é", "e").replace("è", "e").strip()
     if cat in ["video", "audio"]:
         return MediaEngine(progress_callback)
-    elif cat == "image":
+    elif cat in ["image", "images"]:
         return ImageEngine(progress_callback)
-    elif cat == "code":
+    elif cat in ["code"]:
         return CodeEngine(progress_callback)
     else:
         return DocumentEngine(progress_callback)

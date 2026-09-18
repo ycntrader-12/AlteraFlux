@@ -37,6 +37,143 @@ export interface FormatCategory {
 
 export const FORMAT_CATEGORIES: FormatCategory[] = [
   {
+    id: "document",
+    name: "Documents texte",
+    icon: "📄",
+    formats: [
+      { id: "DOCX", label: "DOCX", desc: "Microsoft Word", ext: "docx", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "DOC", label: "DOC", desc: "Microsoft Word ancien format", ext: "doc", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "DOCM", label: "DOCM", desc: "Word avec macros", ext: "docm", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "DOT", label: "DOT", desc: "Modèle Word", ext: "dot", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "DOTX", label: "DOTX", desc: "Modèle Word XML", ext: "dotx", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "DOTM", label: "DOTM", desc: "Modèle Word avec macros", ext: "dotm", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "ODT", label: "ODT", desc: "OpenDocument Text", ext: "odt", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "OTT", label: "OTT", desc: "Modèle OpenDocument", ext: "ott", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "RTF", label: "RTF", desc: "Rich Text Format", ext: "rtf", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "TXT", label: "TXT", desc: "Texte brut UTF-8", ext: "txt", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "MD", label: "MD", desc: "Markdown structuré", ext: "md", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "TEX", label: "TEX", desc: "LaTeX composition", ext: "tex", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "LATEX", label: "LATEX", desc: "Document LaTeX", ext: "latex", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "XML", label: "XML", desc: "XML Markup Language", ext: "xml", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "HTML", label: "HTML", desc: "Page web HTML5", ext: "html", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "HTM", label: "HTM", desc: "Fichier HTML", ext: "htm", badgeColor: "bg-rose-100 text-rose-800" }
+    ]
+  },
+  {
+    id: "pdf",
+    name: "PDF & Associés",
+    icon: "📕",
+    formats: [
+      { id: "PDF", label: "PDF", desc: "Portable Document Format", ext: "pdf", badgeColor: "bg-red-100 text-red-800" },
+      { id: "PDFA", label: "PDF/A", desc: "PDF/A Archivage pérenne", ext: "pdfa", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "XPS", label: "XPS", desc: "XML Paper Specification", ext: "xps", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "OXPS", label: "OXPS", desc: "OpenXPS Document", ext: "oxps", badgeColor: "bg-sky-100 text-sky-800" }
+    ]
+  },
+  {
+    id: "spreadsheet",
+    name: "Feuilles de calcul",
+    icon: "📊",
+    formats: [
+      { id: "XLSX", label: "XLSX", desc: "Excel Moderne", ext: "xlsx", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "XLS", label: "XLS", desc: "Excel ancien format", ext: "xls", badgeColor: "bg-green-100 text-green-800" },
+      { id: "XLSM", label: "XLSM", desc: "Excel avec macros", ext: "xlsm", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "XLSB", label: "XLSB", desc: "Excel Binary Workbook", ext: "xlsb", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "XLT", label: "XLT", desc: "Modèle Excel", ext: "xlt", badgeColor: "bg-green-100 text-green-800" },
+      { id: "XLTX", label: "XLTX", desc: "Modèle Excel XML", ext: "xltx", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "XLTM", label: "XLTM", desc: "Modèle Excel avec macros", ext: "xltm", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "ODS", label: "ODS", desc: "OpenDocument Spreadsheet", ext: "ods", badgeColor: "bg-lime-100 text-lime-800" },
+      { id: "OTS", label: "OTS", desc: "Modèle OpenDocument Spreadsheet", ext: "ots", badgeColor: "bg-lime-100 text-lime-800" },
+      { id: "CSV", label: "CSV", desc: "Valeurs séparées par virgules", ext: "csv", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "TSV", label: "TSV", desc: "Valeurs séparées par tabulations", ext: "tsv", badgeColor: "bg-sky-100 text-sky-800" }
+    ]
+  },
+  {
+    id: "presentation",
+    name: "Présentations",
+    icon: "📽️",
+    formats: [
+      { id: "PPTX", label: "PPTX", desc: "PowerPoint", ext: "pptx", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "PPT", label: "PPT", desc: "PowerPoint ancien format", ext: "ppt", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "PPTM", label: "PPTM", desc: "PowerPoint avec macros", ext: "pptm", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "PPS", label: "PPS", desc: "PowerPoint Show", ext: "pps", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "PPSX", label: "PPSX", desc: "PowerPoint Show Moderne", ext: "ppsx", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "PPSM", label: "PPSM", desc: "PowerPoint Show avec macros", ext: "ppsm", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "POT", label: "POT", desc: "Modèle PowerPoint", ext: "pot", badgeColor: "bg-yellow-100 text-yellow-800" },
+      { id: "POTX", label: "POTX", desc: "Modèle PowerPoint XML", ext: "potx", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "POTM", label: "POTM", desc: "Modèle PowerPoint avec macros", ext: "potm", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "ODP", label: "ODP", desc: "OpenDocument Presentation", ext: "odp", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "OTP", label: "OTP", desc: "Modèle OpenDocument Presentation", ext: "otp", badgeColor: "bg-purple-100 text-purple-800" }
+    ]
+  },
+  {
+    id: "database",
+    name: "Bases de données & Données",
+    icon: "🗃️",
+    formats: [
+      { id: "MDB", label: "MDB", desc: "Microsoft Access Ancien", ext: "mdb", badgeColor: "bg-red-100 text-red-800" },
+      { id: "ACCDB", label: "ACCDB", desc: "Microsoft Access Moderne", ext: "accdb", badgeColor: "bg-red-100 text-red-800" },
+      { id: "DB", label: "DB", desc: "Base de données", ext: "db", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "SQLITE", label: "SQLITE", desc: "SQLite", ext: "sqlite", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "SQLITE3", label: "SQLITE3", desc: "SQLite version 3", ext: "sqlite3", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "JSON", label: "JSON", desc: "JSON Structuré", ext: "json", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "YAML", label: "YAML", desc: "YAML", ext: "yaml", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "YML", label: "YML", desc: "YAML", ext: "yml", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "CSV", label: "CSV", desc: "Données tabulaires", ext: "csv", badgeColor: "bg-teal-100 text-teal-800" }
+    ]
+  },
+  {
+    id: "ebook",
+    name: "Formats e-Book",
+    icon: "📝",
+    formats: [
+      { id: "EPUB", label: "EPUB", desc: "eBook", ext: "epub", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "MOBI", label: "MOBI", desc: "Mobipocket", ext: "mobi", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "AZW", label: "AZW", desc: "Amazon Kindle", ext: "azw", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "AZW3", label: "AZW3", desc: "Amazon Kindle 8", ext: "azw3", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "FB2", label: "FB2", desc: "FictionBook", ext: "fb2", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "CBZ", label: "CBZ", desc: "Comic Book ZIP", ext: "cbz", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "CBR", label: "CBR", desc: "Comic Book RAR", ext: "cbr", badgeColor: "bg-pink-100 text-pink-800" }
+    ]
+  },
+  {
+    id: "publishing",
+    name: "Impression & Publication",
+    icon: "🖨️",
+    formats: [
+      { id: "PS", label: "PS", desc: "PostScript", ext: "ps", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "EPS", label: "EPS", desc: "Encapsulated PostScript", ext: "eps", badgeColor: "bg-violet-100 text-violet-800" },
+      { id: "PUB", label: "PUB", desc: "Microsoft Publisher", ext: "pub", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "PMD", label: "PMD", desc: "PageMaker", ext: "pmd", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "INDD", label: "INDD", desc: "Adobe InDesign", ext: "indd", badgeColor: "bg-pink-100 text-pink-800" },
+      { id: "IDML", label: "IDML", desc: "InDesign Markup Language", ext: "idml", badgeColor: "bg-rose-100 text-rose-800" }
+    ]
+  },
+  {
+    id: "technical",
+    name: "Documents techniques",
+    icon: "📐",
+    formats: [
+      { id: "DWG", label: "DWG", desc: "AutoCAD", ext: "dwg", badgeColor: "bg-red-100 text-red-800" },
+      { id: "DXF", label: "DXF", desc: "Drawing Exchange Format", ext: "dxf", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "DGN", label: "DGN", desc: "MicroStation", ext: "dgn", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "SVG", label: "SVG", desc: "Scalable Vector Graphics", ext: "svg", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "VSD", label: "VSD", desc: "Visio", ext: "vsd", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "VSDX", label: "VSDX", desc: "Visio", ext: "vsdx", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "VSDM", label: "VSDM", desc: "Visio avec macros", ext: "vsdm", badgeColor: "bg-indigo-100 text-indigo-800" }
+    ]
+  },
+  {
+    id: "notes",
+    name: "Formats de notes",
+    icon: "✍️",
+    formats: [
+      { id: "ONE", label: "ONE", desc: "Microsoft OneNote", ext: "one", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "ENEX", label: "ENEX", desc: "Evernote Export", ext: "enex", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "OPML", label: "OPML", desc: "Outline Processor Markup Language", ext: "opml", badgeColor: "bg-sky-100 text-sky-800" }
+    ]
+  },
+  {
     id: "video",
     name: "Vidéo",
     icon: "🎬",
@@ -82,23 +219,8 @@ export const FORMAT_CATEGORIES: FormatCategory[] = [
     ]
   },
   {
-    id: "document",
-    name: "Documents",
-    icon: "📄",
-    formats: [
-      { id: "PDF", label: "PDF", desc: "Document Vectoriel Universel", ext: "pdf", badgeColor: "bg-red-100 text-red-800" },
-      { id: "DOCX", label: "DOCX", desc: "Microsoft Word Éditable", ext: "docx", badgeColor: "bg-blue-100 text-blue-800" },
-      { id: "EPUB", label: "EPUB", desc: "Livre Numérique E-reader", ext: "epub", badgeColor: "bg-amber-100 text-amber-800" },
-      { id: "TXT", label: "TXT", desc: "Texte Brut UTF-8 Universel", ext: "txt", badgeColor: "bg-slate-100 text-slate-800" },
-      { id: "MD", label: "MD", desc: "Markdown GitHub Structuré", ext: "md", badgeColor: "bg-indigo-100 text-indigo-800" },
-      { id: "HTML", label: "HTML", desc: "Page Web Standalone", ext: "html", badgeColor: "bg-orange-100 text-orange-800" },
-      { id: "XLSX", label: "XLSX", desc: "Tableur Microsoft Excel", ext: "xlsx", badgeColor: "bg-emerald-100 text-emerald-800" },
-      { id: "CSV", label: "CSV", desc: "Données Tabulaires Export", ext: "csv", badgeColor: "bg-teal-100 text-teal-800" }
-    ]
-  },
-  {
     id: "code",
-    name: "Code & Data",
+    name: "Code & Transpilation",
     icon: "💻",
     formats: [
       { id: "TS", label: "TypeScript", desc: "JavaScript Typé (Transpilation)", ext: "ts", badgeColor: "bg-blue-100 text-blue-800" },
@@ -107,8 +229,11 @@ export const FORMAT_CATEGORIES: FormatCategory[] = [
       { id: "RS", label: "Rust", desc: "Système Sûr & Ultra-rapide", ext: "rs", badgeColor: "bg-orange-100 text-orange-800" },
       { id: "GO", label: "Go", desc: "Golang Microservices & API", ext: "go", badgeColor: "bg-cyan-100 text-cyan-800" },
       { id: "CPP", label: "C++", desc: "C++ 20 Code Natif Haute Vitesse", ext: "cpp", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "C", label: "C", desc: "Langage C ANSI / C11", ext: "c", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "SQL", label: "SQL", desc: "Schémas & Requêtes", ext: "sql", badgeColor: "bg-teal-100 text-teal-800" },
       { id: "JSON", label: "JSON", desc: "Format d'Échange de Données", ext: "json", badgeColor: "bg-slate-100 text-slate-800" },
-      { id: "YAML", label: "YAML", desc: "Configuration YAML Développeur", ext: "yaml", badgeColor: "bg-rose-100 text-rose-800" }
+      { id: "YAML", label: "YAML", desc: "Configuration YAML", ext: "yaml", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "TOML", label: "TOML", desc: "Format de Configuration Moderne", ext: "toml", badgeColor: "bg-amber-100 text-amber-800" }
     ]
   }
 ];
@@ -190,11 +315,11 @@ export default function Home() {
       setFileSize(`${(f.size / (1024 * 1024)).toFixed(0)} MB`);
 
       const ext = f.name.split(".").pop()?.toLowerCase() || "";
-      if (["mp4", "mov", "avi", "webm", "mkv", "flv", "wmv"].includes(ext)) {
-        setFileType("Video");
-        setTargetFormat("WEBM");
+      if (["mp4", "mov", "avi", "webm", "mkv", "flv", "wmv", "gif"].includes(ext)) {
+        setFileType("Vidéo");
+        setTargetFormat("MP4");
         setSelectedFormatCategory("video");
-      } else if (["mp3", "wav", "aac", "flac", "ogg", "m4a", "opus"].includes(ext)) {
+      } else if (["mp3", "wav", "aac", "flac", "ogg", "m4a", "opus", "wma"].includes(ext)) {
         setFileType("Audio");
         setTargetFormat("MP3");
         setSelectedFormatCategory("audio");
@@ -202,7 +327,43 @@ export default function Home() {
         setFileType("Image");
         setTargetFormat("WEBP");
         setSelectedFormatCategory("image");
-      } else if (["py", "js", "ts", "rs", "go", "cpp", "c", "json", "yaml", "sql"].includes(ext)) {
+      } else if (["doc", "docx", "docm", "dot", "dotx", "dotm", "odt", "ott", "rtf", "txt", "md", "tex", "latex", "xml", "html", "htm"].includes(ext)) {
+        setFileType("Texte");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("document");
+      } else if (["pdf", "xps", "oxps", "pdfa"].includes(ext)) {
+        setFileType("PDF");
+        setTargetFormat("DOCX");
+        setSelectedFormatCategory("pdf");
+      } else if (["xls", "xlsx", "xlsm", "xlsb", "xlt", "xltx", "xltm", "ods", "ots", "csv", "tsv"].includes(ext)) {
+        setFileType("Tableur");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("spreadsheet");
+      } else if (["ppt", "pptx", "pptm", "pps", "ppsx", "ppsm", "pot", "potx", "potm", "odp", "otp"].includes(ext)) {
+        setFileType("Présentation");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("presentation");
+      } else if (["mdb", "accdb", "db", "sqlite", "sqlite3"].includes(ext)) {
+        setFileType("Base de données");
+        setTargetFormat("SQLITE");
+        setSelectedFormatCategory("database");
+      } else if (["epub", "mobi", "azw", "azw3", "fb2", "cbz", "cbr"].includes(ext)) {
+        setFileType("E-Book");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("ebook");
+      } else if (["ps", "eps", "pub", "pmd", "indd", "idml"].includes(ext)) {
+        setFileType("Publication");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("publishing");
+      } else if (["dwg", "dxf", "dgn", "vsd", "vsdx", "vsdm"].includes(ext)) {
+        setFileType("Technique");
+        setTargetFormat("PDF");
+        setSelectedFormatCategory("technical");
+      } else if (["one", "enex", "opml"].includes(ext)) {
+        setFileType("Notes");
+        setTargetFormat("MD");
+        setSelectedFormatCategory("notes");
+      } else if (["py", "js", "ts", "rs", "go", "cpp", "c", "json", "yaml", "yml", "toml", "sql"].includes(ext)) {
         setFileType("Code");
         setTargetFormat("TS");
         setSelectedFormatCategory("code");
@@ -228,12 +389,15 @@ export default function Home() {
       const presigned = await requestUploadUrl(selectedFile.name, selectedFile.type, selectedFile.size);
       await uploadFileDirect(presigned.upload_url, selectedFile, presigned.headers);
 
+      const sourceExt = selectedFile.name.split(".").pop()?.toLowerCase() || "";
+      const jobCategory = selectedFormatCategory !== "all" ? selectedFormatCategory : (currentCategoryOfTarget?.id || undefined);
+
       const job = await createConversionJob({
         filename: selectedFile.name,
         source_key: presigned.key,
-        source_format: selectedFile.name.split(".").pop() || "",
+        source_format: sourceExt,
         target_format: targetFormat.toLowerCase(),
-        category: fileType.toLowerCase(),
+        category: jobCategory,
         source_size_bytes: selectedFile.size
       });
 
@@ -381,12 +545,20 @@ export default function Home() {
                     onChange={(e) => setSourceFilter(e.target.value)}
                     className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                   >
-                    <option value="Select file type">Tous les types sources</option>
-                    <option value="video">🎬 Vidéo (*.mp4, *.webm, *.mov, *.avi)</option>
-                    <option value="audio">🎵 Audio (*.mp3, *.wav, *.flac, *.aac)</option>
-                    <option value="image">🖼️ Images (*.png, *.jpg, *.webp, *.avif)</option>
-                    <option value="document">📄 Documents (*.pdf, *.docx, *.epub, *.md)</option>
-                    <option value="code">💻 Code (*.ts, *.py, *.js, *.rs, *.go)</option>
+                    <option value="Select file type">Tous les types sources ({totalFormatsCount} formats)</option>
+                    <option value="document">📄 Documents texte (*.doc, *.docx, *.odt, *.txt, *.md, *.tex...)</option>
+                    <option value="pdf">📕 PDF et associés (*.pdf, *.xps, *.oxps, *.pdfa)</option>
+                    <option value="spreadsheet">📊 Feuilles de calcul (*.xlsx, *.xls, *.ods, *.csv, *.tsv...)</option>
+                    <option value="presentation">📽️ Présentations (*.pptx, *.ppt, *.odp, *.ppsx...)</option>
+                    <option value="database">🗃️ Bases de données & Structurés (*.sqlite, *.db, *.accdb, *.json...)</option>
+                    <option value="ebook">📝 Formats e-Book (*.epub, *.mobi, *.azw3, *.cbz...)</option>
+                    <option value="publishing">🖨️ Impression & Publication (*.eps, *.ps, *.indd, *.pub...)</option>
+                    <option value="technical">📐 Documents techniques (*.dwg, *.dxf, *.vsdx, *.svg...)</option>
+                    <option value="notes">✍️ Formats de notes (*.one, *.enex, *.opml)</option>
+                    <option value="video">🎬 Vidéo (*.mp4, *.webm, *.mov, *.avi...)</option>
+                    <option value="audio">🎵 Audio (*.mp3, *.wav, *.flac, *.aac...)</option>
+                    <option value="image">🖼️ Images (*.png, *.jpg, *.webp, *.avif...)</option>
+                    <option value="code">💻 Code & Transpilation (*.ts, *.py, *.js, *.rs, *.go...)</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
                 </div>
@@ -400,12 +572,12 @@ export default function Home() {
                     }}
                     className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
                   >
-                    <option value="all">Toutes les catégories (40+ formats)</option>
-                    <option value="video">🎬 Vidéo (8 formats)</option>
-                    <option value="audio">🎵 Audio (8 formats)</option>
-                    <option value="image">🖼️ Images (8 formats)</option>
-                    <option value="document">📄 Documents (8 formats)</option>
-                    <option value="code">💻 Code & Data (8 formats)</option>
+                    <option value="all">Toutes les catégories ({totalFormatsCount} formats)</option>
+                    {FORMAT_CATEGORIES.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.icon} {cat.name} ({cat.formats.length} formats)
+                      </option>
+                    ))}
                   </select>
                   <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
                 </div>
