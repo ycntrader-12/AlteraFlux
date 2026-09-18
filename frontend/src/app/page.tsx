@@ -8,7 +8,8 @@ import {
   Play,
   Check,
   Search,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react";
 import {
   fetchPresets,
@@ -36,6 +37,51 @@ export interface FormatCategory {
 }
 
 export const FORMAT_CATEGORIES: FormatCategory[] = [
+  {
+    id: "video",
+    name: "Vidéo",
+    icon: "🎬",
+    formats: [
+      { id: "MP4", label: "MP4", desc: "H.264 / AAC Universel", ext: "mp4", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "WEBM", label: "WEBM", desc: "VP9 Web Streaming HD", ext: "webm", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "MKV", label: "MKV", desc: "Matroska Multi-pistes", ext: "mkv", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "MOV", label: "MOV", desc: "Apple QuickTime Pro", ext: "mov", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "AVI", label: "AVI", desc: "Audio Video Interleave", ext: "avi", badgeColor: "bg-sky-100 text-sky-800" },
+      { id: "FLV", label: "FLV", desc: "Flash Video Web", ext: "flv", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "WMV", label: "WMV", desc: "Windows Media Video", ext: "wmv", badgeColor: "bg-teal-100 text-teal-800" },
+      { id: "GIF", label: "GIF", desc: "Animation Boucle", ext: "gif", badgeColor: "bg-pink-100 text-pink-800" }
+    ]
+  },
+  {
+    id: "audio",
+    name: "Audio",
+    icon: "🎵",
+    formats: [
+      { id: "MP3", label: "MP3", desc: "MPEG-3 Haute Compatibilité", ext: "mp3", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "WAV", label: "WAV", desc: "Studio Master Lossless PCM", ext: "wav", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "FLAC", label: "FLAC", desc: "Free Lossless Audio Codec", ext: "flac", badgeColor: "bg-violet-100 text-violet-800" },
+      { id: "AAC", label: "AAC", desc: "Advanced Audio Coding", ext: "aac", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "OGG", label: "OGG", desc: "Vorbis Open Audio", ext: "ogg", badgeColor: "bg-orange-100 text-orange-800" },
+      { id: "M4A", label: "M4A", desc: "Apple Lossless / AAC", ext: "m4a", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "OPUS", label: "OPUS", desc: "Streaming Voix Ultra-HD", ext: "opus", badgeColor: "bg-rose-100 text-rose-800" },
+      { id: "WMA", label: "WMA", desc: "Windows Media Audio", ext: "wma", badgeColor: "bg-cyan-100 text-cyan-800" }
+    ]
+  },
+  {
+    id: "image",
+    name: "Images",
+    icon: "🖼️",
+    formats: [
+      { id: "PNG", label: "PNG", desc: "Transparence Sans Perte", ext: "png", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "JPG", label: "JPG", desc: "JPEG Standard Web & Photo", ext: "jpg", badgeColor: "bg-amber-100 text-amber-800" },
+      { id: "WEBP", label: "WEBP", desc: "WebP Ultra-léger Moderne", ext: "webp", badgeColor: "bg-cyan-100 text-cyan-800" },
+      { id: "AVIF", label: "AVIF", desc: "Next-Gen Compression HDR", ext: "avif", badgeColor: "bg-purple-100 text-purple-800" },
+      { id: "SVG", label: "SVG", desc: "Vectoriel Scalable XML", ext: "svg", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "ICO", label: "ICO", desc: "Favicon & Icône Windows", ext: "ico", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "BMP", label: "BMP", desc: "Bitmap Non Compressé", ext: "bmp", badgeColor: "bg-indigo-100 text-indigo-800" },
+      { id: "TIFF", label: "TIFF", desc: "Impression & Prépresse HD", ext: "tiff", badgeColor: "bg-pink-100 text-pink-800" }
+    ]
+  },
   {
     id: "document",
     name: "Documents texte",
@@ -174,51 +220,6 @@ export const FORMAT_CATEGORIES: FormatCategory[] = [
     ]
   },
   {
-    id: "video",
-    name: "Vidéo",
-    icon: "🎬",
-    formats: [
-      { id: "MP4", label: "MP4", desc: "H.264 / AAC Universel", ext: "mp4", badgeColor: "bg-blue-100 text-blue-800" },
-      { id: "WEBM", label: "WEBM", desc: "VP9 Web Streaming HD", ext: "webm", badgeColor: "bg-cyan-100 text-cyan-800" },
-      { id: "MKV", label: "MKV", desc: "Matroska Multi-pistes", ext: "mkv", badgeColor: "bg-indigo-100 text-indigo-800" },
-      { id: "MOV", label: "MOV", desc: "Apple QuickTime Pro", ext: "mov", badgeColor: "bg-purple-100 text-purple-800" },
-      { id: "AVI", label: "AVI", desc: "Audio Video Interleave", ext: "avi", badgeColor: "bg-sky-100 text-sky-800" },
-      { id: "FLV", label: "FLV", desc: "Flash Video Web", ext: "flv", badgeColor: "bg-amber-100 text-amber-800" },
-      { id: "WMV", label: "WMV", desc: "Windows Media Video", ext: "wmv", badgeColor: "bg-teal-100 text-teal-800" },
-      { id: "GIF", label: "GIF", desc: "Animation Boucle", ext: "gif", badgeColor: "bg-pink-100 text-pink-800" }
-    ]
-  },
-  {
-    id: "audio",
-    name: "Audio",
-    icon: "🎵",
-    formats: [
-      { id: "MP3", label: "MP3", desc: "MPEG-3 Haute Compatibilité", ext: "mp3", badgeColor: "bg-emerald-100 text-emerald-800" },
-      { id: "WAV", label: "WAV", desc: "Studio Master Lossless PCM", ext: "wav", badgeColor: "bg-blue-100 text-blue-800" },
-      { id: "FLAC", label: "FLAC", desc: "Free Lossless Audio Codec", ext: "flac", badgeColor: "bg-violet-100 text-violet-800" },
-      { id: "AAC", label: "AAC", desc: "Advanced Audio Coding", ext: "aac", badgeColor: "bg-amber-100 text-amber-800" },
-      { id: "OGG", label: "OGG", desc: "Vorbis Open Audio", ext: "ogg", badgeColor: "bg-orange-100 text-orange-800" },
-      { id: "M4A", label: "M4A", desc: "Apple Lossless / AAC", ext: "m4a", badgeColor: "bg-purple-100 text-purple-800" },
-      { id: "OPUS", label: "OPUS", desc: "Streaming Voix Ultra-HD", ext: "opus", badgeColor: "bg-rose-100 text-rose-800" },
-      { id: "WMA", label: "WMA", desc: "Windows Media Audio", ext: "wma", badgeColor: "bg-cyan-100 text-cyan-800" }
-    ]
-  },
-  {
-    id: "image",
-    name: "Images",
-    icon: "🖼️",
-    formats: [
-      { id: "PNG", label: "PNG", desc: "Transparence Sans Perte", ext: "png", badgeColor: "bg-blue-100 text-blue-800" },
-      { id: "JPG", label: "JPG", desc: "JPEG Standard Web & Photo", ext: "jpg", badgeColor: "bg-amber-100 text-amber-800" },
-      { id: "WEBP", label: "WEBP", desc: "WebP Ultra-léger Moderne", ext: "webp", badgeColor: "bg-cyan-100 text-cyan-800" },
-      { id: "AVIF", label: "AVIF", desc: "Next-Gen Compression HDR", ext: "avif", badgeColor: "bg-purple-100 text-purple-800" },
-      { id: "SVG", label: "SVG", desc: "Vectoriel Scalable XML", ext: "svg", badgeColor: "bg-emerald-100 text-emerald-800" },
-      { id: "ICO", label: "ICO", desc: "Favicon & Icône Windows", ext: "ico", badgeColor: "bg-slate-100 text-slate-800" },
-      { id: "BMP", label: "BMP", desc: "Bitmap Non Compressé", ext: "bmp", badgeColor: "bg-indigo-100 text-indigo-800" },
-      { id: "TIFF", label: "TIFF", desc: "Impression & Prépresse HD", ext: "tiff", badgeColor: "bg-pink-100 text-pink-800" }
-    ]
-  },
-  {
     id: "code",
     name: "Code & Transpilation",
     icon: "💻",
@@ -264,25 +265,28 @@ export default function Home() {
 
   // Onglet actif navbar
   const [activeTab, setActiveTab] = useState<string>("Convert");
+  const [myFilesCategory, setMyFilesCategory] = useState<string>("all");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Total des formats disponibles
   const totalFormatsCount = FORMAT_CATEGORIES.reduce((acc, cat) => acc + cat.formats.length, 0);
 
-  // Catégories et formats filtrés dynamiquement
+  // Catégories et formats filtrés dynamiquement (Organisé par catégorie)
   const filteredCategories = FORMAT_CATEGORIES.map((cat) => {
-    if (selectedFormatCategory !== "all" && cat.id !== selectedFormatCategory) {
+    const q = formatSearch.trim().toLowerCase();
+    // Si pas de recherche et qu'une catégorie spécifique est sélectionnée
+    if (!q && selectedFormatCategory !== "all" && cat.id !== selectedFormatCategory) {
       return null;
     }
-    const q = formatSearch.trim().toLowerCase();
     const matchedFormats = cat.formats.filter((f) => {
       if (!q) return true;
       return (
         f.id.toLowerCase().includes(q) ||
         f.label.toLowerCase().includes(q) ||
         f.desc.toLowerCase().includes(q) ||
-        f.ext.toLowerCase().includes(q)
+        f.ext.toLowerCase().includes(q) ||
+        cat.name.toLowerCase().includes(q)
       );
     });
     if (matchedFormats.length === 0) return null;
@@ -293,6 +297,17 @@ export default function Home() {
   const currentCategoryOfTarget = FORMAT_CATEGORIES.find((cat) =>
     cat.formats.some((f) => f.id.toUpperCase() === targetFormat.toUpperCase())
   );
+
+  // Écoute de la touche Échap pour fermer le modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isDropdownOpen) {
+        setIsDropdownOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     loadRecentActivity();
@@ -622,13 +637,19 @@ export default function Home() {
 
                   <button
                     type="button"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition"
+                    onClick={() => {
+                      if (currentCategoryOfTarget) {
+                        setSelectedFormatCategory(currentCategoryOfTarget.id);
+                      }
+                      setIsDropdownOpen(true);
+                    }}
+                    className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition hover:border-[#00D4FF]"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[#0284C7] font-black text-sm tracking-wide">{targetFormat}</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">
-                        {currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"}
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 flex items-center gap-1">
+                        <span>{currentCategoryOfTarget?.icon}</span>
+                        <span>{currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"}</span>
                       </span>
                     </div>
                     <ChevronDown
@@ -638,104 +659,235 @@ export default function Home() {
                     />
                   </button>
 
-                  {/* Menu déroulant ouvert par Catégories */}
+                  {/* Modal de sélection de format : Organisé par Catégorie (Convertio / CloudConvert style) */}
                   {isDropdownOpen && (
-                    <div className="absolute z-40 top-full mt-2 right-0 w-80 sm:w-96 bg-[#FFFFFF] border border-[#CBD5E1] rounded-2xl shadow-2xl p-3 text-xs text-[#0F172A] animate-in fade-in zoom-in-95 duration-150">
-                      {/* 1. Barre de recherche rapide */}
-                      <div className="relative mb-2.5">
-                        <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-2.5 pointer-events-none" />
-                        <input
-                          type="text"
-                          value={formatSearch}
-                          onChange={(e) => setFormatSearch(e.target.value)}
-                          placeholder="Rechercher (ex: mp4, webp, pdf, ts...)"
-                          className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#00D4FF] text-[#0F172A] font-semibold"
-                        />
-                      </div>
+                    <div
+                      className="fixed inset-0 z-50 bg-[#080C27]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <div
+                        className="w-full max-w-4xl bg-white border border-[#CBD5E1] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-150"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* 1. Header du Modal avec Recherche & Bouton Fermer */}
+                        <div className="p-4 sm:p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-50 to-white">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] shadow-sm shadow-[#00E5FF]/50" />
+                              <h2 className="text-lg sm:text-xl font-black text-[#0B1021] tracking-tight">
+                                Format de conversion
+                              </h2>
+                              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-[#0284C7]">
+                                {totalFormatsCount} formats
+                              </span>
+                            </div>
+                            <p className="text-xs text-[#64748B] font-medium mt-0.5">
+                              Sélectionnez une catégorie à gauche pour explorer les formats cibles optimisés
+                            </p>
+                          </div>
 
-                      {/* 2. Onglets de Catégories (Pillules 3D) */}
-                      <div className="flex items-center gap-1 overflow-x-auto pb-2 mb-2 border-b border-[#E2E8F0] scrollbar-none">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedFormatCategory("all")}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition ${
-                            selectedFormatCategory === "all"
-                              ? "bg-[#080C27] text-white shadow-sm"
-                              : "bg-slate-100 text-[#475569] hover:bg-slate-200"
-                          }`}
-                        >
-                          Tous ({totalFormatsCount})
-                        </button>
-                        {FORMAT_CATEGORIES.map((cat) => (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => setSelectedFormatCategory(cat.id)}
-                            className={`px-2 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition flex items-center gap-1 ${
-                              selectedFormatCategory === cat.id
-                                ? "bg-[#00E5FF] text-[#080C27] shadow-sm font-extrabold"
-                                : "bg-slate-100 text-[#475569] hover:bg-slate-200"
-                            }`}
-                          >
-                            <span>{cat.icon}</span>
-                            <span>{cat.name}</span>
-                          </button>
-                        ))}
-                      </div>
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            {/* Barre de recherche avec loupe et bouton clear */}
+                            <div className="relative w-full sm:w-72">
+                              <Search className="w-4 h-4 text-[#64748B] absolute left-3 top-2.5 pointer-events-none" />
+                              <input
+                                type="text"
+                                value={formatSearch}
+                                onChange={(e) => setFormatSearch(e.target.value)}
+                                placeholder="Rechercher (ex: mp4, webp, pdf, docx...)"
+                                className="w-full pl-9 pr-8 py-2 text-xs bg-slate-100 border border-[#CBD5E1] rounded-xl focus:outline-none focus:border-[#00D4FF] focus:bg-white text-[#0F172A] font-bold placeholder-[#94A3B8] transition"
+                                autoFocus
+                              />
+                              {formatSearch && (
+                                <button
+                                  type="button"
+                                  onClick={() => setFormatSearch("")}
+                                  className="absolute right-2.5 top-2.5 text-[#94A3B8] hover:text-[#0F172A]"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
 
-                      {/* 3. Liste des formats groupés par catégorie avec défilement */}
-                      <div className="max-h-52 overflow-y-auto flex flex-col gap-2.5 pr-1">
-                        {filteredCategories.length > 0 ? (
-                          filteredCategories.map((cat) => (
-                            <div key={cat.id} className="flex flex-col gap-1">
-                              {/* Header de catégorie */}
-                              <div className="flex items-center justify-between px-2.5 py-1 bg-slate-100/90 rounded-md text-[10px] font-extrabold text-[#334155] uppercase tracking-wider">
-                                <span className="flex items-center gap-1">
-                                  <span>{cat.icon}</span>
-                                  <span>{cat.name}</span>
-                                </span>
-                                <span className="text-[#64748B] font-bold">{cat.formats.length} formats</span>
-                              </div>
+                            {/* Bouton fermeture */}
+                            <button
+                              type="button"
+                              onClick={() => setIsDropdownOpen(false)}
+                              className="p-2 rounded-xl text-[#64748B] hover:text-[#0B1021] hover:bg-slate-100 transition"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
 
-                              {/* Formats de la catégorie */}
-                              <div className="grid grid-cols-1 gap-1">
-                                {cat.formats.map((item) => (
-                                  <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => {
-                                      setTargetFormat(item.id);
-                                      setIsDropdownOpen(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2 rounded-lg transition flex items-center justify-between ${
-                                      targetFormat === item.id
-                                        ? "bg-sky-100 border border-sky-300 text-[#0284c7] font-extrabold"
-                                        : "hover:bg-slate-100 text-[#0F172A] font-semibold"
+                        {/* 2. Contenu en Deux Colonnes : Catégories à gauche | Formats à droite */}
+                        <div className="flex-1 flex overflow-hidden min-h-[380px]">
+                          {/* Colonne de gauche : Liste des Catégories */}
+                          <aside className="w-56 sm:w-64 bg-slate-50/90 border-r border-[#E2E8F0] p-2.5 flex flex-col gap-1 overflow-y-auto">
+                            <div className="px-2 py-1 text-[10px] font-extrabold text-[#94A3B8] uppercase tracking-wider">
+                              Catégories
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setSelectedFormatCategory("all")}
+                              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                                selectedFormatCategory === "all"
+                                  ? "bg-[#080C27] text-white shadow-sm"
+                                  : "text-[#334155] hover:bg-slate-200/60"
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>🌟</span>
+                                <span>Toutes les catégories</span>
+                              </span>
+                              <span
+                                className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                                  selectedFormatCategory === "all"
+                                    ? "bg-white/20 text-white"
+                                    : "bg-slate-200 text-[#64748B]"
+                                }`}
+                              >
+                                {totalFormatsCount}
+                              </span>
+                            </button>
+
+                            {FORMAT_CATEGORIES.map((cat) => {
+                              const isSelected = selectedFormatCategory === cat.id;
+                              return (
+                                <button
+                                  key={cat.id}
+                                  type="button"
+                                  onClick={() => setSelectedFormatCategory(cat.id)}
+                                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                                    isSelected
+                                      ? "bg-[#00E5FF]/20 text-[#0284C7] border border-[#00E5FF]/50 shadow-sm font-extrabold"
+                                      : "text-[#334155] hover:bg-slate-200/60"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2 truncate">
+                                    <span className="text-base">{cat.icon}</span>
+                                    <span className="truncate">{cat.name}</span>
+                                  </span>
+                                  <span
+                                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold flex-shrink-0 ${
+                                      isSelected
+                                        ? "bg-[#0284C7] text-white"
+                                        : "bg-slate-200 text-[#64748B]"
                                     }`}
                                   >
-                                    <div className="flex items-center gap-2.5">
-                                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-black ${item.badgeColor}`}>
-                                        {item.id}
-                                      </span>
-                                      <div>
-                                        <p className="text-xs font-bold leading-none">{item.label}</p>
-                                        <p className="text-[10px] text-[#64748B] font-medium mt-0.5">{item.desc}</p>
-                                      </div>
+                                    {cat.formats.length}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </aside>
+
+                          {/* Colonne de droite : Grille des Formats Organisée par Catégorie */}
+                          <main className="flex-1 p-4 sm:p-6 overflow-y-auto bg-white flex flex-col gap-6">
+                            {filteredCategories.length > 0 ? (
+                              filteredCategories.map((cat) => (
+                                <section key={cat.id} className="flex flex-col gap-3">
+                                  {/* En-tête de catégorie */}
+                                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-xl">{cat.icon}</span>
+                                      <h3 className="text-sm sm:text-base font-extrabold text-[#0B1021]">
+                                        {cat.name}
+                                      </h3>
                                     </div>
-                                    {targetFormat === item.id && (
-                                      <Check className="w-4 h-4 text-[#0284c7] flex-shrink-0" />
-                                    )}
-                                  </button>
-                                ))}
+                                    <span className="text-xs text-[#64748B] font-semibold">
+                                      {cat.formats.length} format{cat.formats.length > 1 ? "s" : ""} disponible{cat.formats.length > 1 ? "s" : ""}
+                                    </span>
+                                  </div>
+
+                                  {/* Grille des formats de cette catégorie */}
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                    {cat.formats.map((item) => {
+                                      const isTarget = targetFormat.toUpperCase() === item.id.toUpperCase();
+                                      return (
+                                        <button
+                                          key={item.id}
+                                          type="button"
+                                          onClick={() => {
+                                            setTargetFormat(item.id);
+                                            setIsDropdownOpen(false);
+                                          }}
+                                          className={`group p-3 rounded-xl border text-left transition flex flex-col justify-between relative hover:scale-[1.02] hover:shadow-md ${
+                                            isTarget
+                                              ? "bg-gradient-to-tr from-sky-50 to-cyan-50 border-[#0284C7] ring-2 ring-[#0284C7]/30 shadow-sm"
+                                              : "bg-white border-slate-200 hover:border-sky-300 hover:bg-slate-50"
+                                          }`}
+                                        >
+                                          <div className="flex items-start justify-between gap-2">
+                                            <span
+                                              className={`px-2 py-0.5 rounded text-[11px] font-black tracking-wide ${item.badgeColor}`}
+                                            >
+                                              {item.id}
+                                            </span>
+                                            {isTarget && (
+                                              <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center">
+                                                <Check className="w-3 h-3 stroke-[3]" />
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          <div className="mt-2">
+                                            <p className="text-xs font-bold text-[#0B1021] group-hover:text-[#0284C7] transition">
+                                              {item.label}
+                                            </p>
+                                            <p className="text-[10px] text-[#64748B] font-medium leading-tight mt-0.5 line-clamp-2">
+                                              {item.desc}
+                                            </p>
+                                          </div>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </section>
+                              ))
+                            ) : (
+                              <div className="flex flex-col items-center justify-center py-16 text-center text-[#64748B]">
+                                <Search className="w-10 h-10 text-[#CBD5E1] mb-2" />
+                                <p className="font-extrabold text-sm text-[#0B1021]">Aucun format trouvé</p>
+                                <p className="text-xs text-[#64748B] mt-1 max-w-sm">
+                                  Aucun format ne correspond à &quot;{formatSearch}&quot;. Essayez un autre terme ou explorez une catégorie.
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormatSearch("");
+                                    setSelectedFormatCategory("all");
+                                  }}
+                                  className="mt-4 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-[#0F172A] transition"
+                                >
+                                  Réinitialiser les filtres
+                                </button>
                               </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center py-6 text-[#64748B]">
-                            <p className="font-bold text-xs">Aucun format trouvé</p>
-                            <p className="text-[10px] mt-0.5">Essayez un autre terme de recherche.</p>
+                            )}
+                          </main>
+                        </div>
+
+                        {/* 3. Pied de page du Modal avec Résumé et Bouton de validation */}
+                        <div className="p-3 sm:p-4 bg-slate-50 border-t border-[#E2E8F0] flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-[#64748B] font-medium">Format sélectionné :</span>
+                            <span className="px-2 py-0.5 rounded bg-[#080C27] text-white font-extrabold text-xs">
+                              {targetFormat}
+                            </span>
+                            <span className="text-[#0284C7] font-bold">
+                              ({currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"})
+                            </span>
                           </div>
-                        )}
+
+                          <button
+                            type="button"
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="btn-3d-cyan !py-1.5 !px-5 text-xs font-extrabold"
+                          >
+                            Valider
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -825,9 +977,65 @@ export default function Home() {
               </button>
             </div>
 
+            {/* Filtres de catégories pour My Files (Organisé par catégorie) */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setMyFilesCategory("all")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  myFilesCategory === "all"
+                    ? "bg-[#080C27] text-white shadow-sm"
+                    : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
+                }`}
+              >
+                <span>🌟</span>
+                <span>Tous</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-[#475569]">
+                  {recentJobs.length}
+                </span>
+              </button>
+              {FORMAT_CATEGORIES.map((cat) => {
+                const count = recentJobs.filter((job) => {
+                  const ext = (job.target_format || "").toLowerCase();
+                  return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
+                }).length;
+                if (count === 0 && myFilesCategory !== cat.id) return null;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setMyFilesCategory(cat.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                      myFilesCategory === cat.id
+                        ? "bg-[#00E5FF] text-[#080C27] font-extrabold shadow-sm"
+                        : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-[#475569]">
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="flex flex-col gap-3">
-              {recentJobs.length > 0 ? (
-                recentJobs.map((job) => (
+              {recentJobs.filter((job) => {
+                if (myFilesCategory === "all") return true;
+                const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
+                if (!cat) return true;
+                const ext = (job.target_format || "").toLowerCase();
+                return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
+              }).length > 0 ? (
+                recentJobs.filter((job) => {
+                  if (myFilesCategory === "all") return true;
+                  const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
+                  if (!cat) return true;
+                  const ext = (job.target_format || "").toLowerCase();
+                  return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
+                }).map((job) => (
                   <div
                     key={job.id}
                     className="vectra-file-card p-4 flex items-center justify-between gap-4"
@@ -853,7 +1061,7 @@ export default function Home() {
                 ))
               ) : (
                 <div className="text-center py-12 text-[#475569]">
-                  <p className="font-bold text-base text-[#0B1021]">Aucun fichier récent pour le moment</p>
+                  <p className="font-bold text-base text-[#0B1021]">Aucun fichier dans cette catégorie</p>
                   <p className="text-xs mt-1">Lancez une conversion pour voir vos fichiers ici.</p>
                 </div>
               )}
