@@ -275,6 +275,7 @@ export default function Home() {
   // Onglet actif navbar
   const [activeTab, setActiveTab] = useState<string>("Convert");
   const [myFilesCategory, setMyFilesCategory] = useState<string>("all");
+  const [selectedJobIds, setSelectedJobIds] = useState<string[]>([]);
 
   // Délai d'attente public : 5 minutes (300 secondes) entre chaque conversion
   const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
@@ -283,6 +284,71 @@ export default function Home() {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  // Gestionnaires d'actions par lot (Select All, Batch Delete, Batch Download)
+  const handleToggleSelectJob = (jobId: string) => {
+    setSelectedJobIds((prev) =>
+      prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]
+    );
+  };
+
+  const handleToggleSelectAll = (visibleJobs: JobResponse[]) => {
+    const visibleIds = visibleJobs.map((j) => j.id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedJobIds.includes(id));
+    if (allSelected) {
+      setSelectedJobIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
+    } else {
+      setSelectedJobIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
+    }
+  };
+
+  const handleBatchDownload = (jobsToDownload: JobResponse[]) => {
+    const completedJobs = jobsToDownload.filter((j) => j.status === "COMPLETED");
+    if (completedJobs.length === 0) {
+      setDialog({
+        isOpen: true,
+        type: "info",
+        title: "Aucun fichier à télécharger",
+        message: "Aucun fichier prêt pour le téléchargement n'est sélectionné.",
+        confirmText: "Compris"
+      });
+      return;
+    }
+
+    completedJobs.forEach((job, index) => {
+      setTimeout(() => {
+        const url = getDownloadUrl(job);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = job.result_filename || job.filename;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, index * 350);
+    });
+  };
+
+  const handleBatchDelete = (jobIdsToDelete: string[]) => {
+    if (jobIdsToDelete.length === 0) return;
+    setDialog({
+      isOpen: true,
+      type: "warning",
+      title: `Supprimer les ${jobIdsToDelete.length} fichier(s) ?`,
+      message: `Voulez-vous vraiment supprimer les ${jobIdsToDelete.length} conversion(s) sélectionnée(s) de votre historique et effacer leurs fichiers ?`,
+      confirmText: "Oui, Tout Supprimer",
+      onConfirm: async () => {
+        try {
+          setRecentJobs((prev) => prev.filter((j) => !jobIdsToDelete.includes(j.id)));
+          setSelectedJobIds((prev) => prev.filter((id) => !jobIdsToDelete.includes(id)));
+          await Promise.all(jobIdsToDelete.map((id) => deleteJob(id)));
+        } catch (err) {
+          console.error("Erreur suppression par lot:", err);
+          loadRecentActivity();
+        }
+      }
+    });
   };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -1063,103 +1129,156 @@ export default function Home() {
               })}
             </div>
 
-            <div className="flex flex-col gap-3">
-              {recentJobs.filter((job) => {
+            {/* Barre d'actions par lot : Sélectionner Tout | Tout Télécharger | Tout Supprimer */}
+            {(() => {
+              const visibleJobs = recentJobs.filter((job) => {
                 if (myFilesCategory === "all") return true;
                 const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
                 if (!cat) return true;
                 const ext = (job.target_format || "").toLowerCase();
                 return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
-              }).length > 0 ? (
-                recentJobs.filter((job) => {
-                  if (myFilesCategory === "all") return true;
-                  const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
-                  if (!cat) return true;
-                  const ext = (job.target_format || "").toLowerCase();
-                  return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
-                }).map((job) => {
-                  const getCategoryIcon = (category: string) => {
-                    switch (category) {
-                      case "video": return "🎬";
-                      case "audio": return "🎵";
-                      case "image": return "🖼️";
-                      case "document": return "📄";
-                      case "ebook": return "📚";
-                      case "archive": return "📦";
-                      case "code": return "💻";
-                      default: return "📄";
-                    }
-                  };
+              });
+              const isAllVisibleSelected = visibleJobs.length > 0 && visibleJobs.every((j) => selectedJobIds.includes(j.id));
+              const selectedVisibleJobs = visibleJobs.filter((j) => selectedJobIds.includes(j.id));
+              const hasSelection = selectedVisibleJobs.length > 0;
 
-                  return (
-                    <div
-                      key={job.id}
-                      className="vectra-file-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:shadow-md border border-[#E2E8F0]"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-50 to-teal-100/70 border border-[#1A7A86]/25 flex items-center justify-center text-xl shrink-0 shadow-sm">
-                          <span>{getCategoryIcon(job.category)}</span>
-                        </div>
-                        <div className="truncate">
-                          <h4 className="font-extrabold text-sm sm:text-base text-[#0B1021] truncate max-w-md" title={job.filename}>
-                            {job.filename}
-                          </h4>
-                          <div className="text-xs text-[#475569] font-semibold flex items-center gap-2 flex-wrap mt-0.5">
-                            <span className="font-bold text-[#1A7A86] bg-teal-50 px-2 py-0.5 rounded border border-teal-200/60">
-                              {job.source_format.toUpperCase()} → {job.target_format.toUpperCase()}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
-                              job.status === "COMPLETED"
-                                ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                                : job.status === "FAILED"
-                                ? "bg-rose-100 text-rose-800 border border-rose-300"
-                                : "bg-cyan-100 text-cyan-800 border border-cyan-300"
-                            }`}>
-                              {job.status === "COMPLETED" ? "Traité" : job.status}
-                            </span>
-                            {job.source_size_bytes > 0 && (
-                              <span className="text-slate-400 text-[11px]">
-                                {(job.source_size_bytes / (1024 * 1024)).toFixed(1)} MB
-                              </span>
-                            )}
-                          </div>
-                        </div>
+              return (
+                <div className="flex flex-col gap-3">
+                  {visibleJobs.length > 0 && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-inner">
+                      <div className="flex items-center gap-3">
+                        <label className="flex items-center gap-2 text-xs font-extrabold text-[#0B1021] cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={isAllVisibleSelected}
+                            onChange={() => handleToggleSelectAll(visibleJobs)}
+                            className="w-4 h-4 rounded border-slate-300 text-[#00E5FF] focus:ring-[#00E5FF] cursor-pointer"
+                          />
+                          <span>Sélectionner tout ({selectedVisibleJobs.length}/{visibleJobs.length})</span>
+                        </label>
                       </div>
 
-                      {/* Actions devant chaque fichier : Télécharger et Supprimer */}
-                      <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
-                        <a
-                          href={getDownloadUrl(job)}
-                          download={job.result_filename || job.filename}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn-3d-cyan-sm !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
-                          title="Télécharger le fichier traité"
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleBatchDownload(hasSelection ? selectedVisibleJobs : visibleJobs)}
+                          className="btn-3d-cyan-sm !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                          title={hasSelection ? "Télécharger les fichiers sélectionnés" : "Télécharger tous les fichiers visibles"}
                         >
                           <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>Télécharger</span>
-                        </a>
+                          <span>{hasSelection ? `Télécharger la sélection (${selectedVisibleJobs.length})` : "Tout Télécharger"}</span>
+                        </button>
 
                         <button
                           type="button"
-                          onClick={(e) => handleDeleteJob(e, job)}
-                          className="btn-3d-danger !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
-                          title="Supprimer cette conversion"
+                          onClick={() => handleBatchDelete(hasSelection ? selectedVisibleJobs.map((j) => j.id) : visibleJobs.map((j) => j.id))}
+                          className="btn-3d-danger !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                          title={hasSelection ? "Supprimer les fichiers sélectionnés" : "Supprimer tous les fichiers visibles"}
                         >
                           <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
-                          <span>Supprimer</span>
+                          <span>{hasSelection ? `Supprimer la sélection (${selectedVisibleJobs.length})` : "Tout Supprimer"}</span>
                         </button>
                       </div>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="text-center py-12 text-[#475569]">
-                  <p className="font-bold text-base text-[#0B1021]">Aucun fichier dans cette catégorie</p>
-                  <p className="text-xs mt-1">Lancez une conversion pour voir vos fichiers ici.</p>
+                  )}
+
+                  {visibleJobs.length > 0 ? (
+                    visibleJobs.map((job) => {
+                      const isChecked = selectedJobIds.includes(job.id);
+                      const getCategoryIcon = (category: string) => {
+                        switch (category) {
+                          case "video": return "🎬";
+                          case "audio": return "🎵";
+                          case "image": return "🖼️";
+                          case "document": return "📄";
+                          case "ebook": return "📚";
+                          case "archive": return "📦";
+                          case "code": return "💻";
+                          default: return "📄";
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={job.id}
+                          className={`vectra-file-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:shadow-md border ${
+                            isChecked ? "border-[#00E5FF] bg-cyan-50/40 ring-1 ring-[#00E5FF]/40" : "border-[#E2E8F0]"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            {/* Checkbox de sélection individuelle */}
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handleToggleSelectJob(job.id)}
+                              className="w-4 h-4 rounded border-slate-300 text-[#00E5FF] focus:ring-[#00E5FF] cursor-pointer shrink-0"
+                            />
+
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-50 to-teal-100/70 border border-[#1A7A86]/25 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                              <span>{getCategoryIcon(job.category)}</span>
+                            </div>
+                            <div className="truncate">
+                              <h4 className="font-extrabold text-sm sm:text-base text-[#0B1021] truncate max-w-md" title={job.filename}>
+                                {job.filename}
+                              </h4>
+                              <div className="text-xs text-[#475569] font-semibold flex items-center gap-2 flex-wrap mt-0.5">
+                                <span className="font-bold text-[#1A7A86] bg-teal-50 px-2 py-0.5 rounded border border-teal-200/60">
+                                  {job.source_format.toUpperCase()} → {job.target_format.toUpperCase()}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                                  job.status === "COMPLETED"
+                                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                    : job.status === "FAILED"
+                                    ? "bg-rose-100 text-rose-800 border border-rose-300"
+                                    : "bg-cyan-100 text-cyan-800 border border-cyan-300"
+                                }`}>
+                                  {job.status === "COMPLETED" ? "Traité" : job.status}
+                                </span>
+                                {job.source_size_bytes > 0 && (
+                                  <span className="text-slate-400 text-[11px]">
+                                    {(job.source_size_bytes / (1024 * 1024)).toFixed(1)} MB
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions devant chaque fichier : Télécharger et Supprimer */}
+                          <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+                            <a
+                              href={getDownloadUrl(job)}
+                              download={job.result_filename || job.filename}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn-3d-cyan-sm !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
+                              title="Télécharger le fichier traité"
+                            >
+                              <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+                              <span>Télécharger</span>
+                            </a>
+
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteJob(e, job)}
+                              className="btn-3d-danger !text-xs !py-1.5 !px-3.5 font-bold cursor-pointer flex items-center gap-1.5 shadow-sm"
+                              title="Supprimer cette conversion"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                              <span>Supprimer</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-12 text-[#475569]">
+                      <p className="font-bold text-base text-[#0B1021]">Aucun fichier dans cette catégorie</p>
+                      <p className="text-xs mt-1">Lancez une conversion pour voir vos fichiers ici.</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })()}
           </main>
         )}
 
