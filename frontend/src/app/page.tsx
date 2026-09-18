@@ -484,19 +484,20 @@ export default function Home() {
             1. BARRE DE NAVIGATION SUPÉRIEURE FLOTTANTE VECTRAMORPH
             ========================================================== */}
         <header className="vectra-nav-glass px-6 py-3.5 flex items-center justify-between shadow-sm">
-          {/* Logo VectraMorph avec constellation cyan/violet */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <svg viewBox="0 0 32 32" className="w-7 h-7" fill="none">
-                <circle cx="8" cy="10" r="3" fill="#00E5FF" />
-                <circle cx="16" cy="24" r="3" fill="#8CB4F8" />
-                <circle cx="24" cy="12" r="3" fill="#00D4FF" />
-                <path d="M8 10L24 12M8 10L16 24M16 24L24 12" stroke="#8CB4F8" strokeWidth="2" strokeLinecap="round" />
-                <path d="M19 8L25 12L22 17" stroke="#00E5FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+          {/* Logo Alter@Flux avec emblème Image 2 et nom de marque Image 1 */}
+          <div
+            className="flex items-center gap-3 cursor-pointer select-none group"
+            onClick={() => setActiveTab("Convert")}
+          >
+            <div className="relative w-10 h-10 rounded-full overflow-hidden shadow-md border border-slate-300 flex items-center justify-center bg-[#050F29] flex-shrink-0 group-hover:scale-105 transition">
+              <img
+                src="/icon.png"
+                alt="Alter@Flux Logo"
+                className="w-full h-full object-contain p-0.5"
+              />
             </div>
-            <span className="font-bold text-lg tracking-tight text-[#111827]">
-              VectraMorph
+            <span className="font-extrabold text-2xl tracking-tight text-[#177C88] group-hover:text-[#0D6E7A] transition font-sans">
+              Alter@Flux
             </span>
           </div>
 
@@ -547,8 +548,8 @@ export default function Home() {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B1021]">
                   Convert Anything to Anything.
                 </h1>
-                <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
-                  Moteur de conversion universel ultra-rapide accéléré par AlteraFlux
+                <p className="text-xs sm:text-sm text-[#1A7A86] font-bold mt-1">
+                  Moteur de conversion universel ultra-rapide accéléré par Alter@Flux
                 </p>
               </div>
 
@@ -607,19 +608,19 @@ export default function Home() {
                   className="flex items-center gap-4 cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {/* Icône violette carrée avec bouton play 3D */}
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-100 via-sky-50 to-blue-100 border border-purple-200/80 flex items-center justify-center text-purple-600 shadow-md relative overflow-hidden group-hover:scale-105 transition">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+                  {/* Icône carrée avec bouton play 3D aux couleurs Alter@Flux */}
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#1A7A86]/20 via-[#00E5FF]/15 to-sky-100 border border-[#1A7A86]/30 flex items-center justify-center text-[#1A7A86] shadow-md relative overflow-hidden group-hover:scale-105 transition">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0D6E7A] to-[#1A7A86] flex items-center justify-center text-white shadow-sm">
                       <Play className="w-4 h-4 fill-white ml-0.5" />
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-extrabold text-base sm:text-lg text-[#0B1021] tracking-tight group-hover:text-[#0284C7] transition">
+                    <h3 className="font-extrabold text-base sm:text-lg text-[#0B1021] tracking-tight group-hover:text-[#1A7A86] transition">
                       {fileName}
                     </h3>
                     <p className="text-xs text-[#334155] font-semibold mt-0.5">
-                      {fileSize} • type: {fileType} • <span className="text-[#0284C7] underline font-bold">Changer de fichier</span>
+                      {fileSize} • type: {fileType} • <span className="text-[#1A7A86] hover:text-[#0D6E7A] underline font-bold">Changer de fichier</span>
                     </p>
                   </div>
                 </div>
@@ -629,7 +630,7 @@ export default function Home() {
                   <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left flex items-center justify-between">
                     <span>Convert To</span>
                     {currentCategoryOfTarget && (
-                      <span className="text-[10px] text-[#0284C7] font-bold">
+                      <span className="text-[10px] text-[#1A7A86] font-bold">
                         {currentCategoryOfTarget.icon} {currentCategoryOfTarget.name}
                       </span>
                     )}
@@ -646,8 +647,8 @@ export default function Home() {
                     className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition hover:border-[#00D4FF]"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-[#0284C7] font-black text-sm tracking-wide">{targetFormat}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 flex items-center gap-1">
+                      <span className="text-[#1A7A86] font-black text-sm tracking-wide">{targetFormat}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-50 text-[#0D6E7A] border border-cyan-100 flex items-center gap-1">
                         <span>{currentCategoryOfTarget?.icon}</span>
                         <span>{currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"}</span>
                       </span>
@@ -677,7 +678,7 @@ export default function Home() {
                               <h2 className="text-lg sm:text-xl font-black text-[#0B1021] tracking-tight">
                                 Format de conversion
                               </h2>
-                              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-[#0284C7]">
+                              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-50 text-[#1A7A86] border border-cyan-100">
                                 {totalFormatsCount} formats
                               </span>
                             </div>
@@ -761,7 +762,7 @@ export default function Home() {
                                   onClick={() => setSelectedFormatCategory(cat.id)}
                                   className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
                                     isSelected
-                                      ? "bg-[#00E5FF]/20 text-[#0284C7] border border-[#00E5FF]/50 shadow-sm font-extrabold"
+                                      ? "bg-[#00E5FF]/20 text-[#1A7A86] border border-[#00E5FF]/50 shadow-sm font-extrabold"
                                       : "text-[#334155] hover:bg-slate-200/60"
                                   }`}
                                 >
@@ -772,7 +773,7 @@ export default function Home() {
                                   <span
                                     className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold flex-shrink-0 ${
                                       isSelected
-                                        ? "bg-[#0284C7] text-white"
+                                        ? "bg-[#1A7A86] text-white"
                                         : "bg-slate-200 text-[#64748B]"
                                     }`}
                                   >
@@ -815,8 +816,8 @@ export default function Home() {
                                           }}
                                           className={`group p-3 rounded-xl border text-left transition flex flex-col justify-between relative hover:scale-[1.02] hover:shadow-md ${
                                             isTarget
-                                              ? "bg-gradient-to-tr from-sky-50 to-cyan-50 border-[#0284C7] ring-2 ring-[#0284C7]/30 shadow-sm"
-                                              : "bg-white border-slate-200 hover:border-sky-300 hover:bg-slate-50"
+                                              ? "bg-gradient-to-tr from-cyan-50/70 to-teal-50/70 border-[#1A7A86] ring-2 ring-[#1A7A86]/30 shadow-sm"
+                                              : "bg-white border-slate-200 hover:border-cyan-300 hover:bg-slate-50"
                                           }`}
                                         >
                                           <div className="flex items-start justify-between gap-2">
@@ -826,14 +827,14 @@ export default function Home() {
                                               {item.id}
                                             </span>
                                             {isTarget && (
-                                              <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center">
+                                              <span className="w-5 h-5 rounded-full bg-[#1A7A86] text-white flex items-center justify-center">
                                                 <Check className="w-3 h-3 stroke-[3]" />
                                               </span>
                                             )}
                                           </div>
 
                                           <div className="mt-2">
-                                            <p className="text-xs font-bold text-[#0B1021] group-hover:text-[#0284C7] transition">
+                                            <p className="text-xs font-bold text-[#0B1021] group-hover:text-[#1A7A86] transition">
                                               {item.label}
                                             </p>
                                             <p className="text-[10px] text-[#64748B] font-medium leading-tight mt-0.5 line-clamp-2">
@@ -875,7 +876,7 @@ export default function Home() {
                             <span className="px-2 py-0.5 rounded bg-[#080C27] text-white font-extrabold text-xs">
                               {targetFormat}
                             </span>
-                            <span className="text-[#0284C7] font-bold">
+                            <span className="text-[#1A7A86] font-bold">
                               ({currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"})
                             </span>
                           </div>
@@ -951,7 +952,7 @@ export default function Home() {
                 <span>•</span>
                 <span>Chiffrement AES-256</span>
               </div>
-              <span className="text-[#0284C7] font-bold">AlteraFlux v1.0</span>
+              <span className="text-[#1A7A86] font-bold">Alter@Flux v1.0</span>
             </div>
           </main>
         )}
@@ -1077,7 +1078,7 @@ export default function Home() {
                 API & Developer Access
               </h1>
               <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
-                Intégrez le moteur de conversion AlteraFlux dans vos applications
+                Intégrez le moteur de conversion Alter@Flux dans vos applications
               </p>
             </div>
 

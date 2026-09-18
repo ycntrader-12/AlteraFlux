@@ -13,8 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VectraMorph | Universal Converter (AlteraFlux)",
-  description: "Convert Anything to Anything. Universal high-performance conversion platform with iridescent glassmorphism design.",
+  title: "Alter@Flux | Convert Anything to Anything.",
+  description: "Convert Anything to Anything. Moteur de conversion universel ultra-rapide accéléré par Alter@Flux.",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico" }
+    ],
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png"
+  }
 };
 
 export default function RootLayout({
