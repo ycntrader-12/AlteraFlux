@@ -876,7 +876,7 @@ export default function Home() {
 
                   <span className="text-slate-400 text-xs font-bold">→</span>
 
-                  {/* Bouton Format Cible qui ouvre le Modal */}
+                  {/* Bouton Format Cible qui ouvre le Modal (+50 formats) */}
                   <button
                     type="button"
                     onClick={() => {
@@ -885,10 +885,11 @@ export default function Home() {
                       }
                       setIsDropdownOpen(true);
                     }}
-                    className="flex items-center gap-1.5 bg-[#00E5FF]/15 hover:bg-[#00E5FF]/25 text-[#00E5FF] px-3 py-1.5 rounded-xl border border-[#00E5FF]/40 text-xs font-extrabold transition"
+                    className="flex items-center gap-1.5 bg-[#00E5FF] hover:bg-[#33EBFF] text-[#050F29] px-3.5 py-1.5 rounded-xl font-black text-xs shadow-md shadow-[#00E5FF]/30 transition transform hover:scale-105 cursor-pointer border border-[#00E5FF]"
+                    title="Cliquer pour choisir le format cible souhaité (+50 formats disponibles)"
                   >
-                    <span>{targetFormat}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-[#00E5FF]" />
+                    <span className="tracking-wider">{targetFormat}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-[#050F29] stroke-[3]" />
                   </button>
                 </div>
 
@@ -1221,6 +1222,241 @@ export default function Home() {
           </main>
         )}
       </div>
+
+      {/* ==========================================================
+          MODAL DE SÉLECTION DU FORMAT CIBLE (+50 FORMATS)
+          ========================================================== */}
+      {isDropdownOpen && (
+        <div
+          className="fixed inset-0 z-[90] bg-[#050F29]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200"
+          onClick={() => setIsDropdownOpen(false)}
+        >
+          <div
+            className="w-full max-w-4xl bg-white border border-[#CBD5E1] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 1. Header du Modal avec Recherche & Bouton Fermer */}
+            <div className="p-4 sm:p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-50 to-white">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] shadow-sm shadow-[#00E5FF]/50" />
+                  <h2 className="text-lg sm:text-xl font-black text-[#0B1021] tracking-tight">
+                    Format de conversion cible
+                  </h2>
+                  <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-50 text-[#1A7A86] border border-cyan-100">
+                    {totalFormatsCount} formats
+                  </span>
+                </div>
+                <p className="text-xs text-[#64748B] font-medium mt-0.5">
+                  Sélectionnez une catégorie à gauche pour explorer et choisir le format cible souhaité
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Barre de recherche avec loupe et bouton clear */}
+                <div className="relative w-full sm:w-72">
+                  <Search className="w-4 h-4 text-[#64748B] absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={formatSearch}
+                    onChange={(e) => setFormatSearch(e.target.value)}
+                    placeholder="Rechercher (ex: mp4, webp, pdf, docx, ts...)"
+                    className="w-full pl-9 pr-8 py-2 text-xs bg-slate-100 border border-[#CBD5E1] rounded-xl focus:outline-none focus:border-[#00D4FF] focus:bg-white text-[#0F172A] font-bold placeholder-[#94A3B8] transition"
+                    autoFocus
+                  />
+                  {formatSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setFormatSearch("")}
+                      className="absolute right-2.5 top-2.5 text-[#94A3B8] hover:text-[#0F172A]"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Bouton fermeture */}
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="p-2 rounded-xl text-[#64748B] hover:text-[#0B1021] hover:bg-slate-100 transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Contenu en Deux Colonnes : Catégories à gauche | Formats à droite */}
+            <div className="flex-1 flex overflow-hidden min-h-[380px]">
+              {/* Colonne de gauche : Liste des Catégories */}
+              <aside className="w-56 sm:w-64 bg-slate-50/90 border-r border-[#E2E8F0] p-2.5 flex flex-col gap-1 overflow-y-auto">
+                <div className="px-2 py-1 text-[10px] font-extrabold text-[#94A3B8] uppercase tracking-wider">
+                  Catégories
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedFormatCategory("all")}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                    selectedFormatCategory === "all"
+                      ? "bg-[#080C27] text-white shadow-sm"
+                      : "text-[#334155] hover:bg-slate-200/60"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span>🌟</span>
+                    <span>Toutes les catégories</span>
+                  </span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                      selectedFormatCategory === "all"
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-200 text-[#64748B]"
+                    }`}
+                  >
+                    {totalFormatsCount}
+                  </span>
+                </button>
+
+                {FORMAT_CATEGORIES.map((cat) => {
+                  const isSelected = selectedFormatCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setSelectedFormatCategory(cat.id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                        isSelected
+                          ? "bg-[#00E5FF]/20 text-[#1A7A86] border border-[#00E5FF]/50 shadow-sm font-extrabold"
+                          : "text-[#334155] hover:bg-slate-200/60"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        <span className="text-base">{cat.icon}</span>
+                        <span className="truncate">{cat.name}</span>
+                      </span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold flex-shrink-0 ${
+                          isSelected
+                            ? "bg-[#1A7A86] text-white"
+                            : "bg-slate-200 text-[#64748B]"
+                        }`}
+                      >
+                        {cat.formats.length}
+                      </span>
+                    </button>
+                  );
+                })}
+              </aside>
+
+              {/* Colonne de droite : Grille des Formats Organisée par Catégorie */}
+              <main className="flex-1 p-4 sm:p-6 overflow-y-auto bg-white flex flex-col gap-6">
+                {filteredCategories.length > 0 ? (
+                  filteredCategories.map((cat) => (
+                    <section key={cat.id} className="flex flex-col gap-3">
+                      {/* En-tête de catégorie */}
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{cat.icon}</span>
+                          <h3 className="text-sm sm:text-base font-extrabold text-[#0B1021]">
+                            {cat.name}
+                          </h3>
+                        </div>
+                        <span className="text-xs text-[#64748B] font-semibold">
+                          {cat.formats.length} format{cat.formats.length > 1 ? "s" : ""} disponible{cat.formats.length > 1 ? "s" : ""}
+                        </span>
+                      </div>
+
+                      {/* Grille des formats de cette catégorie */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {cat.formats.map((item) => {
+                          const isTarget = targetFormat.toUpperCase() === item.id.toUpperCase();
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                setTargetFormat(item.id);
+                                setIsDropdownOpen(false);
+                              }}
+                              className={`group p-3 rounded-xl border text-left transition flex flex-col justify-between relative hover:scale-[1.02] hover:shadow-md cursor-pointer ${
+                                isTarget
+                                  ? "bg-gradient-to-tr from-cyan-50/70 to-teal-50/70 border-[#1A7A86] ring-2 ring-[#1A7A86]/30 shadow-sm"
+                                  : "bg-white border-slate-200 hover:border-cyan-300 hover:bg-slate-50"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[11px] font-black tracking-wide ${item.badgeColor}`}
+                                >
+                                  {item.id}
+                                </span>
+                                {isTarget && (
+                                  <span className="w-5 h-5 rounded-full bg-[#1A7A86] text-white flex items-center justify-center">
+                                    <Check className="w-3 h-3 stroke-[3]" />
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="mt-2">
+                                <p className="text-xs font-bold text-[#0B1021] group-hover:text-[#1A7A86] transition">
+                                  {item.label}
+                                </p>
+                                <p className="text-[10px] text-[#64748B] font-medium leading-tight mt-0.5 line-clamp-2">
+                                  {item.desc}
+                                </p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-center text-[#64748B]">
+                    <Search className="w-10 h-10 text-[#CBD5E1] mb-2" />
+                    <p className="font-extrabold text-sm text-[#0B1021]">Aucun format trouvé</p>
+                    <p className="text-xs text-[#64748B] mt-1 max-w-sm">
+                      Aucun format ne correspond à &quot;{formatSearch}&quot;. Essayez un autre terme ou explorez une catégorie.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormatSearch("");
+                        setSelectedFormatCategory("all");
+                      }}
+                      className="mt-4 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-[#0F172A] transition"
+                    >
+                      Réinitialiser les filtres
+                    </button>
+                  </div>
+                )}
+              </main>
+            </div>
+
+            {/* 3. Pied de page du Modal avec Résumé et Bouton de validation */}
+            <div className="p-3 sm:p-4 bg-slate-50 border-t border-[#E2E8F0] flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-[#64748B] font-medium">Format sélectionné :</span>
+                <span className="px-2 py-0.5 rounded bg-[#080C27] text-white font-extrabold text-xs">
+                  {targetFormat}
+                </span>
+                <span className="text-[#1A7A86] font-bold">
+                  ({currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"})
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(false)}
+                className="btn-3d-cyan !py-1.5 !px-5 text-xs font-extrabold cursor-pointer"
+              >
+                Valider
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ==========================================================
           BOÎTE DE DIALOGUE MODERNE SYNCHRONISÉE ALTER@FLUX (AJUSTAGE CENTRÉ)
