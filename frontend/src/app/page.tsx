@@ -700,104 +700,183 @@ export default function Home() {
         </header>
 
         {/* ==========================================================
-            2. CARTE PRINCIPALE CENTRÉE VECTRAMORPH (AJUSTÉE ET CENTRÉE)
+            2. CARTE PRINCIPALE STYLE WUZERD AVEC COULEURS ALTER@FLUX
             ========================================================== */}
         {activeTab === "Convert" && (
-          <main className="w-full vectra-glass-panel p-6 sm:p-8 flex flex-col gap-6 shadow-2xl">
-            {/* Entête avec Titre et Sélecteurs */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-              <div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0B1021]">
-                  Convert Anything to Anything.
-                </h1>
-                <p className="text-xs sm:text-sm text-[#1A7A86] font-bold mt-1">
-                  Moteur de conversion universel ultra-rapide accéléré par Alter@Flux
-                </p>
+          <main className="w-full flex flex-col gap-10 py-4">
+            {/* Titre Principal Hero Style Wuzerd */}
+            <div className="flex flex-col items-center text-center gap-3 max-w-2xl mx-auto px-4">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+                Convert your files <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] via-[#00D4FF] to-[#38bdf8] drop-shadow-[0_0_25px_rgba(0,229,255,0.4)]">
+                  easily to any format!
+                </span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
+                Use the fastest universal converter, we guarantee you&apos;ll get your file processed in seconds.
+                You can start by drag and drop your files into the vault below.
+              </p>
+            </div>
+
+            {/* Scène de la Voûte Centrale et Cartes Flottantes Orbitantes */}
+            <div className="relative w-full max-w-5xl mx-auto px-4 flex flex-col items-center justify-center min-h-[500px]">
+              
+              {/* Carte Flottante 1 : Top Left - Sketch Webdesign.json */}
+              <div className="hidden md:flex absolute top-4 left-6 lg:left-12 animate-float-slow z-0">
+                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3 border border-amber-500/30 bg-[#081736]/90 shadow-xl">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-black text-lg">
+                    💎
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">Webdesign.json</p>
+                    <p className="text-[10px] text-amber-300 font-semibold">JSON / Config</p>
+                  </div>
+                </div>
               </div>
 
-              {/* Deux sélecteurs en pilules 3D : haute lisibilité */}
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="relative">
+              {/* Carte Flottante 2 : Mid Left - Extrait Média rotaté -6° avec nœuds lumineux */}
+              <div className="hidden lg:flex absolute top-36 left-0 xl:-left-4 animate-float-reverse z-0 -rotate-6">
+                <div className="wuzerd-dark-panel p-3 rounded-2xl glow-halo-cyan border border-[#00E5FF]/40 bg-[#051333]/95 shadow-2xl w-64 relative">
+                  {/* Nœuds d'ancrage jaunes aux coins (Design Wuzerd) */}
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -top-1 -left-1 shadow-sm shadow-yellow-400" />
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -top-1 -right-1 shadow-sm shadow-yellow-400" />
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -bottom-1 -left-1 shadow-sm shadow-yellow-400" />
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -bottom-1 -right-1 shadow-sm shadow-yellow-400" />
+
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <span className="px-2 py-0.5 rounded-md bg-yellow-400 text-black text-[10px] font-black">
+                      Vidéo HD
+                    </span>
+                    <span className="text-[11px] font-bold text-white truncate">
+                      Project_Demo.mp4
+                    </span>
+                  </div>
+                  <div className="w-full h-20 rounded-xl bg-gradient-to-tr from-[#050F29] via-[#0D6E7A]/60 to-[#00E5FF]/30 border border-[#00E5FF]/20 flex items-center justify-center relative overflow-hidden">
+                    <div className="w-9 h-9 rounded-full bg-[#00E5FF] text-[#050F29] flex items-center justify-center shadow-lg shadow-[#00E5FF]/50">
+                      <Play className="w-4 h-4 fill-[#050F29] ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Carte Flottante 3 : Bottom Left - Xd Design.xd */}
+              <div className="hidden md:flex absolute bottom-8 left-8 lg:left-16 animate-float-slow z-0">
+                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3 border border-purple-500/30 bg-[#081736]/90 shadow-xl">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 font-black text-sm">
+                    Xd
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">Design.xd</p>
+                    <p className="text-[10px] text-purple-300 font-semibold">Adobe XD</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Carte Flottante 4 : Top Right - Figma Mobile.fig */}
+              <div className="hidden md:flex absolute top-6 right-6 lg:right-12 animate-float-reverse z-0">
+                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-teal flex items-center gap-3 border border-[#00E5FF]/30 bg-[#081736]/90 shadow-xl">
+                  <div className="w-10 h-10 rounded-xl bg-[#00E5FF]/20 border border-[#00E5FF]/40 flex items-center justify-center text-[#00E5FF] font-black text-lg">
+                    ❖
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">MobileApp.fig</p>
+                    <p className="text-[10px] text-[#00E5FF] font-semibold">Figma Document</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Carte Flottante 5 : Mid Right - Aperçu Image rotaté 6° */}
+              <div className="hidden lg:flex absolute top-36 right-0 xl:-right-4 animate-float-slow z-0 rotate-6">
+                <div className="wuzerd-dark-panel p-3 rounded-2xl glow-halo-amber border border-amber-500/30 bg-[#051333]/95 shadow-2xl w-60 relative">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-1 -left-1 shadow-sm shadow-amber-400" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-1 -right-1 shadow-sm shadow-amber-400" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -bottom-1 -left-1 shadow-sm shadow-amber-400" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -bottom-1 -right-1 shadow-sm shadow-amber-400" />
+
+                  <div className="w-full h-24 rounded-xl bg-gradient-to-tr from-amber-900/40 via-orange-800/30 to-amber-500/20 border border-amber-500/30 flex items-center justify-center overflow-hidden">
+                    <span className="text-2xl">🌅</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Carte Flottante 6 : Bottom Right - Ai Branding.ai */}
+              <div className="hidden md:flex absolute bottom-8 right-8 lg:right-16 animate-float-reverse z-0">
+                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3 border border-amber-500/30 bg-[#081736]/90 shadow-xl">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-black text-sm">
+                    Ai
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">branding.ai</p>
+                    <p className="text-[10px] text-amber-300 font-semibold">Illustrator</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ==========================================================
+                  VOÛTE CENTRALE D'UPLOAD (ARCH DROPZONE) STYLE WUZERD
+                  ========================================================== */}
+              <div className="w-full max-w-md wuzerd-arch-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition hover:border-[#00E5FF]/60">
+                
+                {/* Icône Centrale '+' dans un cerclage lumineux */}
+                <div
+                  className="w-16 h-16 rounded-full border-2 border-dashed border-[#00E5FF]/60 bg-[#050F29]/90 flex items-center justify-center text-[#00E5FF] shadow-lg shadow-[#00E5FF]/20 cursor-pointer group hover:scale-110 hover:border-[#00E5FF] transition-all"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <span className="text-3xl font-light stroke-[1] text-[#00E5FF] group-hover:rotate-90 transition-transform duration-300">
+                    +
+                  </span>
+                </div>
+
+                {/* Zone Texte d'Upload */}
+                <div
+                  className="flex flex-col items-center gap-2 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <h3 className="font-extrabold text-lg sm:text-xl text-white tracking-tight">
+                    {selectedFile ? fileName : "Drag & Drop files here"}
+                  </h3>
+                  {selectedFile ? (
+                    <p className="text-xs text-[#00E5FF] font-bold">
+                      {fileSize} • {fileType} • <span className="underline">Changer</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400 font-medium">or</p>
+                  )}
+                  
+                  {!selectedFile && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
+                      className="mt-1 px-5 py-2 rounded-xl bg-[#1A7A86] hover:bg-[#1E8E9B] text-white text-xs font-bold shadow-md shadow-[#1A7A86]/40 transition border border-white/20"
+                    >
+                      Browse
+                    </button>
+                  )}
+                </div>
+
+                {/* Barre de sélection de formats intégrée dans la voûte */}
+                <div className="w-full bg-[#050F29]/90 rounded-2xl p-2.5 border border-[#00E5FF]/25 flex items-center justify-between gap-2 shadow-inner">
+                  {/* Filtre Source */}
                   <select
                     value={sourceFilter}
                     onChange={(e) => setSourceFilter(e.target.value)}
-                    className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
+                    className="bg-transparent text-white text-[11px] font-bold px-2 py-1 focus:outline-none cursor-pointer border-none max-w-[120px] truncate"
                   >
-                    <option value="Select file type">Tous les types sources ({totalFormatsCount} formats)</option>
-                    <option value="document">📄 Documents texte (*.doc, *.docx, *.odt, *.txt, *.md, *.tex...)</option>
-                    <option value="pdf">📕 PDF et associés (*.pdf, *.xps, *.oxps, *.pdfa)</option>
-                    <option value="spreadsheet">📊 Feuilles de calcul (*.xlsx, *.xls, *.ods, *.csv, *.tsv...)</option>
-                    <option value="presentation">📽️ Présentations (*.pptx, *.ppt, *.odp, *.ppsx...)</option>
-                    <option value="database">🗃️ Bases de données & Structurés (*.sqlite, *.db, *.accdb, *.json...)</option>
-                    <option value="ebook">📝 Formats e-Book (*.epub, *.mobi, *.azw3, *.cbz...)</option>
-                    <option value="publishing">🖨️ Impression & Publication (*.eps, *.ps, *.indd, *.pub...)</option>
-                    <option value="technical">📐 Documents techniques (*.dwg, *.dxf, *.vsdx, *.svg...)</option>
-                    <option value="notes">✍️ Formats de notes (*.one, *.enex, *.opml)</option>
-                    <option value="video">🎬 Vidéo (*.mp4, *.webm, *.mov, *.avi...)</option>
-                    <option value="audio">🎵 Audio (*.mp3, *.wav, *.flac, *.aac...)</option>
-                    <option value="image">🖼️ Images (*.png, *.jpg, *.webp, *.avif...)</option>
-                    <option value="code">💻 Code & Transpilation (*.ts, *.py, *.js, *.rs, *.go...)</option>
+                    <option value="Select file type" className="bg-[#050F29] text-white">Source Auto</option>
+                    <option value="video" className="bg-[#050F29] text-white">🎬 Vidéo</option>
+                    <option value="audio" className="bg-[#050F29] text-white">🎵 Audio</option>
+                    <option value="image" className="bg-[#050F29] text-white">🖼️ Images</option>
+                    <option value="document" className="bg-[#050F29] text-white">📄 Docs</option>
+                    <option value="pdf" className="bg-[#050F29] text-white">📕 PDF</option>
+                    <option value="code" className="bg-[#050F29] text-white">💻 Code</option>
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
-                </div>
 
-                <div className="relative">
-                  <select
-                    value={selectedFormatCategory}
-                    onChange={(e) => {
-                      setSelectedFormatCategory(e.target.value);
-                      setTargetCategory(e.target.value);
-                    }}
-                    className="selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] appearance-none pr-9 cursor-pointer focus:outline-none"
-                  >
-                    <option value="all">Toutes les catégories ({totalFormatsCount} formats)</option>
-                    {FORMAT_CATEGORIES.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.icon} {cat.name} ({cat.formats.length} formats)
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-[#0F172A] absolute right-3 top-3 pointer-events-none" />
-                </div>
-              </div>
-            </div>
+                  <span className="text-slate-400 text-xs font-bold">→</span>
 
-            {/* Carte interne blanche surélevée */}
-            <div className="vectra-file-card p-6 relative">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-                {/* Métadonnées du fichier */}
-                <div
-                  className="flex items-center gap-4 cursor-pointer group"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {/* Icône carrée avec bouton play 3D aux couleurs Alter@Flux */}
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#1A7A86]/20 via-[#00E5FF]/15 to-sky-100 border border-[#1A7A86]/30 flex items-center justify-center text-[#1A7A86] shadow-md relative overflow-hidden group-hover:scale-105 transition">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0D6E7A] to-[#1A7A86] flex items-center justify-center text-white shadow-sm">
-                      <Play className="w-4 h-4 fill-white ml-0.5" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-extrabold text-base sm:text-lg text-[#0B1021] tracking-tight group-hover:text-[#1A7A86] transition">
-                      {fileName}
-                    </h3>
-                    <p className="text-xs text-[#334155] font-semibold mt-0.5">
-                      {fileSize} • type: {fileType} • <span className="text-[#1A7A86] hover:text-[#0D6E7A] underline font-bold">Changer de fichier</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Sélecteur "Convert To" avec bouton 3D tactile & Menu déroulant par catégorie */}
-                <div className="relative w-full sm:w-56 self-end sm:self-auto">
-                  <div className="text-[12px] font-extrabold text-[#0F172A] mb-1.5 text-right sm:text-left flex items-center justify-between">
-                    <span>Convert To</span>
-                    {currentCategoryOfTarget && (
-                      <span className="text-[10px] text-[#1A7A86] font-bold">
-                        {currentCategoryOfTarget.icon} {currentCategoryOfTarget.name}
-                      </span>
-                    )}
-                  </div>
-
+                  {/* Bouton Format Cible qui ouvre le Modal */}
                   <button
                     type="button"
                     onClick={() => {
@@ -806,266 +885,27 @@ export default function Home() {
                       }
                       setIsDropdownOpen(true);
                     }}
-                    className="w-full selector-3d rounded-xl px-4 py-2.5 text-xs font-bold text-[#0F172A] flex items-center justify-between transition hover:border-[#00D4FF]"
+                    className="flex items-center gap-1.5 bg-[#00E5FF]/15 hover:bg-[#00E5FF]/25 text-[#00E5FF] px-3 py-1.5 rounded-xl border border-[#00E5FF]/40 text-xs font-extrabold transition"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#1A7A86] font-black text-sm tracking-wide">{targetFormat}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-50 text-[#0D6E7A] border border-cyan-100 flex items-center gap-1">
-                        <span>{currentCategoryOfTarget?.icon}</span>
-                        <span>{currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"}</span>
-                      </span>
-                    </div>
-                    <ChevronDown
-                      className={`w-4 h-4 text-[#0F172A] transition-transform ${
-                        isDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    />
+                    <span>{targetFormat}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-[#00E5FF]" />
                   </button>
-
-                  {/* Modal de sélection de format : Organisé par Catégorie (Convertio / CloudConvert style) */}
-                  {isDropdownOpen && (
-                    <div
-                      className="fixed inset-0 z-50 bg-[#080C27]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <div
-                        className="w-full max-w-4xl bg-white border border-[#CBD5E1] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-150"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* 1. Header du Modal avec Recherche & Bouton Fermer */}
-                        <div className="p-4 sm:p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-50 to-white">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] shadow-sm shadow-[#00E5FF]/50" />
-                              <h2 className="text-lg sm:text-xl font-black text-[#0B1021] tracking-tight">
-                                Format de conversion
-                              </h2>
-                              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-50 text-[#1A7A86] border border-cyan-100">
-                                {totalFormatsCount} formats
-                              </span>
-                            </div>
-                            <p className="text-xs text-[#64748B] font-medium mt-0.5">
-                              Sélectionnez une catégorie à gauche pour explorer les formats cibles optimisés
-                            </p>
-                          </div>
-
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            {/* Barre de recherche avec loupe et bouton clear */}
-                            <div className="relative w-full sm:w-72">
-                              <Search className="w-4 h-4 text-[#64748B] absolute left-3 top-2.5 pointer-events-none" />
-                              <input
-                                type="text"
-                                value={formatSearch}
-                                onChange={(e) => setFormatSearch(e.target.value)}
-                                placeholder="Rechercher (ex: mp4, webp, pdf, docx...)"
-                                className="w-full pl-9 pr-8 py-2 text-xs bg-slate-100 border border-[#CBD5E1] rounded-xl focus:outline-none focus:border-[#00D4FF] focus:bg-white text-[#0F172A] font-bold placeholder-[#94A3B8] transition"
-                                autoFocus
-                              />
-                              {formatSearch && (
-                                <button
-                                  type="button"
-                                  onClick={() => setFormatSearch("")}
-                                  className="absolute right-2.5 top-2.5 text-[#94A3B8] hover:text-[#0F172A]"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
-
-                            {/* Bouton fermeture */}
-                            <button
-                              type="button"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="p-2 rounded-xl text-[#64748B] hover:text-[#0B1021] hover:bg-slate-100 transition"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* 2. Contenu en Deux Colonnes : Catégories à gauche | Formats à droite */}
-                        <div className="flex-1 flex overflow-hidden min-h-[380px]">
-                          {/* Colonne de gauche : Liste des Catégories */}
-                          <aside className="w-56 sm:w-64 bg-slate-50/90 border-r border-[#E2E8F0] p-2.5 flex flex-col gap-1 overflow-y-auto">
-                            <div className="px-2 py-1 text-[10px] font-extrabold text-[#94A3B8] uppercase tracking-wider">
-                              Catégories
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => setSelectedFormatCategory("all")}
-                              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
-                                selectedFormatCategory === "all"
-                                  ? "bg-[#080C27] text-white shadow-sm"
-                                  : "text-[#334155] hover:bg-slate-200/60"
-                              }`}
-                            >
-                              <span className="flex items-center gap-2">
-                                <span>🌟</span>
-                                <span>Toutes les catégories</span>
-                              </span>
-                              <span
-                                className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
-                                  selectedFormatCategory === "all"
-                                    ? "bg-white/20 text-white"
-                                    : "bg-slate-200 text-[#64748B]"
-                                }`}
-                              >
-                                {totalFormatsCount}
-                              </span>
-                            </button>
-
-                            {FORMAT_CATEGORIES.map((cat) => {
-                              const isSelected = selectedFormatCategory === cat.id;
-                              return (
-                                <button
-                                  key={cat.id}
-                                  type="button"
-                                  onClick={() => setSelectedFormatCategory(cat.id)}
-                                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
-                                    isSelected
-                                      ? "bg-[#00E5FF]/20 text-[#1A7A86] border border-[#00E5FF]/50 shadow-sm font-extrabold"
-                                      : "text-[#334155] hover:bg-slate-200/60"
-                                  }`}
-                                >
-                                  <span className="flex items-center gap-2 truncate">
-                                    <span className="text-base">{cat.icon}</span>
-                                    <span className="truncate">{cat.name}</span>
-                                  </span>
-                                  <span
-                                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold flex-shrink-0 ${
-                                      isSelected
-                                        ? "bg-[#1A7A86] text-white"
-                                        : "bg-slate-200 text-[#64748B]"
-                                    }`}
-                                  >
-                                    {cat.formats.length}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </aside>
-
-                          {/* Colonne de droite : Grille des Formats Organisée par Catégorie */}
-                          <main className="flex-1 p-4 sm:p-6 overflow-y-auto bg-white flex flex-col gap-6">
-                            {filteredCategories.length > 0 ? (
-                              filteredCategories.map((cat) => (
-                                <section key={cat.id} className="flex flex-col gap-3">
-                                  {/* En-tête de catégorie */}
-                                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-xl">{cat.icon}</span>
-                                      <h3 className="text-sm sm:text-base font-extrabold text-[#0B1021]">
-                                        {cat.name}
-                                      </h3>
-                                    </div>
-                                    <span className="text-xs text-[#64748B] font-semibold">
-                                      {cat.formats.length} format{cat.formats.length > 1 ? "s" : ""} disponible{cat.formats.length > 1 ? "s" : ""}
-                                    </span>
-                                  </div>
-
-                                  {/* Grille des formats de cette catégorie */}
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                                    {cat.formats.map((item) => {
-                                      const isTarget = targetFormat.toUpperCase() === item.id.toUpperCase();
-                                      return (
-                                        <button
-                                          key={item.id}
-                                          type="button"
-                                          onClick={() => {
-                                            setTargetFormat(item.id);
-                                            setIsDropdownOpen(false);
-                                          }}
-                                          className={`group p-3 rounded-xl border text-left transition flex flex-col justify-between relative hover:scale-[1.02] hover:shadow-md ${
-                                            isTarget
-                                              ? "bg-gradient-to-tr from-cyan-50/70 to-teal-50/70 border-[#1A7A86] ring-2 ring-[#1A7A86]/30 shadow-sm"
-                                              : "bg-white border-slate-200 hover:border-cyan-300 hover:bg-slate-50"
-                                          }`}
-                                        >
-                                          <div className="flex items-start justify-between gap-2">
-                                            <span
-                                              className={`px-2 py-0.5 rounded text-[11px] font-black tracking-wide ${item.badgeColor}`}
-                                            >
-                                              {item.id}
-                                            </span>
-                                            {isTarget && (
-                                              <span className="w-5 h-5 rounded-full bg-[#1A7A86] text-white flex items-center justify-center">
-                                                <Check className="w-3 h-3 stroke-[3]" />
-                                              </span>
-                                            )}
-                                          </div>
-
-                                          <div className="mt-2">
-                                            <p className="text-xs font-bold text-[#0B1021] group-hover:text-[#1A7A86] transition">
-                                              {item.label}
-                                            </p>
-                                            <p className="text-[10px] text-[#64748B] font-medium leading-tight mt-0.5 line-clamp-2">
-                                              {item.desc}
-                                            </p>
-                                          </div>
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </section>
-                              ))
-                            ) : (
-                              <div className="flex flex-col items-center justify-center py-16 text-center text-[#64748B]">
-                                <Search className="w-10 h-10 text-[#CBD5E1] mb-2" />
-                                <p className="font-extrabold text-sm text-[#0B1021]">Aucun format trouvé</p>
-                                <p className="text-xs text-[#64748B] mt-1 max-w-sm">
-                                  Aucun format ne correspond à &quot;{formatSearch}&quot;. Essayez un autre terme ou explorez une catégorie.
-                                </p>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setFormatSearch("");
-                                    setSelectedFormatCategory("all");
-                                  }}
-                                  className="mt-4 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-[#0F172A] transition"
-                                >
-                                  Réinitialiser les filtres
-                                </button>
-                              </div>
-                            )}
-                          </main>
-                        </div>
-
-                        {/* 3. Pied de page du Modal avec Résumé et Bouton de validation */}
-                        <div className="p-3 sm:p-4 bg-slate-50 border-t border-[#E2E8F0] flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="text-[#64748B] font-medium">Format sélectionné :</span>
-                            <span className="px-2 py-0.5 rounded bg-[#080C27] text-white font-extrabold text-xs">
-                              {targetFormat}
-                            </span>
-                            <span className="text-[#1A7A86] font-bold">
-                              ({currentCategoryOfTarget ? currentCategoryOfTarget.name : "Format"})
-                            </span>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => setIsDropdownOpen(false)}
-                            className="btn-3d-cyan !py-1.5 !px-5 text-xs font-extrabold"
-                          >
-                            Valider
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
+
+                {/* Note Légale sous la voûte */}
+                <p className="text-[10px] text-slate-400 font-medium leading-tight max-w-xs">
+                  By using our converter you agree to our <span className="underline cursor-pointer hover:text-white">Terms of Service</span> and <span className="underline cursor-pointer hover:text-white">Privacy Policy</span>.
+                </p>
               </div>
             </div>
 
-            {/* Carte de progression sombre #080C27 avec barre cyan et bouton 3D */}
-            <div className="vectra-progress-card p-5 sm:p-6 text-[#F8FAFC] relative overflow-hidden">
-              {/* Ligne de statut */}
+            {/* Carte de progression et d'action (s'affiche lors de la conversion ou prêt) */}
+            <div className="w-full max-w-3xl mx-auto wuzerd-dark-panel p-5 sm:p-6 text-white relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 text-xs sm:text-sm font-mono">
                 <div>
-                  <span className="text-[#FFFFFF] font-bold">Converting: </span>
+                  <span className="text-white font-bold">Converting: </span>
                   <span className="text-[#00E5FF] font-black text-base">{progress}%</span>
-                  <span className="text-[#94A3B8] font-medium"> | {stageText}</span>
+                  <span className="text-slate-300 font-medium"> | {stageText}</span>
                 </div>
 
                 {activeJob?.download_url ? (
@@ -1102,39 +942,57 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Barre de progression cyan : #00D4FF avec lueur néon */}
+              {/* Barre de progression cyan */}
               <div className="w-full h-3 rounded-full bg-[#030614] overflow-hidden relative border border-cyan-900/40">
                 <div
                   className="h-full rounded-full vectra-progress-cyan transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-
-              {/* Effet visuel circuit en dégradé */}
-              <div className="absolute right-0 top-0 bottom-0 w-36 pointer-events-none opacity-20 bg-gradient-to-l from-[#00D4FF] to-transparent" />
             </div>
 
-            {/* Bandeau inférieur de spécifications et sécurité */}
-            <div className="flex flex-wrap items-center justify-between pt-3 text-xs text-[#475569] font-semibold border-t border-[#E2E8F0]">
-              <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                  Moteur haute performance
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1.5 text-[#1A7A86] font-bold">
-                  <Clock className="w-3.5 h-3.5 text-[#00E5FF]" />
-                  <span>Public : 1 conv. / 5 min</span>
-                  {cooldownRemaining > 0 && (
-                    <span className="font-mono text-[#0B1021] bg-cyan-100 border border-cyan-300 px-1.5 py-0.2 rounded text-[10px] font-extrabold">
-                      {formatCooldown(cooldownRemaining)}
-                    </span>
-                  )}
-                </span>
-                <span>•</span>
-                <span>Chiffrement AES-256</span>
+            {/* ==========================================================
+                3. SECTION PREUVE & CARACTÉRISTIQUES (STYLE WUZERD)
+                ========================================================== */}
+            <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+              {/* Carte 1 */}
+              <div className="wuzerd-dark-panel p-6 flex flex-col items-center text-center gap-4 hover:border-[#00E5FF]/50 transition group">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500/30 to-amber-300/10 border border-amber-400/40 flex items-center justify-center text-amber-300 font-extrabold text-xl shadow-lg glow-halo-amber group-hover:scale-105 transition">
+                  ⚡
+                </div>
+                <h3 className="font-extrabold text-base text-white">
+                  The easiest way to convert your files
+                </h3>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  You can easily convert your design, media, and code files using AlteraFlux. AlteraFlux is the fastest universal converter on the market.
+                </p>
               </div>
-              <span className="text-[#1A7A86] font-bold">Alter@Flux v1.0</span>
+
+              {/* Carte 2 */}
+              <div className="wuzerd-dark-panel p-6 flex flex-col items-center text-center gap-4 hover:border-[#00E5FF]/50 transition group">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#1A7A86]/50 to-[#00E5FF]/20 border border-[#00E5FF]/40 flex items-center justify-center text-[#00E5FF] font-extrabold text-xl shadow-lg glow-halo-cyan group-hover:scale-105 transition">
+                  📄
+                </div>
+                <h3 className="font-extrabold text-base text-white">
+                  Supports +50 file formats
+                </h3>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  AlteraFlux supports many file extensions: Video, Audio, Image, Documents (PDF, DOCX), Spreadsheets, E-Books, Databases, and Code.
+                </p>
+              </div>
+
+              {/* Carte 3 */}
+              <div className="wuzerd-dark-panel p-6 flex flex-col items-center text-center gap-4 hover:border-[#00E5FF]/50 transition group">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-500/30 to-emerald-300/10 border border-emerald-400/40 flex items-center justify-center text-emerald-300 font-extrabold text-xl shadow-lg glow-halo-teal group-hover:scale-105 transition">
+                  24/7
+                </div>
+                <h3 className="font-extrabold text-base text-white">
+                  24/7 Live async engine
+                </h3>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  Thanks to our decoupled worker pipeline, you get instant responses with real-time WebSocket progress reporting whenever you convert.
+                </p>
+              </div>
             </div>
           </main>
         )}

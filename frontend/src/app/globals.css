@@ -345,19 +345,84 @@
   transform: translateY(-1px);
 }
 
-/* Scrollbar discrète */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Animations flottantes et lueurs néon Wuzerd Style */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-2deg);
+  }
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
-  border-radius: 9999px;
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6);
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
 }
+
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Halos lumineux autour des cartes flottantes */
+.glow-halo-cyan {
+  box-shadow: 0 0 45px rgba(0, 229, 255, 0.25), 0 0 15px rgba(0, 229, 255, 0.15);
+}
+
+.glow-halo-teal {
+  box-shadow: 0 0 45px rgba(26, 122, 134, 0.35), 0 0 15px rgba(26, 122, 134, 0.2);
+}
+
+.glow-halo-amber {
+  box-shadow: 0 0 45px rgba(245, 158, 11, 0.25), 0 0 15px rgba(245, 158, 11, 0.15);
+}
+
+.glow-halo-purple {
+  box-shadow: 0 0 45px rgba(168, 85, 247, 0.25), 0 0 15px rgba(168, 85, 247, 0.15);
+}
+
+/* Dropzone Voûte / Arch Dropzone Style Wuzerd */
+.wuzerd-arch-card {
+  background: rgba(8, 23, 54, 0.88);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 40px rgba(0, 229, 255, 0.12);
+}
+
+.wuzerd-dark-panel {
+  background: rgba(10, 25, 58, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+}
+
 
