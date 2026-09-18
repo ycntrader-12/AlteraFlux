@@ -39,7 +39,14 @@ ALLOWED_EXTENSIONS = {
     # Code
     "py": "code", "js": "code", "ts": "code", "jsx": "code", "tsx": "code", "cpp": "code",
     "c": "code", "rs": "code", "go": "code", "java": "code", "cs": "code", "json": "code",
-    "yaml": "code", "yml": "code", "toml": "code", "sql": "code", "sh": "code"
+    "yaml": "code", "yml": "code", "toml": "code", "sql": "code"
+}
+
+# Liste noire stricte de formats exécutables ou dangereux pour l'intégrité du serveur
+DANGEROUS_EXTENSIONS = {
+    "exe", "bat", "cmd", "sh", "bash", "php", "phtml", "php3", "php4", "php5", "pht",
+    "vbs", "ps1", "com", "msi", "scr", "dll", "so", "bin", "jar", "cgi", "pl", "app",
+    "action", "apk", "vbe", "wsf", "wsh", "jsp", "asp", "aspx"
 }
 
 # Table de correspondance MIME
@@ -111,16 +118,58 @@ MIME_TYPES = {
 
 
 def sanitize_filename(filename: str) -> str:
-    """Nettoie le nom de fichier pour éviter les attaques par injection ou traversée de répertoires"""
-    clean_name = os.path.basename(filename)
-    clean_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', clean_name)
+    """
+    Nettoie et valide rigoureusement le nom de fichier contre les cyberattaques :
+    - Bloque l'injection de null bytes (\0, %00)
+    - Bloque les attaques par Directory Traversal / Path Traversal (../, ..\)
+    - Bloque les extensions exécutables et scripts malveillants (DANGEROUS_EXTENSIONS)
+    - Détecte les techniques d'évasion par double extension (ex: shell.php.mp4)
+    - Restreint strictement aux caractères sûrs [a-zA-Z0-9_.-]
+    """
+    if not filename:
+        return "file.bin"
+
+    # 1. Détection et blocage des null bytes (LFI / Bypass)
+    if "\x00" in filename or "%00" in filename:
+        raise ValueError("Tentative d'injection détectée (null byte).")
+
+    # 2. Suppression de tout chemin relatif ou absolu
+    base_name = os.path.basename(filename).replace("\\", "/").split("/")[-1]
+    
+    # 3. Nettoyage des séquences de traversal résiduelles
+    base_name = base_name.replace("..", "").strip()
+
+    # 4. Vérification des extensions et détection de double extension malveillante
+    parts = base_name.split(".")
+    for part in parts[1:]:
+        ext_lower = part.lower().strip()
+        if ext_lower in DANGEROUS_EXTENSIONS:
+            raise ValueError(f"Fichier refusé pour des raisons de sécurité (extension non autorisée: .{ext_lower}).")
+
+    # 5. Filtrage des caractères pour autoriser uniquement les caractères sûrs
+    clean_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', base_name)
+    
+    # Éviter les points multiples consécutifs ou commençant par un point
+    clean_name = re.sub(r'\.{2,}', '.', clean_name).lstrip(".")
+
+    # 6. Limitation stricte de longueur pour prévenir les attaques par dépassement de buffer
+    if len(clean_name) > 120:
+        name_parts = clean_name.rsplit(".", 1)
+        if len(name_parts) == 2:
+            clean_name = name_parts[0][:110] + "." + name_parts[1]
+        else:
+            clean_name = clean_name[:120]
+
     if not clean_name:
-        clean_name = "file"
+        clean_name = "file.bin"
+
     return clean_name
 
 def detect_category(filename: str) -> Tuple[str, str]:
     """Retourne l'extension normalisée et la catégorie (video, audio, document, image, code)"""
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    if ext in DANGEROUS_EXTENSIONS:
+        return ext, "forbidden"
     category = ALLOWED_EXTENSIONS.get(ext, "unknown")
     return ext, category
 

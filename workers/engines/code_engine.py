@@ -39,8 +39,18 @@ class CodeEngine(BaseConversionEngine):
             import yaml
             return yaml.dump(parsed_data, sort_keys=False, allow_unicode=True)
         elif tgt == "toml":
-            import tomli_w
-            return tomli_w.dumps(parsed_data)
+            try:
+                import tomli_w
+                return tomli_w.dumps(parsed_data)
+            except ImportError:
+                # Fallback simple de sérialisation TOML
+                lines = []
+                if isinstance(parsed_data, dict):
+                    for k, v in parsed_data.items():
+                        if isinstance(v, (str, int, float, bool)):
+                            val_str = json.dumps(v)
+                            lines.append(f"{k} = {val_str}")
+                return "\n".join(lines) if lines else json.dumps(parsed_data, indent=2)
 
         return None
 
@@ -108,12 +118,35 @@ Code source en {src_lang.upper()} :
                 out.append(l)
             return "\n".join(out)
 
+        if src in ["ts", "js"] and tgt == "py":
+            lines = code.split("\n")
+            out = []
+            for line in lines:
+                l = line.replace("function ", "def ").replace("console.log(", "print(")
+                l = l.replace("const ", "").replace("let ", "").replace("var ", "")
+                l = l.rstrip(";").replace("{", ":").replace("}", "")
+                out.append(l)
+            return "\n".join(out)
+
+        if src == "json" and tgt == "sql":
+            try:
+                data = json.loads(code)
+                if isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict):
+                    cols = ", ".join(data[0].keys())
+                    sql_lines = [f"-- Auto-generated SQL schema from JSON\nCREATE TABLE data_records ({', '.join([f'{k} TEXT' for k in data[0].keys()])});\n"]
+                    for row in data:
+                        vals = ", ".join([f"'{str(v)}'" for v in row.values()])
+                        sql_lines.append(f"INSERT INTO data_records ({cols}) VALUES ({vals});")
+                    return "\n".join(sql_lines)
+            except Exception:
+                pass
+
         if src == "py" and tgt == "cpp":
             return f"""#include <iostream>
 #include <string>
 #include <vector>
 
-// Logique transpilée
+// Logique transpilée AlteraFlux
 int main() {{
     std::cout << "Exécution du module converti AlteraFlux" << std::endl;
     return 0;

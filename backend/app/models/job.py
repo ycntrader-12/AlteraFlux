@@ -1,7 +1,10 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import Column, String, Integer, Float, DateTime, Text, JSON
 from app.database import Base
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 class ConversionJob(Base):
     __tablename__ = "conversion_jobs"
@@ -30,9 +33,9 @@ class ConversionJob(Base):
     error_message = Column(Text, nullable=True)
     
     # Horodatages & Éphéméralité (24h)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    expires_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(hours=24))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
+    expires_at = Column(DateTime, default=lambda: utc_now() + timedelta(hours=24))
 
     def to_dict(self):
         return {
