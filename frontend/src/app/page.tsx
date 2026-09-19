@@ -352,6 +352,33 @@ export default function Home() {
   };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const robotRef = useRef<HTMLDivElement | null>(null);
+
+  // Orientation 3D de l'icône Robot réactive au curseur de la souris
+  const [robotTilt, setRobotTilt] = useState<{ x: number; y: number; active: boolean }>({
+    x: 0,
+    y: 0,
+    active: false,
+  });
+
+  const handleRobotMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!robotRef.current) return;
+    const rect = robotRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+
+    // Calcul d'angle d'inclinaison 3D lacet (rotateY) et tangage (rotateX)
+    const rotateY = Math.max(-28, Math.min(28, (mouseX / (rect.width / 2)) * 25));
+    const rotateX = Math.max(-28, Math.min(28, -(mouseY / (rect.height / 2)) * 25));
+
+    setRobotTilt({ x: rotateY, y: rotateX, active: true });
+  };
+
+  const handleRobotMouseLeave = () => {
+    setRobotTilt({ x: 0, y: 0, active: false });
+  };
 
   // Boîte de dialogue centrée Alter@Flux (remplaçant alert() navigateur)
   const [dialog, setDialog] = useState<{
@@ -899,37 +926,58 @@ export default function Home() {
               {/* ==========================================================
                   VOÛTE DE CONVERSION ROBOT 3D FUTURISTE ALTI@FLUX
                   ========================================================== */}
-              <div className="w-full max-w-lg robot-vault-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition-all duration-300 hover:border-[#00E5FF] group">
-
-                {/* 3D Robot Head Energy Core Dropzone Target */}
+              <div
+                className="w-full max-w-lg robot-vault-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition-all duration-300 hover:border-[#00E5FF] group"
+                onMouseMove={handleRobotMouseMove}
+                onMouseLeave={handleRobotMouseLeave}
+              >
+                
+                {/* 3D Robot Head Energy Core Dropzone Target réactif au curseur de la souris */}
                 <div
-                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-[#00E5FF] bg-[#050F29]/90 flex items-center justify-center text-[#00E5FF] shadow-[0_0_35px_rgba(0,229,255,0.5)] cursor-pointer group hover:scale-110 hover:shadow-[0_0_55px_rgba(0,229,255,0.8)] transition-all duration-300 overflow-hidden"
+                  ref={robotRef}
+                  className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-3 border-[#00E5FF] bg-[#050F29]/95 flex items-center justify-center text-[#00E5FF] cursor-pointer group hover:scale-105 overflow-hidden"
                   onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    transform: robotTilt.active
+                      ? `perspective(800px) rotateX(${robotTilt.y}deg) rotateY(${robotTilt.x}deg) scale(1.1) translateZ(30px)`
+                      : "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)",
+                    boxShadow: robotTilt.active
+                      ? `${-robotTilt.x * 1.5}px ${robotTilt.y * 1.5}px 45px rgba(0, 229, 255, 0.75), inset 0 0 25px rgba(0, 229, 255, 0.4)`
+                      : "0 0 35px rgba(0, 229, 255, 0.5), inset 0 0 15px rgba(0, 229, 255, 0.2)",
+                    transition: robotTilt.active
+                      ? "transform 0.08s ease-out, box-shadow 0.15s ease-out"
+                      : "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease-out",
+                  }}
+                  title="Cliquez ou survolez avec la souris"
                 >
                   <img
                     src="/images/robot_head_3d.jpg"
                     alt="Robot Head 3D Core"
-                    className="w-full h-full object-cover group-hover:rotate-6 transition-transform duration-300"
+                    className="w-full h-full object-cover pointer-events-none"
+                    style={{
+                      transform: robotTilt.active
+                        ? `scale(1.08) translate(${-robotTilt.x * 0.35}px, ${-robotTilt.y * 0.35}px)`
+                        : "scale(1)",
+                      transition: "transform 0.1s ease-out",
+                    }}
                   />
                   <div className="absolute inset-0 bg-[#00E5FF]/10 group-hover:bg-transparent transition-colors" />
                 </div>
 
-                {/* Zone Texte d'Upload */}
+                {/* Zone Fichier / Actions - Texte supprimé selon demande utilisateur */}
                 <div
-                  className="flex flex-col items-center gap-2 cursor-pointer"
+                  className="flex flex-col items-center gap-2 cursor-pointer w-full"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <h3 className="font-black text-xl sm:text-2xl text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                    {selectedFile ? fileName : "Drag & Drop files here"}
-                  </h3>
-                  {selectedFile ? (
-                    <p className="text-xs text-[#00E5FF] font-bold bg-[#00E5FF]/10 px-3 py-1 rounded-full border border-[#00E5FF]/30">
-                      {fileSize} • {fileType} • <span className="underline hover:text-white">Changer</span>
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-300 font-medium max-w-xs">
-                      Glissez vos fichiers ou laissez le Robot AI convertir instantanément
-                    </p>
+                  {selectedFile && (
+                    <div className="flex flex-col items-center gap-1.5">
+                      <h3 className="font-black text-lg sm:text-xl text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        {fileName}
+                      </h3>
+                      <p className="text-xs text-[#00E5FF] font-bold bg-[#00E5FF]/10 px-3 py-1 rounded-full border border-[#00E5FF]/30">
+                        {fileSize} • {fileType} • <span className="underline hover:text-white">Changer</span>
+                      </p>
+                    </div>
                   )}
                   
                   {!selectedFile && (
@@ -939,7 +987,7 @@ export default function Home() {
                         e.stopPropagation();
                         fileInputRef.current?.click();
                       }}
-                      className="mt-2 btn-3d-cyan text-xs font-black px-6 py-2.5 shadow-lg shadow-[#00E5FF]/30 tracking-wide"
+                      className="btn-3d-cyan text-xs font-black px-7 py-2.5 shadow-lg shadow-[#00E5FF]/30 tracking-wide hover:scale-105 transition-transform"
                     >
                       Browse Files
                     </button>
