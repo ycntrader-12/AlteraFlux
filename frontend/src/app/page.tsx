@@ -752,14 +752,14 @@ export default function Home() {
         onChange={handleFileSelect}
       />
 
-      <div className="w-full max-w-4xl flex flex-col gap-5">
+      <div className="w-full max-w-6xl xl:max-w-7xl flex flex-col gap-6">
         {/* ==========================================================
-            1. BARRE DE NAVIGATION SUPÉRIEURE FLOTTANTE VECTRAMORPH
+            1. BARRE DE NAVIGATION SUPÉRIEURE FLOTTANTE VECTRAMORPH (ÉLARGIE)
             ========================================================== */}
-        <header className="vectra-nav-glass px-6 py-3.5 flex items-center justify-between shadow-sm">
+        <header className="vectra-nav-glass px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-sm w-full">
           {/* Logo Alter@Flux avec emblème Image 2 et nom de marque Image 1 */}
           <div
-            className="flex items-center gap-3 cursor-pointer select-none group"
+            className="flex items-center gap-3 cursor-pointer select-none group flex-shrink-0"
             onClick={() => setActiveTab("Convert")}
           >
             <div className="relative w-10 h-10 rounded-full overflow-hidden shadow-md border border-slate-300 flex items-center justify-center bg-[#050F29] flex-shrink-0 group-hover:scale-105 transition">
@@ -775,13 +775,13 @@ export default function Home() {
           </div>
 
           {/* Texte résumé compact au centre de la barre */}
-          <div className="hidden md:flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#177C88]/10 border border-[#177C88]/20 text-[11px] font-semibold text-[#146b75] select-none tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse"></span>
+          <div className="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#177C88]/10 border border-[#177C88]/20 text-xs font-semibold text-[#146b75] select-none tracking-wide whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-[#00E5FF] animate-pulse"></span>
             <span>Fast Universal Converter • Process files in seconds</span>
           </div>
 
           {/* Onglets de navigation 3D aux couleurs de l'application */}
-          <nav className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold">
+          <nav className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold flex-shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("Convert")}
