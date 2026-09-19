@@ -55,7 +55,9 @@ def test_format_compatibility_matrix():
     # Paires totalement incompatibles (doivent être formellement rejetées)
     bad_mp3_docx, reason = is_conversion_compatible("mp3", "docx")
     assert bad_mp3_docx is False
+    assert reason is not None
     assert "Impossible de convertir" in reason
+
 
     bad_png_wav, reason_img = is_conversion_compatible("png", "wav")
     assert bad_png_wav is False
