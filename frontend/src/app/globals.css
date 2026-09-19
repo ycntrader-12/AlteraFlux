@@ -425,4 +425,104 @@
   border-radius: 1.5rem;
 }
 
+/* ==========================================================
+   EXCELLENCE 3D ANIMATIONS & CARTES ICONES DE FORMATS DE FICHIERS 3D
+   ========================================================== */
+
+.perspective-3d {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Base de Carte Format Fichier 3D avec reliefs et ombres volumétriques */
+.file-card-3d {
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 
+    0 15px 35px -5px rgba(0, 0, 0, 0.6),
+    0 5px 15px rgba(0, 229, 255, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.file-card-3d:hover {
+  transform: translateY(-10px) rotateX(14deg) rotateY(-12deg) translateZ(30px) scale(1.07);
+  box-shadow: 
+    -15px 25px 50px -10px rgba(0, 0, 0, 0.8),
+    0 0 35px rgba(0, 229, 255, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  border-color: rgba(0, 229, 255, 0.6);
+}
+
+/* Animations 3D Flottantes Complexe (Translation & Rotation sur 3 Axes) */
+@keyframes float3D1 {
+  0%, 100% {
+    transform: translateY(0px) rotateX(8deg) rotateY(-12deg) translateZ(10px);
+  }
+  50% {
+    transform: translateY(-16px) rotateX(15deg) rotateY(-4deg) translateZ(35px);
+  }
+}
+
+@keyframes float3D2 {
+  0%, 100% {
+    transform: translateY(0px) rotateX(-10deg) rotateY(14deg) translateZ(15px);
+  }
+  50% {
+    transform: translateY(18px) rotateX(-18deg) rotateY(6deg) translateZ(40px);
+  }
+}
+
+@keyframes float3D3 {
+  0%, 100% {
+    transform: translateY(0px) rotateX(12deg) rotateY(10deg) translateZ(5px);
+  }
+  50% {
+    transform: translateY(-14px) rotateX(4deg) rotateY(18deg) translateZ(28px);
+  }
+}
+
+@keyframes spin3DDisc {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatBadge3D {
+  0%, 100% {
+    transform: translateZ(20px) translateY(0px);
+  }
+  50% {
+    transform: translateZ(35px) translateY(-5px);
+  }
+}
+
+.animate-float-3d-1 {
+  animation: float3D1 6s ease-in-out infinite;
+}
+
+.animate-float-3d-2 {
+  animation: float3D2 7s ease-in-out infinite;
+}
+
+.animate-float-3d-3 {
+  animation: float3D3 8s ease-in-out infinite;
+}
+
+.animate-spin-disc {
+  animation: spin3DDisc 10s linear infinite;
+}
+
+.animate-badge-3d {
+  animation: floatBadge3D 3s ease-in-out infinite;
+}
+
+
 

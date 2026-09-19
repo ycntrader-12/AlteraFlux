@@ -787,93 +787,159 @@ export default function Home() {
             {/* Scène de la Voûte Centrale et Cartes Flottantes Orbitantes */}
             <div className="relative w-full max-w-5xl mx-auto px-4 flex flex-col items-center justify-center min-h-[500px]">
               
-              {/* Carte Flottante 1 : Top Left - Sketch Webdesign.json */}
-              <div className="hidden md:flex absolute top-4 left-6 lg:left-12 animate-float-slow z-0">
-                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3 border border-amber-500/30 bg-[#081736]/90 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-black text-lg">
-                    💎
+              {/* Carte Flottante 1 : Top Left - Format JSON Animé */}
+              <div className="hidden md:flex absolute top-2 left-4 lg:left-10 z-0 perspective-3d">
+                <div className="file-card-3d animate-float-3d-1 p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3.5 border border-amber-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/30 via-orange-600/20 to-amber-900/40 border border-amber-400/60 flex items-center justify-center text-amber-400 font-black text-xl shadow-lg shadow-amber-500/30 preserve-3d group-hover:scale-110 transition-transform duration-300">
+                    <span className="drop-shadow-[0_2px_4px_rgba(245,158,11,0.8)] animate-badge-3d">
+                      &#123;&nbsp;&#125;
+                    </span>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">Webdesign.json</p>
-                    <p className="text-[10px] text-amber-300 font-semibold">JSON / Config</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.2 rounded bg-amber-500/30 text-amber-300 text-[9px] font-extrabold uppercase tracking-wider border border-amber-400/30">
+                        JSON
+                      </span>
+                      <p className="text-xs font-bold text-white tracking-tight">Webdesign.json</p>
+                    </div>
+                    <p className="text-[10px] text-amber-300 font-semibold flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                      JSON / Config
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 2 : Mid Left - Extrait Média rotaté -6° avec nœuds lumineux */}
-              <div className="hidden lg:flex absolute top-36 left-0 xl:-left-4 animate-float-reverse z-0 -rotate-6">
-                <div className="wuzerd-dark-panel p-3 rounded-2xl glow-halo-cyan border border-[#00E5FF]/40 bg-[#051333]/95 shadow-2xl w-64 relative">
-                  {/* Nœuds d'ancrage jaunes aux coins (Design Wuzerd) */}
-                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -top-1 -left-1 shadow-sm shadow-yellow-400" />
-                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -top-1 -right-1 shadow-sm shadow-yellow-400" />
-                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -bottom-1 -left-1 shadow-sm shadow-yellow-400" />
-                  <span className="w-2 h-2 rounded-full bg-yellow-400 absolute -bottom-1 -right-1 shadow-sm shadow-yellow-400" />
+              {/* Carte Flottante 2 : Mid Left - Format MP4 Vidéo Animé rotaté -6° avec Nœuds Lumineux */}
+              <div className="hidden lg:flex absolute top-36 left-0 xl:-left-4 z-0 -rotate-6 perspective-3d">
+                <div className="file-card-3d animate-float-3d-2 p-3 rounded-2xl glow-halo-cyan border border-[#00E5FF]/50 bg-[#051333]/95 shadow-2xl w-64 relative backdrop-blur-xl group">
+                  {/* Nœuds d'ancrage jaunes aux coins */}
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -top-1 -left-1 shadow-md shadow-yellow-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -top-1 -right-1 shadow-md shadow-yellow-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -bottom-1 -left-1 shadow-md shadow-yellow-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -bottom-1 -right-1 shadow-md shadow-yellow-400/80 animate-pulse" />
 
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <span className="px-2 py-0.5 rounded-md bg-yellow-400 text-black text-[10px] font-black">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-black shadow-sm">
                       Vidéo HD
                     </span>
-                    <span className="text-[11px] font-bold text-white truncate">
+                    <span className="text-[11px] font-bold text-white truncate max-w-[130px]">
                       Project_Demo.mp4
                     </span>
                   </div>
-                  <div className="w-full h-20 rounded-xl bg-gradient-to-tr from-[#050F29] via-[#0D6E7A]/60 to-[#00E5FF]/30 border border-[#00E5FF]/20 flex items-center justify-center relative overflow-hidden">
-                    <div className="w-9 h-9 rounded-full bg-[#00E5FF] text-[#050F29] flex items-center justify-center shadow-lg shadow-[#00E5FF]/50">
-                      <Play className="w-4 h-4 fill-[#050F29] ml-0.5" />
+                  
+                  {/* Écran Média avec Bouton Lecture Animé */}
+                  <div className="w-full h-22 rounded-xl bg-gradient-to-tr from-[#050F29] via-[#0D6E7A]/80 to-[#00E5FF]/40 border border-[#00E5FF]/30 flex items-center justify-center relative overflow-hidden group-hover:border-[#00E5FF] transition-all">
+                    {/* Motif de pellicule en filigrane */}
+                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00E5FF_1px,transparent_1px)] [background-size:10px_10px]" />
+                    
+                    {/* Bouton Play néon brillant */}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00E5FF] to-[#38bdf8] text-[#050F29] flex items-center justify-center shadow-lg shadow-[#00E5FF]/60 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                      <Play className="w-5 h-5 fill-[#050F29] ml-0.5" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 3 : Bottom Left - Xd Design.xd */}
-              <div className="hidden md:flex absolute bottom-8 left-8 lg:left-16 animate-float-slow z-0">
-                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3 border border-purple-500/30 bg-[#081736]/90 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 font-black text-sm">
-                    Xd
+              {/* Carte Flottante 3 : Bottom Left - Format PDF Animé */}
+              <div className="hidden md:flex absolute bottom-6 left-6 lg:left-14 z-0 perspective-3d">
+                <div className="file-card-3d animate-float-3d-3 p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3.5 border border-red-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
+                  {/* Icône PDF Feuille Cornée */}
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 via-rose-600 to-red-800 border border-red-400/60 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-red-500/40 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
+                    <span className="tracking-tighter font-extrabold text-[11px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                      PDF
+                    </span>
+                    {/* Coin corné */}
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-300 rounded-bl-sm shadow-sm" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">Design.xd</p>
-                    <p className="text-[10px] text-purple-300 font-semibold">Adobe XD</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.2 rounded bg-red-500/30 text-red-300 text-[9px] font-extrabold uppercase tracking-wider border border-red-400/30">
+                        PDF
+                      </span>
+                      <p className="text-xs font-bold text-white tracking-tight">Report_2026.pdf</p>
+                    </div>
+                    <p className="text-[10px] text-red-300 font-semibold flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                      Document Portable
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 4 : Top Right - Figma Mobile.fig */}
-              <div className="hidden md:flex absolute top-6 right-6 lg:right-12 animate-float-reverse z-0">
-                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-teal flex items-center gap-3 border border-[#00E5FF]/30 bg-[#081736]/90 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-[#00E5FF]/20 border border-[#00E5FF]/40 flex items-center justify-center text-[#00E5FF] font-black text-lg">
-                    ❖
+              {/* Carte Flottante 4 : Top Right - Format DOCX Word Animé */}
+              <div className="hidden md:flex absolute top-4 right-4 lg:right-10 z-0 perspective-3d">
+                <div className="file-card-3d animate-float-3d-2 p-3.5 rounded-2xl glow-halo-teal flex items-center gap-3.5 border border-sky-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
+                  {/* Icône DOCX Empilée */}
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-800 border border-sky-400/60 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-sky-500/40 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
+                    <span className="tracking-tighter font-black text-[10px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                      DOCX
+                    </span>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">MobileApp.fig</p>
-                    <p className="text-[10px] text-[#00E5FF] font-semibold">Figma Document</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.2 rounded bg-sky-500/30 text-sky-300 text-[9px] font-extrabold uppercase tracking-wider border border-sky-400/30">
+                        DOCX
+                      </span>
+                      <p className="text-xs font-bold text-white tracking-tight">Contract_V2.docx</p>
+                    </div>
+                    <p className="text-[10px] text-sky-300 font-semibold flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
+                      Microsoft Word
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 5 : Mid Right - Aperçu Image rotaté 6° */}
-              <div className="hidden lg:flex absolute top-36 right-0 xl:-right-4 animate-float-slow z-0 rotate-6">
-                <div className="wuzerd-dark-panel p-3 rounded-2xl glow-halo-amber border border-amber-500/30 bg-[#051333]/95 shadow-2xl w-60 relative">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-1 -left-1 shadow-sm shadow-amber-400" />
-                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-1 -right-1 shadow-sm shadow-amber-400" />
-                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -bottom-1 -left-1 shadow-sm shadow-amber-400" />
-                  <span className="w-2 h-2 rounded-full bg-amber-400 absolute -bottom-1 -right-1 shadow-sm shadow-amber-400" />
+              {/* Carte Flottante 5 : Mid Right - Format WEBP Image Animé rotaté +6° */}
+              <div className="hidden lg:flex absolute top-36 right-0 xl:-right-4 z-0 rotate-6 perspective-3d">
+                <div className="file-card-3d animate-float-3d-1 p-3 rounded-2xl glow-halo-amber border border-emerald-500/50 bg-[#051333]/95 shadow-2xl w-60 relative backdrop-blur-xl group">
+                  {/* Nœuds d'ancrage ambre aux coins */}
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -left-1 shadow-md shadow-amber-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1 shadow-md shadow-amber-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -bottom-1 -left-1 shadow-md shadow-amber-400/80 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -bottom-1 -right-1 shadow-md shadow-amber-400/80 animate-pulse" />
 
-                  <div className="w-full h-24 rounded-xl bg-gradient-to-tr from-amber-900/40 via-orange-800/30 to-amber-500/20 border border-amber-500/30 flex items-center justify-center overflow-hidden">
-                    <span className="text-2xl">🌅</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[10px] font-black shadow-sm">
+                      Image HD
+                    </span>
+                    <span className="text-[11px] font-bold text-white truncate max-w-[120px]">
+                      Hero_Banner.webp
+                    </span>
+                  </div>
+
+                  {/* Cadre Image Paysage Néon */}
+                  <div className="w-full h-22 rounded-xl bg-gradient-to-tr from-emerald-950/80 via-teal-900/60 to-emerald-500/30 border border-emerald-400/30 flex items-center justify-center relative overflow-hidden group-hover:border-emerald-400 transition-all">
+                    {/* Soleil brillant */}
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-400 shadow-md shadow-amber-400/60 absolute top-2 right-4 animate-pulse" />
+                    {/* Montagnes en calque */}
+                    <div className="absolute bottom-0 inset-x-0 h-10 bg-emerald-800/40 clip-path-triangle backdrop-blur-sm" />
+                    <span className="text-2xl z-10 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">🌅</span>
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 6 : Bottom Right - Ai Branding.ai */}
-              <div className="hidden md:flex absolute bottom-8 right-8 lg:right-16 animate-float-reverse z-0">
-                <div className="wuzerd-dark-panel p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3 border border-amber-500/30 bg-[#081736]/90 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-black text-sm">
-                    Ai
+              {/* Carte Flottante 6 : Bottom Right - Format MP3 Audio Animé */}
+              <div className="hidden md:flex absolute bottom-6 right-6 lg:right-14 z-0 perspective-3d">
+                <div className="file-card-3d animate-float-3d-3 p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3.5 border border-purple-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
+                  {/* Icône MP3 Disque Vinyle Tournant */}
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-purple-900 via-violet-600 to-fuchsia-500 border-2 border-purple-300/50 flex items-center justify-center text-white shadow-lg shadow-purple-500/50 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-4 h-4 rounded-full bg-[#050F29] border border-purple-300 flex items-center justify-center animate-spin-disc">
+                      <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400" />
+                    </div>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">branding.ai</p>
-                    <p className="text-[10px] text-amber-300 font-semibold">Illustrator</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-300 text-[9px] font-extrabold uppercase tracking-wider border border-purple-400/30">
+                        MP3
+                      </span>
+                      <p className="text-xs font-bold text-white tracking-tight">Soundtrack_HQ.mp3</p>
+                    </div>
+                    <p className="text-[10px] text-purple-300 font-semibold flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
+                      Audio Lossless 320k
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1073,7 +1139,7 @@ export default function Home() {
                   My Converted Files
                 </h1>
                 <p className="text-xs sm:text-sm text-[#334155] font-semibold mt-1">
-                  Historique de vos conversions récentes
+                  Historique de vos conversions terminées et prêtes au téléchargement
                 </p>
               </div>
               <button
@@ -1085,102 +1151,108 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Filtres de catégories pour My Files (Organisé par catégorie) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              <button
-                type="button"
-                onClick={() => setMyFilesCategory("all")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                  myFilesCategory === "all"
-                    ? "bg-[#080C27] text-white shadow-sm"
-                    : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
-                }`}
-              >
-                <span>🌟</span>
-                <span>Tous</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-[#475569]">
-                  {recentJobs.length}
-                </span>
-              </button>
-              {FORMAT_CATEGORIES.map((cat) => {
-                const count = recentJobs.filter((job) => {
-                  const ext = (job.target_format || "").toLowerCase();
-                  return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
-                }).length;
-                if (count === 0 && myFilesCategory !== cat.id) return null;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setMyFilesCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                      myFilesCategory === cat.id
-                        ? "bg-[#00E5FF] text-[#080C27] font-extrabold shadow-sm"
-                        : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
-                    }`}
-                  >
-                    <span>{cat.icon}</span>
-                    <span>{cat.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-[#475569]">
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Barre d'actions par lot : Sélectionner Tout | Tout Télécharger | Tout Supprimer */}
+            {/* Filtres de catégories pour My Files (Affichage uniquement des fichiers convertis prêts) */}
             {(() => {
-              const visibleJobs = recentJobs.filter((job) => {
-                if (myFilesCategory === "all") return true;
-                const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
-                if (!cat) return true;
-                const ext = (job.target_format || "").toLowerCase();
-                return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
-              });
-              const isAllVisibleSelected = visibleJobs.length > 0 && visibleJobs.every((j) => selectedJobIds.includes(j.id));
-              const selectedVisibleJobs = visibleJobs.filter((j) => selectedJobIds.includes(j.id));
-              const hasSelection = selectedVisibleJobs.length > 0;
+              // Filtrer uniquement les conversions réussies (COMPLETED) prêtes au téléchargement / suppression
+              const completedJobs = recentJobs.filter((job) => job.status === "COMPLETED");
 
               return (
-                <div className="flex flex-col gap-3">
-                  {visibleJobs.length > 0 && (
-                    <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-inner">
-                      <div className="flex items-center gap-3">
-                        <label className="flex items-center gap-2 text-xs font-extrabold text-[#0B1021] cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={isAllVisibleSelected}
-                            onChange={() => handleToggleSelectAll(visibleJobs)}
-                            className="w-4 h-4 rounded border-slate-300 text-[#00E5FF] focus:ring-[#00E5FF] cursor-pointer"
-                          />
-                          <span>Sélectionner tout ({selectedVisibleJobs.length}/{visibleJobs.length})</span>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center gap-2">
+                <>
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                    <button
+                      type="button"
+                      onClick={() => setMyFilesCategory("all")}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                        myFilesCategory === "all"
+                          ? "bg-[#080C27] text-white shadow-sm"
+                          : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
+                      }`}
+                    >
+                      <span>🌟</span>
+                      <span>Tous</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-[#475569]">
+                        {completedJobs.length}
+                      </span>
+                    </button>
+                    {FORMAT_CATEGORIES.map((cat) => {
+                      const count = completedJobs.filter((job) => {
+                        const ext = (job.target_format || "").toLowerCase();
+                        return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
+                      }).length;
+                      if (count === 0 && myFilesCategory !== cat.id) return null;
+                      return (
                         <button
+                          key={cat.id}
                           type="button"
-                          onClick={() => handleBatchDownload(hasSelection ? selectedVisibleJobs : visibleJobs)}
-                          className="btn-3d-cyan-sm !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
-                          title={hasSelection ? "Télécharger les fichiers sélectionnés" : "Télécharger tous les fichiers visibles"}
+                          onClick={() => setMyFilesCategory(cat.id)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                            myFilesCategory === cat.id
+                              ? "bg-[#00E5FF] text-[#080C27] font-extrabold shadow-sm"
+                              : "bg-white/80 text-[#334155] hover:bg-white border border-slate-200"
+                          }`}
                         >
-                          <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>{hasSelection ? `Télécharger la sélection (${selectedVisibleJobs.length})` : "Tout Télécharger"}</span>
+                          <span>{cat.icon}</span>
+                          <span>{cat.name}</span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-[#475569]">
+                            {count}
+                          </span>
                         </button>
+                      );
+                    })}
+                  </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleBatchDelete(hasSelection ? selectedVisibleJobs.map((j) => j.id) : visibleJobs.map((j) => j.id))}
-                          className="btn-3d-danger !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
-                          title={hasSelection ? "Supprimer les fichiers sélectionnés" : "Supprimer tous les fichiers visibles"}
-                        >
-                          <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
-                          <span>{hasSelection ? `Supprimer la sélection (${selectedVisibleJobs.length})` : "Tout Supprimer"}</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  {/* Barre d'actions par lot : Sélectionner Tout | Tout Télécharger | Tout Supprimer */}
+                  {(() => {
+                    const visibleJobs = completedJobs.filter((job) => {
+                      if (myFilesCategory === "all") return true;
+                      const cat = FORMAT_CATEGORIES.find((c) => c.id === myFilesCategory);
+                      if (!cat) return true;
+                      const ext = (job.target_format || "").toLowerCase();
+                      return cat.formats.some((f) => f.ext.toLowerCase() === ext || f.id.toLowerCase() === ext);
+                    });
+                    const isAllVisibleSelected = visibleJobs.length > 0 && visibleJobs.every((j) => selectedJobIds.includes(j.id));
+                    const selectedVisibleJobs = visibleJobs.filter((j) => selectedJobIds.includes(j.id));
+                    const hasSelection = selectedVisibleJobs.length > 0;
+
+                    return (
+                      <div className="flex flex-col gap-3">
+                        {visibleJobs.length > 0 && (
+                          <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-inner">
+                            <div className="flex items-center gap-3">
+                              <label className="flex items-center gap-2 text-xs font-extrabold text-[#0B1021] cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={isAllVisibleSelected}
+                                  onChange={() => handleToggleSelectAll(visibleJobs)}
+                                  className="w-4 h-4 rounded border-slate-300 text-[#00E5FF] focus:ring-[#00E5FF] cursor-pointer"
+                                />
+                                <span>Sélectionner tout ({selectedVisibleJobs.length}/{visibleJobs.length})</span>
+                              </label>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleBatchDownload(hasSelection ? selectedVisibleJobs : visibleJobs)}
+                                className="btn-3d-cyan-sm !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                title={hasSelection ? "Télécharger les fichiers sélectionnés" : "Télécharger tous les fichiers visibles"}
+                              >
+                                <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+                                <span>{hasSelection ? `Télécharger la sélection (${selectedVisibleJobs.length})` : "Tout Télécharger"}</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleBatchDelete(hasSelection ? selectedVisibleJobs.map((j) => j.id) : visibleJobs.map((j) => j.id))}
+                                className="btn-3d-danger !py-1.5 !px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                title={hasSelection ? "Supprimer les fichiers sélectionnés" : "Supprimer tous les fichiers visibles"}
+                              >
+                                <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                                <span>{hasSelection ? `Supprimer la sélection (${selectedVisibleJobs.length})` : "Tout Supprimer"}</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                   {visibleJobs.length > 0 ? (
                     visibleJobs.map((job) => {
@@ -1279,8 +1351,11 @@ export default function Home() {
                 </div>
               );
             })()}
-          </main>
-        )}
+          </>
+        );
+      })()}
+    </main>
+  )}
 
         {/* Onglet API */}
         {activeTab === "API" && (
