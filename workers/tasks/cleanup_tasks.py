@@ -1,6 +1,19 @@
+import sys
+import os
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+backend_dir = os.path.join(BASE_DIR, "backend")
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+workers_dir = os.path.join(BASE_DIR, "workers")
+if workers_dir not in sys.path:
+    sys.path.insert(0, workers_dir)
+
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import select
 from app.database import AsyncSessionLocal
 from app.models.job import ConversionJob
@@ -12,7 +25,7 @@ logger = logging.getLogger(__name__)
 async def run_purge_expired_files():
     """Supprime les fichiers temporaires et tâches expirées (> 24h)"""
     logger.info("Lancement du nettoyage automatique des fichiers expirés (TTL 24h)...")
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     storage = get_storage_provider()
     deleted_count = 0
 
