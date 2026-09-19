@@ -774,6 +774,12 @@ export default function Home() {
             </span>
           </div>
 
+          {/* Texte résumé compact au centre de la barre */}
+          <div className="hidden md:flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#177C88]/10 border border-[#177C88]/20 text-[11px] font-semibold text-[#146b75] select-none tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse"></span>
+            <span>Fast Universal Converter • Process files in seconds</span>
+          </div>
+
           {/* Onglets de navigation 3D aux couleurs de l'application */}
           <nav className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold">
             <button
@@ -823,10 +829,6 @@ export default function Home() {
                   easily to any format!
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
-                Use the fastest universal converter, we guarantee you&apos;ll get your file processed in seconds.
-                You can start by drag and drop your files into the vault below.
-              </p>
             </div>
 
             {/* Scène de la Voûte Centrale et Cartes Flottantes Orbitantes */}
