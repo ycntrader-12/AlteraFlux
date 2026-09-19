@@ -900,16 +900,6 @@ export default function Home() {
                   VOÛTE DE CONVERSION ROBOT 3D FUTURISTE ALTI@FLUX
                   ========================================================== */}
               <div className="w-full max-w-lg robot-vault-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition-all duration-300 hover:border-[#00E5FF] group">
-                
-                {/* Robot 3D Mascot Floating Header */}
-                <div className="relative w-40 h-40 sm:w-48 sm:h-48 -mt-6 sm:-mt-10 animate-float-robot z-20 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#00E5FF]/40 via-cyan-400/20 to-transparent blur-2xl animate-pulse-glow" />
-                  <img
-                    src="/images/robot_3d.jpg"
-                    alt="Robot 3D Converter Mascot"
-                    className="w-full h-full object-contain filter drop-shadow-[0_15px_25px_rgba(0,229,255,0.5)] group-hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
 
                 {/* 3D Robot Head Energy Core Dropzone Target */}
                 <div
