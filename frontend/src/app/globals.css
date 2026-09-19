@@ -563,13 +563,64 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* Badge 3D en relief au bas de l'icône de fichier */
-.badge-banner-3d {
-  transform-style: preserve-3d;
+/* ==========================================================
+   VOÛTE DE CONVERSION ROBOT 3D FUTURISTE & CYBERNÉTIQUE
+   ========================================================== */
+
+/* Animation de lévitation 3D du Robot Mascot */
+@keyframes float3DRobot {
+  0%, 100% {
+    transform: translateY(0px) rotateX(4deg) rotateY(-4deg) translateZ(20px);
+  }
+  50% {
+    transform: translateY(-15px) rotateX(8deg) rotateY(6deg) translateZ(45px);
+  }
+}
+
+@keyframes robotPortalPulse {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.35), 0 0 70px rgba(0, 229, 255, 0.15), inset 0 0 25px rgba(0, 229, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 55px rgba(0, 229, 255, 0.65), 0 0 110px rgba(0, 229, 255, 0.35), inset 0 0 45px rgba(0, 229, 255, 0.4);
+    transform: scale(1.03);
+  }
+}
+
+.animate-float-robot {
+  animation: float3DRobot 5.5s ease-in-out infinite;
+}
+
+.animate-robot-pulse {
+  animation: robotPortalPulse 3.5s ease-in-out infinite;
+}
+
+/* Carte Voûte Robot 3D */
+.robot-vault-card {
+  background: radial-gradient(circle at 50% 10%, rgba(0, 229, 255, 0.22) 0%, rgba(8, 23, 54, 0.94) 75%);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
+  border: 2px solid rgba(0, 229, 255, 0.45);
   box-shadow: 
-    0 4px 10px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 1px 2px rgba(0, 0, 0, 0.2);
+    0 30px 80px -15px rgba(0, 0, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    0 0 55px rgba(0, 229, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.robot-vault-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(0, 229, 255, 0.15) 60deg, transparent 120deg);
+  animation: spin3DDisc 12s linear infinite;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 

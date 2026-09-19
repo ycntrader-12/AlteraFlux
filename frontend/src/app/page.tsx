@@ -897,18 +897,31 @@ export default function Home() {
               </div>
 
               {/* ==========================================================
-                  VOÛTE CENTRALE D'UPLOAD (ARCH DROPZONE) STYLE WUZERD
+                  VOÛTE DE CONVERSION ROBOT 3D FUTURISTE ALTI@FLUX
                   ========================================================== */}
-              <div className="w-full max-w-md wuzerd-arch-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition hover:border-[#00E5FF]/60">
+              <div className="w-full max-w-lg robot-vault-card rounded-t-[140px] sm:rounded-t-[180px] rounded-b-3xl p-6 sm:p-10 flex flex-col items-center text-center gap-6 relative z-10 shadow-2xl transition-all duration-300 hover:border-[#00E5FF] group">
                 
-                {/* Icône Centrale '+' dans un cerclage lumineux */}
+                {/* Robot 3D Mascot Floating Header */}
+                <div className="relative w-40 h-40 sm:w-48 sm:h-48 -mt-6 sm:-mt-10 animate-float-robot z-20 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#00E5FF]/40 via-cyan-400/20 to-transparent blur-2xl animate-pulse-glow" />
+                  <img
+                    src="/images/robot_3d.jpg"
+                    alt="Robot 3D Converter Mascot"
+                    className="w-full h-full object-contain filter drop-shadow-[0_15px_25px_rgba(0,229,255,0.5)] group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+
+                {/* 3D Robot Head Energy Core Dropzone Target */}
                 <div
-                  className="w-16 h-16 rounded-full border-2 border-dashed border-[#00E5FF]/60 bg-[#050F29]/90 flex items-center justify-center text-[#00E5FF] shadow-lg shadow-[#00E5FF]/20 cursor-pointer group hover:scale-110 hover:border-[#00E5FF] transition-all"
+                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-[#00E5FF] bg-[#050F29]/90 flex items-center justify-center text-[#00E5FF] shadow-[0_0_35px_rgba(0,229,255,0.5)] cursor-pointer group hover:scale-110 hover:shadow-[0_0_55px_rgba(0,229,255,0.8)] transition-all duration-300 overflow-hidden"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <span className="text-3xl font-light stroke-[1] text-[#00E5FF] group-hover:rotate-90 transition-transform duration-300">
-                    +
-                  </span>
+                  <img
+                    src="/images/robot_head_3d.jpg"
+                    alt="Robot Head 3D Core"
+                    className="w-full h-full object-cover group-hover:rotate-6 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-[#00E5FF]/10 group-hover:bg-transparent transition-colors" />
                 </div>
 
                 {/* Zone Texte d'Upload */}
@@ -916,15 +929,17 @@ export default function Home() {
                   className="flex flex-col items-center gap-2 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <h3 className="font-extrabold text-lg sm:text-xl text-white tracking-tight">
+                  <h3 className="font-black text-xl sm:text-2xl text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                     {selectedFile ? fileName : "Drag & Drop files here"}
                   </h3>
                   {selectedFile ? (
-                    <p className="text-xs text-[#00E5FF] font-bold">
-                      {fileSize} • {fileType} • <span className="underline">Changer</span>
+                    <p className="text-xs text-[#00E5FF] font-bold bg-[#00E5FF]/10 px-3 py-1 rounded-full border border-[#00E5FF]/30">
+                      {fileSize} • {fileType} • <span className="underline hover:text-white">Changer</span>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400 font-medium">or</p>
+                    <p className="text-xs text-slate-300 font-medium max-w-xs">
+                      Glissez vos fichiers ou laissez le Robot AI convertir instantanément
+                    </p>
                   )}
                   
                   {!selectedFile && (
@@ -934,20 +949,20 @@ export default function Home() {
                         e.stopPropagation();
                         fileInputRef.current?.click();
                       }}
-                      className="mt-1 px-5 py-2 rounded-xl bg-[#1A7A86] hover:bg-[#1E8E9B] text-white text-xs font-bold shadow-md shadow-[#1A7A86]/40 transition border border-white/20"
+                      className="mt-2 btn-3d-cyan text-xs font-black px-6 py-2.5 shadow-lg shadow-[#00E5FF]/30 tracking-wide"
                     >
-                      Browse
+                      Browse Files
                     </button>
                   )}
                 </div>
 
-                {/* Barre de sélection de formats intégrée dans la voûte */}
-                <div className="w-full bg-[#050F29]/90 rounded-2xl p-2.5 border border-[#00E5FF]/25 flex items-center justify-between gap-2 shadow-inner">
+                {/* Barre de sélection de formats intégrée dans la voûte Robot */}
+                <div className="w-full bg-[#050F29]/95 rounded-2xl p-3 border border-[#00E5FF]/40 flex items-center justify-between gap-2 shadow-2xl backdrop-blur-md">
                   {/* Filtre Source */}
                   <select
                     value={sourceFilter}
                     onChange={(e) => setSourceFilter(e.target.value)}
-                    className="bg-transparent text-white text-[11px] font-bold px-2 py-1 focus:outline-none cursor-pointer border-none max-w-[120px] truncate"
+                    className="bg-[#081736] text-[#00E5FF] text-xs font-extrabold px-3 py-1.5 rounded-xl border border-[#00E5FF]/30 focus:outline-none cursor-pointer max-w-[130px] truncate shadow-sm"
                   >
                     <option value="Select file type" className="bg-[#050F29] text-white">Source Auto</option>
                     <option value="video" className="bg-[#050F29] text-white">🎬 Vidéo</option>
@@ -958,7 +973,7 @@ export default function Home() {
                     <option value="code" className="bg-[#050F29] text-white">💻 Code</option>
                   </select>
 
-                  <span className="text-slate-400 text-xs font-bold">→</span>
+                  <span className="text-[#00E5FF] text-sm font-black animate-pulse">➔</span>
 
                   {/* Bouton Format Cible qui ouvre le Modal (+50 formats) */}
                   <button
@@ -969,7 +984,7 @@ export default function Home() {
                       }
                       setIsDropdownOpen(true);
                     }}
-                    className="flex items-center gap-1.5 bg-[#00E5FF] hover:bg-[#33EBFF] text-[#050F29] px-3.5 py-1.5 rounded-xl font-black text-xs shadow-md shadow-[#00E5FF]/30 transition transform hover:scale-105 cursor-pointer border border-[#00E5FF]"
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-[#00E5FF] to-[#00C2E0] hover:from-[#33EBFF] hover:to-[#00D4FF] text-[#050F29] px-4 py-1.5 rounded-xl font-black text-xs shadow-lg shadow-[#00E5FF]/40 transition transform hover:scale-105 cursor-pointer border border-[#00E5FF]"
                     title="Cliquer pour choisir le format cible souhaité (+50 formats disponibles)"
                   >
                     <span className="tracking-wider">{targetFormat}</span>
