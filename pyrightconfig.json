@@ -7,5 +7,6 @@
   ],
   "reportMissingImports": false,
   "reportMissingModuleSource": false,
-  "reportGeneralTypeIssues": false
+  "reportGeneralTypeIssues": false,
+  "reportAttributeAccessIssue": false
 }

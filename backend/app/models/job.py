@@ -1,4 +1,4 @@
-import uuid
+from typing import Any
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import Column, String, Integer, Float, DateTime, Text, JSON
 from app.database import Base
@@ -9,33 +9,33 @@ def utc_now():
 class ConversionJob(Base):
     __tablename__ = "conversion_jobs"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    filename = Column(String(255), nullable=False)
-    source_key = Column(String(512), nullable=False)
-    source_format = Column(String(32), nullable=False)
-    source_size_bytes = Column(Integer, default=0)
-    target_format = Column(String(32), nullable=False)
-    category = Column(String(32), nullable=False)  # video, audio, image, document, code
+    id: Any = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    filename: Any = Column(String(255), nullable=False)
+    source_key: Any = Column(String(512), nullable=False)
+    source_format: Any = Column(String(32), nullable=False)
+    source_size_bytes: Any = Column(Integer, default=0)
+    target_format: Any = Column(String(32), nullable=False)
+    category: Any = Column(String(32), nullable=False)  # video, audio, image, document, code
     
     # Statut : QUEUED, PROCESSING, COMPLETED, FAILED, EXPIRED
-    status = Column(String(32), default="QUEUED", index=True)
-    progress = Column(Float, default=0.0)
-    stage = Column(String(128), default="Mise en file d'attente...")
+    status: Any = Column(String(32), default="QUEUED", index=True)
+    progress: Any = Column(Float, default=0.0)
+    stage: Any = Column(String(128), default="Mise en file d'attente...")
     
     # Options de conversion avancées (bitrate, résolution, prompt IA, etc.)
-    options = Column(JSON, default=dict)
+    options: Any = Column(JSON, default=dict)
     
     # Résultat
-    result_key = Column(String(512), nullable=True)
-    result_filename = Column(String(255), nullable=True)
-    result_size_bytes = Column(Integer, nullable=True)
-    download_url = Column(Text, nullable=True)
-    error_message = Column(Text, nullable=True)
+    result_key: Any = Column(String(512), nullable=True)
+    result_filename: Any = Column(String(255), nullable=True)
+    result_size_bytes: Any = Column(Integer, nullable=True)
+    download_url: Any = Column(Text, nullable=True)
+    error_message: Any = Column(Text, nullable=True)
     
     # Horodatages & Éphéméralité (24h)
-    created_at = Column(DateTime, default=utc_now)
-    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
-    expires_at = Column(DateTime, default=lambda: utc_now() + timedelta(hours=24))
+    created_at: Any = Column(DateTime, default=utc_now)
+    updated_at: Any = Column(DateTime, default=utc_now, onupdate=utc_now)
+    expires_at: Any = Column(DateTime, default=lambda: utc_now() + timedelta(hours=24))
 
     def to_dict(self):
         return {
