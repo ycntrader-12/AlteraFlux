@@ -1,3 +1,17 @@
+import sys
+import os
+
+# Résolution globale du chemin racine pour le backend et les workers
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+backend_dir = os.path.join(BASE_DIR, "backend")
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+workers_dir = os.path.join(BASE_DIR, "workers")
+if workers_dir not in sys.path:
+    sys.path.insert(0, workers_dir)
+
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect

@@ -1,9 +1,22 @@
+import sys
+import os
 import uuid
 import logging
 import asyncio
-import os
 from datetime import datetime
 from typing import List, Optional
+
+# Résolution globale du chemin racine pour l'importation dynamique du module workers
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+backend_dir = os.path.join(BASE_DIR, "backend")
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+workers_dir = os.path.join(BASE_DIR, "workers")
+if workers_dir not in sys.path:
+    sys.path.insert(0, workers_dir)
+
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
