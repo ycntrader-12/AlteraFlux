@@ -51,6 +51,16 @@ class ArchiveEngine(BaseConversionEngine):
                 except Exception as e:
                     logger.warning(f"Échec décompression tarfile standard: {e}")
 
+            elif src in ["7z"]:
+                self.report_progress(25.0, "Décompression de l'archive 7Z...")
+                try:
+                    import py7zr
+                    with py7zr.SevenZipFile(input_path, mode="r") as sz:
+                        sz.extractall(path=extract_dir)
+                    is_archive_source = True
+                except Exception as e:
+                    logger.warning(f"Échec décompression 7z: {e}")
+
             # Si ce n'est pas une archive existante (ex: compression d'un fichier en ZIP),
             # copier simplement le fichier d'entrée dans le répertoire d'extraction
             if not is_archive_source:
@@ -70,6 +80,24 @@ class ArchiveEngine(BaseConversionEngine):
                             full_p = os.path.join(root, file)
                             arcname = os.path.relpath(full_p, extract_dir)
                             z_out.write(full_p, arcname)
+
+            elif tgt in ["7z"]:
+                try:
+                    import py7zr
+                    with py7zr.SevenZipFile(output_path, "w") as sz:
+                        for root, _, files in os.walk(extract_dir):
+                            for file in files:
+                                full_p = os.path.join(root, file)
+                                arcname = os.path.relpath(full_p, extract_dir)
+                                sz.write(full_p, arcname)
+                except Exception as e:
+                    logger.warning(f"Échec py7zr écriture: {e}. Bascule en ZIP...")
+                    with zipfile.ZipFile(output_path, "w", compression=zipfile.ZIP_DEFLATED) as z_out:
+                        for root, _, files in os.walk(extract_dir):
+                            for file in files:
+                                full_p = os.path.join(root, file)
+                                arcname = os.path.relpath(full_p, extract_dir)
+                                z_out.write(full_p, arcname)
 
             elif tgt in ["tar"]:
                 with tarfile.open(output_path, "w") as t_out:

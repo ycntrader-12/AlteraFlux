@@ -1,3 +1,49 @@
+[project]
+name = "alteraflux"
+version = "1.0.0"
+description = "Plateforme universelle et temps réel de conversion de fichiers multi-formats"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.2.1",
+    "python-multipart>=0.0.9",
+    "aiofiles>=23.2.1",
+    "websockets>=12.0",
+    "requests>=2.31.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "cryptography>=42.0.0",
+    "sqlalchemy>=2.0.28",
+    "asyncpg>=0.29.0",
+    "aiosqlite>=0.20.0",
+    "redis>=5.0.3",
+    "boto3>=1.34.69",
+    "celery>=5.3.6",
+    "reportlab>=4.1.0",
+    "pdf2docx>=0.5.13",
+    "python-docx>=1.2.0",
+    "pypdf>=6.19.0",
+    "pandas>=2.2.0",
+    "openpyxl>=3.1.5",
+    "Pillow>=10.2.0",
+    "pillow-heif>=0.15.0",
+    "pymupdf>=1.24.0",
+    "py7zr>=0.20.0",
+    "PyYAML>=6.0.1",
+    "tomli>=2.0.1",
+    "tomli-w>=1.0.0",
+    "google-generativeai>=0.4.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.1.1",
+    "pytest-asyncio>=0.23.6",
+]
+
 [tool.pytest.ini_options]
 pythonpath = [
     "backend",
