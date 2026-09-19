@@ -562,7 +562,7 @@ export default function Home() {
 
     try {
       const presigned = await requestUploadUrl(selectedFile.name, selectedFile.type, selectedFile.size);
-      await uploadFileDirect(presigned.upload_url, selectedFile, presigned.headers);
+      await uploadFileDirect(presigned.upload_url, selectedFile, presigned.headers, presigned.key);
 
       const sourceExt = selectedFile.name.split(".").pop()?.toLowerCase() || "";
       const jobCategory = selectedFormatCategory !== "all" ? selectedFormatCategory : (currentCategoryOfTarget?.id || undefined);

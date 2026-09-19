@@ -98,7 +98,8 @@ export async function requestUploadUrl(
 export async function uploadFileDirect(
   uploadUrl: string,
   file: File,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
+  key?: string
 ): Promise<void> {
   // Si c'est un endpoint direct relatif du backend
   const targetUrl = uploadUrl.startsWith("http") ? uploadUrl : `${API_BASE}${uploadUrl}`;
@@ -107,7 +108,11 @@ export async function uploadFileDirect(
   if (targetUrl.includes("/api/v1/storage/upload-direct")) {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(targetUrl, {
+    let url = targetUrl;
+    if (key && !url.includes("key=")) {
+      url += (url.includes("?") ? "&" : "?") + `key=${encodeURIComponent(key)}`;
+    }
+    const res = await fetch(url, {
       method: "POST",
       body: formData
     });
@@ -142,7 +147,11 @@ export async function uploadFileDirect(
   // Si l'upload S3 direct a échoué, on tente le fallback upload-direct côté serveur
   const formData = new FormData();
   formData.append("file", file);
-  const fallbackRes = await fetch(`${API_BASE}/api/v1/storage/upload-direct`, {
+  let fallbackUrl = `${API_BASE}/api/v1/storage/upload-direct`;
+  if (key) {
+    fallbackUrl += `?key=${encodeURIComponent(key)}`;
+  }
+  const fallbackRes = await fetch(fallbackUrl, {
     method: "POST",
     body: formData
   });

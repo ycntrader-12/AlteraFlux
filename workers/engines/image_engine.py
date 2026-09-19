@@ -19,7 +19,23 @@ class ImageEngine(BaseConversionEngine):
         options: Dict[str, Any]
     ) -> str:
         target_fmt = target_format.lower().lstrip(".")
-        self.report_progress(10.0, "Chargement de l'image source...")
+        src_fmt = source_format.lower().lstrip(".")
+        self.report_progress(10.0, "Chargement de la source...")
+
+        # Support PDF vers Image (PNG / JPG / WEBP) via PyMuPDF (fitz)
+        if src_fmt == "pdf":
+            try:
+                import fitz
+                doc = fitz.open(input_path)
+                if len(doc) > 0:
+                    page = doc[0]
+                    pix = page.get_pixmap(dpi=150)
+                    pix.save(output_path)
+                    doc.close()
+                    self.report_progress(100.0, f"Rendu du PDF vers {target_fmt.upper()} réussi !")
+                    return output_path
+            except Exception as e:
+                logger.warning(f"Bascule PyMuPDF PDF->Image: {e}")
 
         with Image.open(input_path) as img:
             self.report_progress(30.0, f"Analyse dimensions ({img.width}x{img.height})...")

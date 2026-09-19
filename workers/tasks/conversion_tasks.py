@@ -80,8 +80,9 @@ async def run_conversion_pipeline(job_id: str):
             )
 
         # 4. Sélection et exécution du moteur
-        engine = get_engine_for_category(category, on_engine_progress)
-        await update_job_progress(job_id, 10.0, f"Exécution du moteur {category.upper()}...")
+        engine = get_engine_for_category(category, source_format, target_format, on_engine_progress)
+        engine_name = (category or source_format or "conversion").upper()
+        await update_job_progress(job_id, 10.0, f"Exécution du moteur {engine_name}...")
         
         # Exécution dans un threadpool pour ne pas bloquer la boucle d'événements
         await asyncio.to_thread(
