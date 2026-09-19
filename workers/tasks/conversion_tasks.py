@@ -16,9 +16,11 @@ import tempfile
 import asyncio
 import logging
 from datetime import datetime
+from typing import Dict, Any, Optional
 from sqlalchemy import select
 from app.database import AsyncSessionLocal
 from app.models.job import ConversionJob
+from app.security.validator import get_content_type
 from app.storage import get_storage_provider
 from app.websocket.progress import manager
 from workers.engines import get_engine_for_category
@@ -63,12 +65,12 @@ async def run_conversion_pipeline(job_id: str):
             logger.error(f"Job {job_id} introuvable en base.")
             return
 
-        source_key = job.source_key
-        filename = job.filename
-        source_format = job.source_format
-        target_format = job.target_format
-        category = job.category
-        options = job.options or {}
+        source_key: str = str(job.source_key or "")
+        filename: str = str(job.filename or "file")
+        source_format: str = str(job.source_format or "").lower().lstrip(".")
+        target_format: str = str(job.target_format or "").lower().lstrip(".")
+        category: str = str(job.category or "")
+        options: Dict[str, Any] = dict(job.options or {})
 
     sandbox_dir = tempfile.mkdtemp(prefix=f"alteraflux_{job_id[:8]}_")
     try:
@@ -110,14 +112,13 @@ async def run_conversion_pipeline(job_id: str):
         await update_job_progress(job_id, 92.0, "Téléversement du fichier converti...")
         result_key = f"results/{job_id}/{result_filename}"
         
-        from app.security.validator import get_content_type
         content_type = get_content_type(target_format)
         
         await storage.upload_from_path(local_output_path, result_key, content_type)
         result_size = os.path.getsize(local_output_path) if os.path.exists(local_output_path) else 0
 
         # Génération du lien de téléchargement direct
-        download_url = storage.generate_presigned_download_url(result_key, filename=result_filename)
+        download_url = storage.generate_presigned_download_url(key=result_key, filename=result_filename)
 
         # 6. Finalisation du job
         async with AsyncSessionLocal() as session:
