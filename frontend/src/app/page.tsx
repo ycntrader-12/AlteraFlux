@@ -820,17 +820,7 @@ export default function Home() {
             2. CARTE PRINCIPALE STYLE WUZERD AVEC COULEURS ALTER@FLUX
             ========================================================== */}
         {activeTab === "Convert" && (
-          <main className="w-full flex flex-col gap-10 py-4">
-            {/* Titre Principal Hero Style Wuzerd */}
-            <div className="flex flex-col items-center text-center gap-3 max-w-2xl mx-auto px-4">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-                Convert your files <br className="hidden sm:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00E5FF] via-[#00D4FF] to-[#38bdf8] drop-shadow-[0_0_25px_rgba(0,229,255,0.4)]">
-                  easily to any format!
-                </span>
-              </h1>
-            </div>
-
+          <main className="w-full flex flex-col gap-6 py-2">
             {/* Scène de la Voûte Centrale et Cartes Flottantes Orbitantes */}
             <div className="relative w-full max-w-5xl mx-auto px-4 flex flex-col items-center justify-center min-h-[500px]">
               
