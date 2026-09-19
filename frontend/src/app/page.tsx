@@ -245,8 +245,20 @@ const FORMAT_CATEGORIES: FormatCategory[] = [
       { id: "YAML", label: "YAML", desc: "Configuration YAML", ext: "yaml", badgeColor: "bg-rose-100 text-rose-800" },
       { id: "TOML", label: "TOML", desc: "Format de Configuration Moderne", ext: "toml", badgeColor: "bg-amber-100 text-amber-800" }
     ]
+  },
+  {
+    id: "archive",
+    name: "Archives",
+    icon: "📦",
+    formats: [
+      { id: "ZIP", label: "ZIP", desc: "Archive compressée universelle", ext: "zip", badgeColor: "bg-emerald-100 text-emerald-800" },
+      { id: "TAR.GZ", label: "TAR.GZ", desc: "Archive compressée Linux/Cloud", ext: "tar.gz", badgeColor: "bg-blue-100 text-blue-800" },
+      { id: "TAR", label: "TAR", desc: "Conteneur sans compression", ext: "tar", badgeColor: "bg-slate-100 text-slate-800" },
+      { id: "TAR.BZ2", label: "TAR.BZ2", desc: "Haute compression Bzip2", ext: "tar.bz2", badgeColor: "bg-violet-100 text-violet-800" }
+    ]
   }
 ];
+
 
 export default function Home() {
   // Fichier sélectionné
@@ -550,6 +562,10 @@ export default function Home() {
         setFileType("Code");
         setTargetFormat("TS");
         setSelectedFormatCategory("code");
+      } else if (["zip", "tar", "gz", "tgz", "bz2", "tbz2", "7z", "rar"].includes(ext)) {
+        setFileType("Archive");
+        setTargetFormat("ZIP");
+        setSelectedFormatCategory("archive");
       } else {
         setFileType("Document");
         setTargetFormat("PDF");
@@ -627,15 +643,17 @@ export default function Home() {
         return;
       }
       const errMsg = err?.message || String(err) || "Erreur de conversion";
+      const isCompatError = errMsg.includes("Impossible de convertir") || errMsg.includes("incompatible") || errMsg.includes("non supporté") || errMsg.includes("non prise en charge") || errMsg.includes("requiert le moteur FFmpeg");
       setDialog({
         isOpen: true,
         type: "error",
-        title: "Erreur de conversion",
-        message: "Une erreur est survenue lors de l'envoi ou du traitement du fichier. Veuillez vérifier la connexion au serveur et réessayer.",
-        details: errMsg,
+        title: isCompatError ? "Incompatibilité de format" : "Erreur de conversion",
+        message: isCompatError ? errMsg : "Une erreur est survenue lors de l'envoi ou du traitement du fichier. Veuillez vérifier les options et réessayer.",
+        details: isCompatError ? undefined : errMsg,
         confirmText: "OK, Compris"
       });
     }
+
   };
 
   const listenJob = (jobId: string) => {

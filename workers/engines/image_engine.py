@@ -1,10 +1,11 @@
 import os
 import logging
 from typing import Dict, Any, Optional, Callable
-from PIL import Image
+from PIL import Image, ImageOps
 from workers.engines.base import BaseConversionEngine
 
 logger = logging.getLogger(__name__)
+Image.MAX_IMAGE_PIXELS = 100_000_000
 
 try:
     import pillow_heif
@@ -44,8 +45,10 @@ class ImageEngine(BaseConversionEngine):
             except Exception as e:
                 logger.warning(f"Bascule PyMuPDF {src_fmt}->Image: {e}")
 
-        with Image.open(input_path) as img:
+        with Image.open(input_path) as raw_img:
+            img = ImageOps.exif_transpose(raw_img) or raw_img
             self.report_progress(30.0, f"Analyse dimensions ({img.width}x{img.height})...")
+
 
             # Options
             quality = int(options.get("quality", 85))

@@ -84,7 +84,12 @@ class DocumentEngine(BaseConversionEngine):
                 import pandas as pd
                 df = None
                 if src_fmt == "csv":
-                    df = pd.read_csv(input_path)
+                    for enc in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
+                        try:
+                            df = pd.read_csv(input_path, encoding=enc)
+                            break
+                        except Exception:
+                            continue
                 elif src_fmt == "tsv":
                     df = pd.read_csv(input_path, sep="\t")
                 elif src_fmt in ["xlsx", "xls", "ods"]:
@@ -94,14 +99,57 @@ class DocumentEngine(BaseConversionEngine):
                     if tgt_fmt in ["xlsx", "xls"]:
                         df.to_excel(output_path, index=False)
                     elif tgt_fmt == "csv":
-                        df.to_csv(output_path, index=False)
+                        df.to_csv(output_path, index=False, encoding="utf-8")
                     elif tgt_fmt == "tsv":
-                        df.to_csv(output_path, sep="\t", index=False)
+                        df.to_csv(output_path, sep="\t", index=False, encoding="utf-8")
                     elif tgt_fmt == "json":
                         df.to_json(output_path, orient="records", indent=2)
                     elif tgt_fmt == "html":
                         df.to_html(output_path, index=False)
-                    if os.path.exists(output_path):
+                    elif tgt_fmt in ["pdf", "pdfa"]:
+                        from reportlab.lib.pagesizes import letter, landscape
+                        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+                        from reportlab.lib.styles import getSampleStyleSheet
+                        from reportlab.lib import colors
+
+                        doc = SimpleDocTemplate(
+                            output_path,
+                            pagesize=landscape(letter),
+                            rightMargin=20,
+                            leftMargin=20,
+                            topMargin=20,
+                            bottomMargin=20
+                        )
+                        styles = getSampleStyleSheet()
+                        story = []
+                        story.append(Paragraph(f"<b>Tableau Converti AlteraFlux</b> - {os.path.basename(input_path)}", styles["Heading2"]))
+                        story.append(Spacer(1, 10))
+
+                        # Limiter à 250 lignes et 20 colonnes pour garder un rendu lisible et performant
+                        preview_df = df.iloc[:250, :20]
+                        headers = [str(c) for c in preview_df.columns]
+                        data_rows = [headers]
+                        for _, row in preview_df.iterrows():
+                            data_rows.append([str(v) if pd.notna(v) else "" for v in row.values])
+
+                        t = Table(data_rows, repeatRows=1)
+                        t.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0284c7")),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 9),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
+                            ('TOPPADDING', (0, 0), (-1, 0), 5),
+                            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                            ('FONTSIZE', (0, 1), (-1, -1), 8),
+                            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fafc")]),
+                        ]))
+                        story.append(t)
+                        doc.build(story)
+
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
                         self.report_progress(100.0, f"Conversion tableur vers {tgt_fmt.upper()} réussie !")
                         return output_path
             except Exception as e:
@@ -150,7 +198,7 @@ class DocumentEngine(BaseConversionEngine):
                 cmd.append("--toc")
 
             try:
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+                subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
                 self.report_progress(95.0, "Finalisation du rendu...")
                 return output_path
             except subprocess.CalledProcessError as e:
@@ -176,31 +224,51 @@ class DocumentEngine(BaseConversionEngine):
                 logger.warning(f"Échec LibreOffice: {e}. Tentative fallback...")
 
         # 3. Fallback pur Python pour texte / HTML / Markdown / PDF
-        self.report_progress(60.0, "Application du parseur textuel natif...")
+        self.report_progress(60.0, "Application du moteur documentaire natif...")
         try:
             text_content = self._extract_text(input_path, src_fmt)
 
             if tgt_fmt in ["pdf", "pdfa"]:
                 try:
                     from reportlab.lib.pagesizes import letter
-                    from reportlab.pdfgen import canvas
-                    c = canvas.Canvas(output_path, pagesize=letter)
-                    c.setFont("Helvetica-Bold", 16)
-                    c.drawString(50, 750, "Document Converti AlteraFlux")
-                    c.setFont("Helvetica", 10)
-                    y = 720
-                    for line in (text_content or "Fichier converti avec succès.").split("\n"):
-                        if y < 50:
-                            c.showPage()
-                            c.setFont("Helvetica", 10)
-                            y = 750
-                        c.drawString(50, line[:100])
-                        y -= 15
-                    c.save()
-                    self.report_progress(100.0, "Export PDF ReportLab réussi !")
-                    return output_path
+                    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+                    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+                    from reportlab.lib import colors
+
+                    doc = SimpleDocTemplate(
+                        output_path,
+                        pagesize=letter,
+                        rightMargin=40,
+                        leftMargin=40,
+                        topMargin=40,
+                        bottomMargin=40
+                    )
+                    styles = getSampleStyleSheet()
+                    body_style = ParagraphStyle(
+                        'AlteraBody',
+                        parent=styles['Normal'],
+                        fontSize=10,
+                        leading=14,
+                        textColor=colors.HexColor("#1e293b")
+                    )
+
+                    story = []
+                    story.append(Paragraph("<b>Document Converti AlteraFlux</b>", styles['Heading1']))
+                    story.append(Spacer(1, 14))
+
+                    paragraphs = (text_content or "Document converti avec succès.").split("\n")
+                    for para in paragraphs:
+                        clean_p = para.strip().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                        if clean_p:
+                            story.append(Paragraph(clean_p, body_style))
+                            story.append(Spacer(1, 6))
+
+                    doc.build(story)
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                        self.report_progress(100.0, "Export PDF ReportLab réussi !")
+                        return output_path
                 except Exception as e:
-                    logger.warning(f"Échec ReportLab: {e}")
+                    logger.warning(f"Échec ReportLab Flowable: {e}")
                     with open(output_path, "wb") as f_out:
                         pdf_data = f"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000052 00000 n\n0000000101 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n185\n%%EOF\n"
                         f_out.write(pdf_data.encode("ascii"))
@@ -299,10 +367,22 @@ class DocumentEngine(BaseConversionEngine):
             except Exception:
                 pass
 
-        if os.path.exists(input_path):
+        if src in ["pdf", "pdfa"]:
             try:
-                with open(input_path, "r", encoding="utf-8", errors="ignore") as f_in:
-                    return f_in.read()
+                from pypdf import PdfReader
+                reader = PdfReader(input_path)
+                pages_text = [p.extract_text() for p in reader.pages if p.extract_text()]
+                if pages_text:
+                    return "\n\n".join(pages_text)
             except Exception:
                 pass
+
+        if os.path.exists(input_path):
+            for enc in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
+                try:
+                    with open(input_path, "r", encoding=enc, errors="ignore") as f_in:
+                        return f_in.read()
+                except Exception:
+                    continue
         return ""
+

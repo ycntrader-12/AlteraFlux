@@ -49,16 +49,29 @@ class MediaEngine(BaseConversionEngine):
         target_fmt = target_format.lower().lstrip(".")
         self.report_progress(5.0, "Analyse du flux audio/vidéo...")
 
+        src_fmt = source_format.lower().lstrip(".")
+
+        # Traitement natif des fichiers WAV pur Python sans dépendance externe
+        if src_fmt == "wav" and target_fmt == "wav":
+            try:
+                import wave
+                with wave.open(input_path, "rb") as r_wav:
+                    params = r_wav.getparams()
+                    frames = r_wav.readframes(r_wav.getnframes())
+                with wave.open(output_path, "wb") as w_wav:
+                    w_wav.setparams(params)
+                    w_wav.writeframes(frames)
+                self.report_progress(100.0, "Conversion audio WAV native réussie !")
+                return output_path
+            except Exception as e:
+                logger.warning(f"Bascule WAV natif: {e}")
+
         if not self.has_ffmpeg:
-            logger.warning("FFmpeg n'est pas détecté dans le PATH système. Mode simulation média actif.")
-            # Simulation progressive pour environnement de développement sans FFmpeg installé
-            for step in range(10, 101, 15):
-                time.sleep(0.3)
-                self.report_progress(float(step), f"Transcodage vers {target_fmt.upper()} ({step}%)...")
-            # Crée un fichier de sortie pour test
-            with open(output_path, "wb") as f:
-                f.write(b"AlteraFlux Media Output (Simulated container)")
-            return output_path
+            raise RuntimeError(
+                f"Le transcodage média du format {src_fmt.upper()} vers {target_fmt.upper()} "
+                "requiert le moteur FFmpeg installé sur le système hôte. "
+                "Veuillez installer FFmpeg dans le PATH ou convertir vers un format pris en charge nativement."
+            )
 
         total_duration = self.get_duration_seconds(input_path)
         self.report_progress(10.0, f"Démarrage de l'encodage vers {target_fmt.upper()}...")

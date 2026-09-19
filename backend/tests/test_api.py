@@ -51,14 +51,18 @@ async def test_create_and_get_job():
         assert "key" in upload_data
 
         # Création du job
-        job_res = await ac.post("/api/v1/conversions/jobs", json={
-            "filename": "sample_video.mp4",
-            "source_key": upload_data["key"],
-            "source_format": "mp4",
-            "target_format": "mp3",
-            "category": "video",
-            "options": {"audio_bitrate": "192k"}
-        })
+        job_res = await ac.post(
+            "/api/v1/conversions/jobs",
+            headers={"x-client-id": "client_test_api_001"},
+            json={
+                "filename": "sample_video.mp4",
+                "source_key": upload_data["key"],
+                "source_format": "mp4",
+                "target_format": "mp3",
+                "category": "video",
+                "options": {"audio_bitrate": "192k"}
+            }
+        )
         assert job_res.status_code == 200
         job_data = job_res.json()
         job_id = job_data["id"]

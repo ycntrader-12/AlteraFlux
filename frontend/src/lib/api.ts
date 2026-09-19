@@ -194,6 +194,17 @@ export async function createConversionJob(data: {
   return await res.json();
 }
 
+export async function fetchCompatibleFormats(sourceFormat: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/conversions/compatible-formats?source=${encodeURIComponent(sourceFormat)}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.compatible_targets || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchCooldown(): Promise<CooldownResponse> {
   try {
     const res = await fetch(`${API_BASE}/api/v1/conversions/cooldown`, {

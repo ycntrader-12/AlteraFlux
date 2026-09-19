@@ -36,6 +36,9 @@ ALLOWED_EXTENSIONS = {
     # Images
     "png": "image", "jpg": "image", "jpeg": "image", "webp": "image", "avif": "image",
     "gif": "image", "svg": "image", "ico": "image", "bmp": "image", "tiff": "image",
+    # Archives & Compression
+    "zip": "archive", "tar": "archive", "gz": "archive", "tgz": "archive",
+    "bz2": "archive", "tbz2": "archive", "7z": "archive", "rar": "archive",
     # Code
     "py": "code", "js": "code", "ts": "code", "jsx": "code", "tsx": "code", "cpp": "code",
     "c": "code", "rs": "code", "go": "code", "java": "code", "cs": "code", "json": "code",
@@ -114,7 +117,192 @@ MIME_TYPES = {
     "sqlite": "application/x-sqlite3",
     "sqlite3": "application/x-sqlite3",
     "db": "application/octet-stream",
+    # Archives & Compression
+    "zip": "application/zip",
+    "tar": "application/x-tar",
+    "gz": "application/gzip",
+    "tgz": "application/gzip",
+    "bz2": "application/x-bzip2",
+    "tbz2": "application/x-bzip2",
+    "7z": "application/x-7z-compressed",
+    "rar": "application/vnd.rar",
 }
+
+# -------------------------------------------------------------
+# Matrice de compatibilité de conversion (Source -> Cibles autorisées)
+# -------------------------------------------------------------
+_VIDEO_TARGETS = {"mp4", "webm", "mkv", "mov", "avi", "gif", "mp3", "wav", "aac", "flac", "ogg"}
+_AUDIO_TARGETS = {"mp3", "wav", "flac", "ogg", "aac", "m4a", "opus"}
+_IMAGE_TARGETS = {"png", "jpg", "jpeg", "webp", "avif", "gif", "ico", "bmp", "tiff", "pdf"}
+_DOC_TARGETS = {"pdf", "docx", "doc", "odt", "rtf", "txt", "md", "html"}
+_PDF_TARGETS = {"docx", "doc", "txt", "md", "html", "png", "jpg", "jpeg", "webp", "pdf", "pdfa"}
+_SHEET_TARGETS = {"xlsx", "xls", "ods", "csv", "tsv", "json", "html", "pdf"}
+_PRESENTATION_TARGETS = {"pptx", "odp", "pdf", "txt", "html"}
+_DATA_CONFIG_TARGETS = {"json", "yaml", "yml", "toml", "sql", "csv"}
+_CODE_TARGETS = {"ts", "js", "py", "cpp", "rs", "go"}
+_ARCHIVE_TARGETS = {"zip", "tar", "tar.gz", "tar.bz2", "tgz", "tbz2"}
+_DATABASE_TARGETS = {"csv", "xlsx", "json", "html", "sql", "sqlite", "sqlite3"}
+
+COMPATIBILITY_MAP = {
+    # Vidéo
+    "mp4": _VIDEO_TARGETS, "mkv": _VIDEO_TARGETS, "avi": _VIDEO_TARGETS,
+    "mov": _VIDEO_TARGETS, "webm": _VIDEO_TARGETS, "flv": _VIDEO_TARGETS, "wmv": _VIDEO_TARGETS,
+    # Audio
+    "mp3": _AUDIO_TARGETS, "wav": _AUDIO_TARGETS, "flac": _AUDIO_TARGETS,
+    "aac": _AUDIO_TARGETS, "ogg": _AUDIO_TARGETS, "m4a": _AUDIO_TARGETS,
+    "opus": _AUDIO_TARGETS, "wma": _AUDIO_TARGETS,
+    # Images
+    "png": _IMAGE_TARGETS, "jpg": _IMAGE_TARGETS, "jpeg": _IMAGE_TARGETS,
+    "webp": _IMAGE_TARGETS, "avif": _IMAGE_TARGETS, "gif": _IMAGE_TARGETS,
+    "svg": _IMAGE_TARGETS, "ico": _IMAGE_TARGETS, "bmp": _IMAGE_TARGETS, "tiff": _IMAGE_TARGETS,
+    # Documents
+    "doc": _DOC_TARGETS, "docx": _DOC_TARGETS, "docm": _DOC_TARGETS, "dot": _DOC_TARGETS,
+    "dotx": _DOC_TARGETS, "odt": _DOC_TARGETS, "rtf": _DOC_TARGETS, "txt": _DOC_TARGETS,
+    "md": _DOC_TARGETS, "tex": _DOC_TARGETS, "latex": _DOC_TARGETS, "html": _DOC_TARGETS,
+    "htm": _DOC_TARGETS, "xml": _DOC_TARGETS, "epub": _DOC_TARGETS,
+    # PDF
+    "pdf": _PDF_TARGETS, "pdfa": _PDF_TARGETS, "xps": _PDF_TARGETS, "oxps": _PDF_TARGETS,
+    # Tableurs
+    "xls": _SHEET_TARGETS, "xlsx": _SHEET_TARGETS, "xlsm": _SHEET_TARGETS, "xlsb": _SHEET_TARGETS,
+    "ods": _SHEET_TARGETS, "csv": _SHEET_TARGETS, "tsv": _SHEET_TARGETS,
+    # Présentations
+    "ppt": _PRESENTATION_TARGETS, "pptx": _PRESENTATION_TARGETS, "pptm": _PRESENTATION_TARGETS,
+    "pps": _PRESENTATION_TARGETS, "ppsx": _PRESENTATION_TARGETS, "odp": _PRESENTATION_TARGETS,
+    # Données et configuration
+    "json": _DATA_CONFIG_TARGETS, "yaml": _DATA_CONFIG_TARGETS, "yml": _DATA_CONFIG_TARGETS,
+    "toml": _DATA_CONFIG_TARGETS, "sql": _DATA_CONFIG_TARGETS,
+    # Code source
+    "py": _CODE_TARGETS, "js": _CODE_TARGETS, "ts": _CODE_TARGETS,
+    "jsx": _CODE_TARGETS, "tsx": _CODE_TARGETS, "cpp": _CODE_TARGETS,
+    "c": _CODE_TARGETS, "rs": _CODE_TARGETS, "go": _CODE_TARGETS,
+    # Archives
+    "zip": _ARCHIVE_TARGETS, "tar": _ARCHIVE_TARGETS, "gz": _ARCHIVE_TARGETS,
+    "tgz": _ARCHIVE_TARGETS, "bz2": _ARCHIVE_TARGETS, "tbz2": _ARCHIVE_TARGETS,
+    "7z": _ARCHIVE_TARGETS, "rar": _ARCHIVE_TARGETS,
+    # Bases de données
+    "sqlite": _DATABASE_TARGETS, "sqlite3": _DATABASE_TARGETS, "db": _DATABASE_TARGETS,
+    "mdb": _DATABASE_TARGETS, "accdb": _DATABASE_TARGETS
+}
+
+
+def is_conversion_compatible(source_format: str, target_format: str) -> Tuple[bool, Optional[str]]:
+    """
+    Vérifie rigoureusement si le format source peut être converti vers le format cible.
+    Retourne (True, None) si compatible, ou (False, raison explicative).
+    """
+    src = (source_format or "").lower().lstrip(".")
+    tgt = (target_format or "").lower().lstrip(".")
+
+    if not src:
+        return False, "Le format source est indéterminé."
+    if not tgt:
+        return False, "Le format cible est obligatoire."
+
+    if src in DANGEROUS_EXTENSIONS or tgt in DANGEROUS_EXTENSIONS:
+        return False, "L'extension est bloquée pour des raisons de sécurité."
+
+    # Même format : opération de recompression / validation autorisée
+    if src == tgt:
+        return True, None
+
+    targets = COMPATIBILITY_MAP.get(src)
+    if targets and tgt in targets:
+        return True, None
+
+    # Tout fichier peut être archivé en ZIP ou TAR.GZ
+    if tgt in ["zip", "tar", "tar.gz", "tgz"]:
+        return True, None
+
+    if targets:
+        sugg = ", ".join(sorted(list(targets))[:7])
+        return False, f"Impossible de convertir un fichier .{src.upper()} en .{tgt.upper()}. Formats compatibles suggérés : {sugg}."
+
+    return False, f"Le format source .{src.upper()} n'est pas encore pris en charge pour conversion."
+
+
+def get_compatible_targets(source_format: str) -> list[str]:
+    """Retourne la liste des formats cibles compatibles pour un format source donné"""
+    src = (source_format or "").lower().lstrip(".")
+    targets = set(COMPATIBILITY_MAP.get(src, set()))
+    targets.add("zip")
+    targets.add("tar.gz")
+    return sorted(list(targets))
+
+
+def validate_file_integrity(file_path: str, expected_format: str) -> Tuple[bool, str]:
+    """
+    Contrôle strict de l'intégrité d'un fichier (entrée ou sortie) :
+    - Vérifie l'existence et la taille non nulle.
+    - Valide les signatures binaires (Magic Bytes) contre les corruptions.
+    """
+    if not os.path.exists(file_path):
+        return False, "Le fichier n'existe pas sur le système de fichiers."
+
+    size = os.path.getsize(file_path)
+    if size == 0:
+        return False, "Le fichier est totalement vide (0 octet)."
+
+    fmt = (expected_format or "").lower().lstrip(".")
+
+    try:
+        with open(file_path, "rb") as f:
+            header = f.read(512)
+    except Exception as e:
+        return False, f"Impossible de lire le fichier: {e}"
+
+    if len(header) == 0:
+        return False, "En-tête de fichier introuvable."
+
+    # 1. PDF : doit commencer par %PDF-
+    if fmt in ["pdf", "pdfa"]:
+        if not header.startswith(b"%PDF-"):
+            return False, "Signature binaire PDF invalide (en-tête %PDF- manquant)."
+
+    # 2. PNG : doit commencer par \x89PNG\r\n\x1a\n
+    elif fmt == "png":
+        if not header.startswith(b"\x89PNG\r\n\x1a\n"):
+            return False, "Signature binaire PNG invalide."
+
+    # 3. JPEG : commence par \xff\xd8\xff
+    elif fmt in ["jpg", "jpeg"]:
+        if not header.startswith(b"\xff\xd8"):
+            return False, "Signature binaire JPEG invalide."
+
+    # 4. GIF : commence par GIF87a ou GIF89a
+    elif fmt == "gif":
+        if not (header.startswith(b"GIF87a") or header.startswith(b"GIF89a")):
+            return False, "Signature binaire GIF invalide."
+
+    # 5. WEBP : RIFF....WEBP
+    elif fmt == "webp":
+        if not (header.startswith(b"RIFF") and b"WEBP" in header[:16]):
+            return False, "Signature binaire WebP invalide."
+
+    # 6. ZIP et conteneurs OpenXML (DOCX, XLSX, PPTX) : PK\x03\x04 ou PK\x05\x06
+    elif fmt in ["zip", "docx", "xlsx", "pptx", "odt", "ods", "odp", "epub"]:
+        if not (header.startswith(b"PK\x03\x04") or header.startswith(b"PK\x05\x06")):
+            return False, f"Signature d'archive/conteneur XML invalide pour .{fmt.upper()}."
+
+    # 7. GZ / TGZ : \x1f\x8b
+    elif fmt in ["gz", "tgz", "tar.gz"]:
+        if not header.startswith(b"\x1f\x8b"):
+            return False, "Signature d'archive GZIP invalide."
+
+    # 8. BZ2 / TBZ2 : BZh
+    elif fmt in ["bz2", "tbz2", "tar.bz2"]:
+        if not header.startswith(b"BZh"):
+            return False, "Signature d'archive BZIP2 invalide."
+
+    # 9. JSON : syntaxe JSON valide
+    elif fmt == "json":
+        import json
+        try:
+            with open(file_path, "r", encoding="utf-8") as jf:
+                json.load(jf)
+        except Exception as je:
+            return False, f"Fichier JSON syntaxiquement corrompu: {je}"
+
+    return True, "Fichier valide et intègre."
 
 
 def sanitize_filename(filename: str) -> str:
@@ -166,7 +354,7 @@ def sanitize_filename(filename: str) -> str:
     return clean_name
 
 def detect_category(filename: str) -> Tuple[str, str]:
-    """Retourne l'extension normalisée et la catégorie (video, audio, document, image, code)"""
+    """Retourne l'extension normalisée et la catégorie (video, audio, document, image, code, archive)"""
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
     if ext in DANGEROUS_EXTENSIONS:
         return ext, "forbidden"
@@ -175,3 +363,4 @@ def detect_category(filename: str) -> Tuple[str, str]:
 
 def get_content_type(extension: str) -> str:
     return MIME_TYPES.get(extension.lower(), "application/octet-stream")
+

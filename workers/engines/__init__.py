@@ -3,6 +3,7 @@ from workers.engines.media_engine import MediaEngine
 from workers.engines.image_engine import ImageEngine
 from workers.engines.document_engine import DocumentEngine
 from workers.engines.code_engine import CodeEngine
+from workers.engines.archive_engine import ArchiveEngine
 
 def get_engine_for_category(
     category: str = "",
@@ -14,6 +15,9 @@ def get_engine_for_category(
     src = (source_format or "").lower().lstrip(".")
     tgt = (target_format or "").lower().lstrip(".")
 
+    archive_exts = {
+        "zip", "tar", "gz", "tgz", "bz2", "tbz2", "7z", "rar", "tar.gz", "tar.bz2"
+    }
     video_audio_exts = {
         "mp4", "mov", "avi", "webm", "mkv", "flv", "wmv", "gif",
         "mp3", "wav", "flac", "aac", "ogg", "m4a", "opus", "wma"
@@ -25,12 +29,16 @@ def get_engine_for_category(
         "json", "yaml", "yml", "toml", "js", "ts", "py", "rs", "go", "cpp", "c", "sql"
     }
 
-    if cat in ["video", "audio"] or src in video_audio_exts or tgt in video_audio_exts:
+    if cat in ["archive", "archives"] or (src in archive_exts and tgt in archive_exts) or (tgt in archive_exts and src not in video_audio_exts and src not in image_exts and src not in code_exts):
+        return ArchiveEngine(progress_callback)
+    elif cat in ["video", "audio"] or src in video_audio_exts or tgt in video_audio_exts:
         return MediaEngine(progress_callback)
-    elif cat in ["image", "images"] or src in image_exts or tgt in image_exts:
+    elif cat in ["image", "images"] or (src in image_exts and tgt in image_exts) or (src in image_exts and tgt == "pdf") or (src in ["pdf", "svg"] and tgt in image_exts):
         return ImageEngine(progress_callback)
-    elif cat in ["code"] or src in code_exts or tgt in code_exts:
+    elif cat in ["code"] or (src in code_exts and tgt in code_exts):
         return CodeEngine(progress_callback)
+    elif tgt in archive_exts or src in archive_exts:
+        return ArchiveEngine(progress_callback)
     else:
         return DocumentEngine(progress_callback)
 
@@ -40,5 +48,7 @@ __all__ = [
     "ImageEngine",
     "DocumentEngine",
     "CodeEngine",
+    "ArchiveEngine",
     "get_engine_for_category"
 ]
+

@@ -246,6 +246,22 @@ PRESETS_DATA = [
             {"id": "include_comments", "label": "Commentaires explicatifs", "type": "boolean", "default": True},
             {"id": "target_runtime", "label": "Cible d'exécution", "type": "text", "default": "Modern standard"}
         ]
+    },
+    {
+        "category": "archive",
+        "title": "Archives & Compression",
+        "description": "Conversion et compression d'archives ZIP, TAR, GZ, BZ2",
+        "icon": "Archive",
+        "source_extensions": ["zip", "tar", "gz", "tgz", "bz2", "tbz2", "7z", "rar"],
+        "target_formats": [
+            {"id": "zip", "label": "ZIP Archive (.zip)", "description": "Format d'archive universel haute compatibilité", "popular": True},
+            {"id": "tar.gz", "label": "TAR GZ (.tar.gz)", "description": "Archive compressée standard Linux / Cloud", "popular": True},
+            {"id": "tar", "label": "TAR (.tar)", "description": "Conteneur d'archive sans compression", "popular": False},
+            {"id": "tar.bz2", "label": "TAR BZ2 (.tar.bz2)", "description": "Archive à compression élevée", "popular": False}
+        ],
+        "options_schema": [
+            {"id": "compression_level", "label": "Niveau de compression (1-9)", "type": "number", "min": 1, "max": 9, "default": 6}
+        ]
     }
 ]
 
@@ -253,4 +269,5 @@ PRESETS_DATA = [
 async def get_conversion_presets():
     """Renvoie toutes les catégories et leurs configurations de formats"""
     return PRESETS_DATA
+
 

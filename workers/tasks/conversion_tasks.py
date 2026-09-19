@@ -20,7 +20,7 @@ from typing import Dict, Any, Optional
 from sqlalchemy import select
 from app.database import AsyncSessionLocal
 from app.models.job import ConversionJob
-from app.security.validator import get_content_type
+from app.security.validator import get_content_type, validate_file_integrity, is_conversion_compatible
 from app.storage import get_storage_provider
 from app.websocket.progress import manager
 from workers.engines import get_engine_for_category
@@ -53,7 +53,7 @@ async def update_job_progress(job_id: str, progress: float, stage: str, status: 
         logger.warning(f"Erreur update DB pour job {job_id}: {e}")
 
 async def run_conversion_pipeline(job_id: str):
-    """Pipeline de conversion complet et isolé"""
+    """Pipeline de conversion complet, sécurisé et isolé"""
     logger.info(f"--- Démarrage de la conversion pour le job: {job_id} ---")
     
     # 1. Récupération du job en base
@@ -72,6 +72,11 @@ async def run_conversion_pipeline(job_id: str):
         category: str = str(job.category or "")
         options: Dict[str, Any] = dict(job.options or {})
 
+    # Vérification stricte de compatibilité
+    is_comp, comp_err = is_conversion_compatible(source_format, target_format)
+    if not is_comp:
+        raise ValueError(f"Conversion impossible : {comp_err}")
+
     sandbox_dir = tempfile.mkdtemp(prefix=f"alteraflux_{job_id[:8]}_")
     try:
         await update_job_progress(job_id, 5.0, "Téléchargement du fichier source depuis le stockage...")
@@ -81,11 +86,17 @@ async def run_conversion_pipeline(job_id: str):
         local_input_path = os.path.join(sandbox_dir, f"input.{source_format}")
         await storage.download_file_to_path(source_key, local_input_path)
 
+        # 3. Validation de l'intégrité du fichier en entrée
+        await update_job_progress(job_id, 8.0, "Validation de l'intégrité du fichier source...")
+        is_valid_in, in_err = validate_file_integrity(local_input_path, source_format)
+        if not is_valid_in:
+            raise ValueError(f"Fichier source corrompu ou invalide : {in_err}")
+
         base_name = os.path.splitext(filename)[0]
         result_filename = f"{base_name}.{target_format}"
         local_output_path = os.path.join(sandbox_dir, result_filename)
 
-        # 3. Callback de progression synchrone pontée vers l'asynchrone
+        # 4. Callback de progression synchrone pontée vers l'asynchrone
         loop = asyncio.get_event_loop()
         def on_engine_progress(pct: float, current_stage: str):
             asyncio.run_coroutine_threadsafe(
@@ -93,10 +104,10 @@ async def run_conversion_pipeline(job_id: str):
                 loop
             )
 
-        # 4. Sélection et exécution du moteur
+        # 5. Sélection et exécution du moteur
         engine = get_engine_for_category(category, source_format, target_format, on_engine_progress)
         engine_name = (category or source_format or "conversion").upper()
-        await update_job_progress(job_id, 10.0, f"Exécution du moteur {engine_name}...")
+        await update_job_progress(job_id, 12.0, f"Exécution du moteur {engine_name}...")
         
         # Exécution dans un threadpool pour ne pas bloquer la boucle d'événements
         await asyncio.to_thread(
@@ -107,6 +118,12 @@ async def run_conversion_pipeline(job_id: str):
             target_format,
             options
         )
+
+        # 6. Validation stricte du fichier généré en sortie (intégrité & taille > 0)
+        await update_job_progress(job_id, 90.0, "Contrôle qualité et intégrité du fichier généré...")
+        is_valid_out, out_err = validate_file_integrity(local_output_path, target_format)
+        if not is_valid_out:
+            raise RuntimeError(f"Le fichier converti est invalide ou corrompu : {out_err}")
 
         # 5. Téléversement du fichier converti vers le stockage S3/MinIO
         await update_job_progress(job_id, 92.0, "Téléversement du fichier converti...")

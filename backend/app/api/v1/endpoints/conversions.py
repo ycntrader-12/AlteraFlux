@@ -25,7 +25,7 @@ from app.config import settings
 from app.database import get_db
 from app.models.job import ConversionJob
 from app.schemas.job import JobCreate, JobResponse
-from app.security.validator import detect_category, sanitize_filename
+from app.security.validator import detect_category, sanitize_filename, is_conversion_compatible, get_compatible_targets
 from app.security.rate_limiter import check_conversion_rate_limit, record_conversion_usage
 from app.storage import get_storage_provider
 from app.websocket.progress import manager
@@ -85,6 +85,20 @@ async def get_conversion_cooldown(request: Request):
         "is_allowed": is_allowed
     }
 
+@router.get("/compatible-formats")
+async def get_compatible_conversion_formats(source: str):
+    """
+    Renvoie la liste des formats cibles compatibles pour une extension source donnée.
+    Permet au frontend de verrouiller ou filtrer la sélection des formats.
+    """
+    src = (source or "").lower().lstrip(".")
+    targets = get_compatible_targets(src)
+    return {
+        "source_format": src,
+        "compatible_targets": targets,
+        "count": len(targets)
+    }
+
 @router.post("/jobs", response_model=JobResponse)
 async def create_conversion_job(
     payload: JobCreate,
@@ -94,8 +108,23 @@ async def create_conversion_job(
 ):
     """
     Crée une nouvelle tâche de conversion et l'ajoute à la file de traitement.
-    Règle publique : Chaque utilisateur doit attendre 5 minutes avant de convertir à nouveau.
+    Vérifie rigoureusement la compatibilité des formats avant validation et application du cooldown.
     """
+    safe_filename = sanitize_filename(payload.filename)
+    source_ext, detected_cat = detect_category(safe_filename)
+
+    src_fmt = (payload.source_format or source_ext).lower().lstrip(".")
+    tgt_fmt = payload.target_format.lower().lstrip(".")
+
+    # 1. Validation stricte de la compatibilité source -> cible
+    is_compat, reason = is_conversion_compatible(src_fmt, tgt_fmt)
+    if not is_compat:
+        raise HTTPException(
+            status_code=400,
+            detail=reason or f"La conversion de .{src_fmt.upper()} vers .{tgt_fmt.upper()} n'est pas possible."
+        )
+
+    # 2. Vérification du délai d'attente public
     is_allowed, remaining = check_conversion_rate_limit(request, settings.CONVERSION_COOLDOWN_SECONDS)
     if not is_allowed:
         minutes = remaining // 60
@@ -106,9 +135,6 @@ async def create_conversion_job(
             detail=f"Délai d'attente public actif : vous devez patienter 5 minutes entre chaque conversion. Temps restant : {time_str}.",
             headers={"Retry-After": str(remaining)}
         )
-
-    safe_filename = sanitize_filename(payload.filename)
-    source_ext, detected_cat = detect_category(safe_filename)
     
     category = payload.category or detected_cat
     if category == "unknown":
@@ -118,9 +144,9 @@ async def create_conversion_job(
         id=str(uuid.uuid4()),
         filename=safe_filename,
         source_key=payload.source_key,
-        source_format=payload.source_format.lower().lstrip("."),
+        source_format=src_fmt,
         source_size_bytes=payload.source_size_bytes or 0,
-        target_format=payload.target_format.lower().lstrip("."),
+        target_format=tgt_fmt,
         category=category,
         status="QUEUED",
         progress=0.0,
