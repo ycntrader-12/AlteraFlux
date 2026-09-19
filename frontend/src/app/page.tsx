@@ -775,9 +775,11 @@ export default function Home() {
           </div>
 
           {/* Texte résumé compact au centre de la barre */}
-          <div className="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#177C88]/10 border border-[#177C88]/20 text-xs font-semibold text-[#146b75] select-none tracking-wide whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-[#00E5FF] animate-pulse"></span>
-            <span>Fast Universal Converter • Process files in seconds</span>
+          <div className="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 border border-slate-300/90 shadow-sm select-none tracking-wide whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-[#00D4FF] shadow-[0_0_8px_rgba(0,212,255,0.7)] animate-pulse flex-shrink-0"></span>
+            <span className="text-xs font-extrabold text-[#0B1528] tracking-tight">
+              Fast Universal Converter <span className="text-[#177C88] font-black mx-1">•</span> Process files in seconds
+            </span>
           </div>
 
           {/* Onglets de navigation 3D aux couleurs de l'application */}
