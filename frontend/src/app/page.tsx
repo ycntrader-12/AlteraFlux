@@ -787,159 +787,111 @@ export default function Home() {
             {/* Scène de la Voûte Centrale et Cartes Flottantes Orbitantes */}
             <div className="relative w-full max-w-5xl mx-auto px-4 flex flex-col items-center justify-center min-h-[500px]">
               
-              {/* Carte Flottante 1 : Top Left - Format JSON Animé */}
-              <div className="hidden md:flex absolute top-2 left-4 lg:left-10 z-0 perspective-3d">
-                <div className="file-card-3d animate-float-3d-1 p-3.5 rounded-2xl glow-halo-amber flex items-center gap-3.5 border border-amber-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/30 via-orange-600/20 to-amber-900/40 border border-amber-400/60 flex items-center justify-center text-amber-400 font-black text-xl shadow-lg shadow-amber-500/30 preserve-3d group-hover:scale-110 transition-transform duration-300">
-                    <span className="drop-shadow-[0_2px_4px_rgba(245,158,11,0.8)] animate-badge-3d">
-                      &#123;&nbsp;&#125;
-                    </span>
+              {/* Icon 1 : Top-Left - AI / Vector 3D File Icon */}
+              <div className="hidden md:flex absolute top-4 left-4 lg:left-8 z-0 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-1 w-20 h-26 sm:w-24 sm:h-30 rounded-2xl bg-gradient-to-b from-amber-50 via-slate-100 to-amber-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-2">
+                    <span className="text-3xl sm:text-4xl filter drop-shadow-[0_4px_6px_rgba(245,158,11,0.5)]">✒️</span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.2 rounded bg-amber-500/30 text-amber-300 text-[9px] font-extrabold uppercase tracking-wider border border-amber-400/30">
-                        JSON
-                      </span>
-                      <p className="text-xs font-bold text-white tracking-tight">Webdesign.json</p>
-                    </div>
-                    <p className="text-[10px] text-amber-300 font-semibold flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                      JSON / Config
-                    </p>
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-center text-[11px] tracking-wider border border-amber-300/60">
+                    AI
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 2 : Mid Left - Format MP4 Vidéo Animé rotaté -6° avec Nœuds Lumineux */}
-              <div className="hidden lg:flex absolute top-36 left-0 xl:-left-4 z-0 -rotate-6 perspective-3d">
-                <div className="file-card-3d animate-float-3d-2 p-3 rounded-2xl glow-halo-cyan border border-[#00E5FF]/50 bg-[#051333]/95 shadow-2xl w-64 relative backdrop-blur-xl group">
-                  {/* Nœuds d'ancrage jaunes aux coins */}
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -top-1 -left-1 shadow-md shadow-yellow-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -top-1 -right-1 shadow-md shadow-yellow-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -bottom-1 -left-1 shadow-md shadow-yellow-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 absolute -bottom-1 -right-1 shadow-md shadow-yellow-400/80 animate-pulse" />
-
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-black shadow-sm">
-                      Vidéo HD
-                    </span>
-                    <span className="text-[11px] font-bold text-white truncate max-w-[130px]">
-                      Project_Demo.mp4
-                    </span>
+              {/* Icon 2 : Mid-Left - PDF 3D File Icon (Tilted -8°) */}
+              <div className="hidden lg:flex absolute top-36 left-0 xl:-left-2 z-0 -rotate-8 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-2 w-22 h-28 sm:w-26 sm:h-32 rounded-2xl bg-gradient-to-b from-rose-50 via-slate-100 to-red-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-1 gap-1">
+                    <div className="w-8 h-1 bg-red-400/50 rounded-full" />
+                    <div className="w-10 h-1 bg-red-400/40 rounded-full" />
+                    <div className="w-6 h-1 bg-red-400/30 rounded-full" />
+                    <span className="text-2xl mt-1 filter drop-shadow-[0_3px_5px_rgba(239,68,68,0.5)]">📕</span>
                   </div>
-                  
-                  {/* Écran Média avec Bouton Lecture Animé */}
-                  <div className="w-full h-22 rounded-xl bg-gradient-to-tr from-[#050F29] via-[#0D6E7A]/80 to-[#00E5FF]/40 border border-[#00E5FF]/30 flex items-center justify-center relative overflow-hidden group-hover:border-[#00E5FF] transition-all">
-                    {/* Motif de pellicule en filigrane */}
-                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00E5FF_1px,transparent_1px)] [background-size:10px_10px]" />
-                    
-                    {/* Bouton Play néon brillant */}
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00E5FF] to-[#38bdf8] text-[#050F29] flex items-center justify-center shadow-lg shadow-[#00E5FF]/60 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-black text-center text-[11px] tracking-wider border border-red-300/60">
+                    PDF
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon 3 : Bottom-Left - PPT Presentation 3D File Icon */}
+              <div className="hidden md:flex absolute bottom-8 left-6 lg:left-12 z-0 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-3 w-20 h-26 sm:w-24 sm:h-30 rounded-2xl bg-gradient-to-b from-orange-50 via-slate-100 to-orange-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-2">
+                    <span className="text-3xl sm:text-4xl filter drop-shadow-[0_4px_6px_rgba(249,115,22,0.5)]">📊</span>
+                  </div>
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-orange-500 to-amber-600 text-white font-black text-center text-[11px] tracking-wider border border-orange-300/60">
+                    PPT
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon 4 : Top-Center-Left - HTML / Code 3D File Icon */}
+              <div className="hidden xl:flex absolute top-8 left-48 z-0 perspective-3d -rotate-6">
+                <div className="standalone-file-3d animate-float-3d-1 w-18 h-24 sm:w-20 sm:h-26 rounded-2xl bg-gradient-to-b from-purple-50 via-slate-100 to-purple-100/90 border-2 border-white/90 flex flex-col justify-between p-2 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-1 text-purple-600 font-black text-base drop-shadow-[0_2px_4px_rgba(147,51,234,0.4)]">
+                    &lt;/&gt;
+                  </div>
+                  <div className="badge-banner-3d w-full py-0.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-center text-[10px] tracking-wider border border-purple-300/60">
+                    HTML
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon 5 : Top-Center-Right - TXT / Word 3D File Icon */}
+              <div className="hidden xl:flex absolute top-8 right-48 z-0 perspective-3d rotate-6">
+                <div className="standalone-file-3d animate-float-3d-3 w-18 h-24 sm:w-20 sm:h-26 rounded-2xl bg-gradient-to-b from-blue-50 via-slate-100 to-sky-100/90 border-2 border-white/90 flex flex-col justify-between p-2 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-1">
+                    <span className="text-2xl filter drop-shadow-[0_3px_5px_rgba(59,130,246,0.5)]">📝</span>
+                  </div>
+                  <div className="badge-banner-3d w-full py-0.5 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 text-white font-black text-center text-[10px] tracking-wider border border-blue-300/60">
+                    TXT
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon 6 : Top-Right - ZIP Archive 3D File Icon */}
+              <div className="hidden md:flex absolute top-4 right-4 lg:right-8 z-0 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-2 w-20 h-26 sm:w-24 sm:h-30 rounded-2xl bg-gradient-to-b from-yellow-50 via-slate-100 to-yellow-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-2">
+                    <span className="text-3xl sm:text-4xl filter drop-shadow-[0_4px_6px_rgba(234,179,8,0.5)]">📦</span>
+                  </div>
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-black text-center text-[11px] tracking-wider border border-amber-200/80">
+                    ZIP
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon 7 : Mid-Right - MP4 Video 3D File Icon (Tilted +8°) */}
+              <div className="hidden lg:flex absolute top-36 right-0 xl:-right-2 z-0 rotate-8 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-1 w-22 h-28 sm:w-26 sm:h-32 rounded-2xl bg-gradient-to-b from-sky-50 via-slate-100 to-cyan-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-1">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00E5FF] to-sky-400 text-[#050F29] flex items-center justify-center shadow-lg shadow-[#00E5FF]/60 group-hover:scale-110 transition-transform duration-300">
                       <Play className="w-5 h-5 fill-[#050F29] ml-0.5" />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Carte Flottante 3 : Bottom Left - Format PDF Animé */}
-              <div className="hidden md:flex absolute bottom-6 left-6 lg:left-14 z-0 perspective-3d">
-                <div className="file-card-3d animate-float-3d-3 p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3.5 border border-red-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
-                  {/* Icône PDF Feuille Cornée */}
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 via-rose-600 to-red-800 border border-red-400/60 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-red-500/40 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
-                    <span className="tracking-tighter font-extrabold text-[11px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                      PDF
-                    </span>
-                    {/* Coin corné */}
-                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-300 rounded-bl-sm shadow-sm" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.2 rounded bg-red-500/30 text-red-300 text-[9px] font-extrabold uppercase tracking-wider border border-red-400/30">
-                        PDF
-                      </span>
-                      <p className="text-xs font-bold text-white tracking-tight">Report_2026.pdf</p>
-                    </div>
-                    <p className="text-[10px] text-red-300 font-semibold flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                      Document Portable
-                    </p>
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-[#00E5FF] to-[#00A3BD] text-[#050F29] font-black text-center text-[11px] tracking-wider border border-cyan-200/80">
+                    MP4
                   </div>
                 </div>
               </div>
 
-              {/* Carte Flottante 4 : Top Right - Format DOCX Word Animé */}
-              <div className="hidden md:flex absolute top-4 right-4 lg:right-10 z-0 perspective-3d">
-                <div className="file-card-3d animate-float-3d-2 p-3.5 rounded-2xl glow-halo-teal flex items-center gap-3.5 border border-sky-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
-                  {/* Icône DOCX Empilée */}
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-800 border border-sky-400/60 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-sky-500/40 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
-                    <span className="tracking-tighter font-black text-[10px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                      DOCX
-                    </span>
+              {/* Icon 8 : Bottom-Right - JPEG / Image 3D File Icon */}
+              <div className="hidden md:flex absolute bottom-8 right-6 lg:right-12 z-0 perspective-3d">
+                <div className="standalone-file-3d animate-float-3d-3 w-20 h-26 sm:w-24 sm:h-30 rounded-2xl bg-gradient-to-b from-emerald-50 via-slate-100 to-teal-100/90 border-2 border-white/90 flex flex-col justify-between p-2.5 shadow-2xl relative group">
+                  <div className="doc-fold-corner-3d" />
+                  <div className="flex-1 flex flex-col items-center justify-center pt-2">
+                    <span className="text-3xl sm:text-4xl filter drop-shadow-[0_4px_6px_rgba(16,185,129,0.5)]">🖼️</span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.2 rounded bg-sky-500/30 text-sky-300 text-[9px] font-extrabold uppercase tracking-wider border border-sky-400/30">
-                        DOCX
-                      </span>
-                      <p className="text-xs font-bold text-white tracking-tight">Contract_V2.docx</p>
-                    </div>
-                    <p className="text-[10px] text-sky-300 font-semibold flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
-                      Microsoft Word
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Carte Flottante 5 : Mid Right - Format WEBP Image Animé rotaté +6° */}
-              <div className="hidden lg:flex absolute top-36 right-0 xl:-right-4 z-0 rotate-6 perspective-3d">
-                <div className="file-card-3d animate-float-3d-1 p-3 rounded-2xl glow-halo-amber border border-emerald-500/50 bg-[#051333]/95 shadow-2xl w-60 relative backdrop-blur-xl group">
-                  {/* Nœuds d'ancrage ambre aux coins */}
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -left-1 shadow-md shadow-amber-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1 shadow-md shadow-amber-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -bottom-1 -left-1 shadow-md shadow-amber-400/80 animate-pulse" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -bottom-1 -right-1 shadow-md shadow-amber-400/80 animate-pulse" />
-
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[10px] font-black shadow-sm">
-                      Image HD
-                    </span>
-                    <span className="text-[11px] font-bold text-white truncate max-w-[120px]">
-                      Hero_Banner.webp
-                    </span>
-                  </div>
-
-                  {/* Cadre Image Paysage Néon */}
-                  <div className="w-full h-22 rounded-xl bg-gradient-to-tr from-emerald-950/80 via-teal-900/60 to-emerald-500/30 border border-emerald-400/30 flex items-center justify-center relative overflow-hidden group-hover:border-emerald-400 transition-all">
-                    {/* Soleil brillant */}
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-400 shadow-md shadow-amber-400/60 absolute top-2 right-4 animate-pulse" />
-                    {/* Montagnes en calque */}
-                    <div className="absolute bottom-0 inset-x-0 h-10 bg-emerald-800/40 clip-path-triangle backdrop-blur-sm" />
-                    <span className="text-2xl z-10 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">🌅</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Carte Flottante 6 : Bottom Right - Format MP3 Audio Animé */}
-              <div className="hidden md:flex absolute bottom-6 right-6 lg:right-14 z-0 perspective-3d">
-                <div className="file-card-3d animate-float-3d-3 p-3.5 rounded-2xl glow-halo-purple flex items-center gap-3.5 border border-purple-500/40 bg-[#081736]/95 shadow-2xl backdrop-blur-md cursor-pointer group">
-                  {/* Icône MP3 Disque Vinyle Tournant */}
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-purple-900 via-violet-600 to-fuchsia-500 border-2 border-purple-300/50 flex items-center justify-center text-white shadow-lg shadow-purple-500/50 preserve-3d relative group-hover:scale-110 transition-transform duration-300">
-                    <div className="w-4 h-4 rounded-full bg-[#050F29] border border-purple-300 flex items-center justify-center animate-spin-disc">
-                      <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-300 text-[9px] font-extrabold uppercase tracking-wider border border-purple-400/30">
-                        MP3
-                      </span>
-                      <p className="text-xs font-bold text-white tracking-tight">Soundtrack_HQ.mp3</p>
-                    </div>
-                    <p className="text-[10px] text-purple-300 font-semibold flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
-                      Audio Lossless 320k
-                    </p>
+                  <div className="badge-banner-3d w-full py-1 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-center text-[11px] tracking-wider border border-emerald-300/60">
+                    JPEG
                   </div>
                 </div>
               </div>
