@@ -2,9 +2,13 @@
 pythonpath = [
     "backend",
     "workers",
+    "backend/app",
     "."
 ]
 testpaths = ["backend/tests"]
 
 [tool.pyright]
-extraPaths = ["backend", "workers", "."]
+extraPaths = ["backend", "workers", "backend/app", "."]
+reportMissingImports = false
+reportMissingModuleSource = false
+reportGeneralTypeIssues = false

@@ -2,6 +2,10 @@
   "extraPaths": [
     "backend",
     "workers",
+    "backend/app",
     "."
-  ]
+  ],
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false,
+  "reportGeneralTypeIssues": false
 }

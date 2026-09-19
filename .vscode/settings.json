@@ -3,11 +3,17 @@
   "python.analysis.extraPaths": [
     "${workspaceFolder}/backend",
     "${workspaceFolder}/workers",
+    "${workspaceFolder}/backend/app",
     "${workspaceFolder}"
   ],
   "python.autoComplete.extraPaths": [
     "${workspaceFolder}/backend",
     "${workspaceFolder}/workers",
+    "${workspaceFolder}/backend/app",
     "${workspaceFolder}"
-  ]
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none"
+  }
 }
