@@ -107,6 +107,41 @@ class DocumentEngine(BaseConversionEngine):
             except Exception as e:
                 logger.warning(f"Bascule Pandas tableur: {e}")
 
+        # 0.d Conversion de bases de données (SQLite / DB / ACCDB / MDB) vers CSV / XLSX / JSON / HTML / SQL
+        if src_fmt in ["sqlite", "sqlite3", "db", "accdb", "mdb"] or tgt_fmt in ["sqlite", "sqlite3", "sql"]:
+            try:
+                import sqlite3
+                import pandas as pd
+                conn = sqlite3.connect(input_path)
+                cursor = conn.cursor()
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                tables = [r[0] for r in cursor.fetchall()]
+                
+                if tables:
+                    first_table = tables[0]
+                    df = pd.read_sql_query(f"SELECT * FROM `{first_table}`", conn)
+                    conn.close()
+                    if tgt_fmt in ["csv", "tsv"]:
+                        df.to_csv(output_path, index=False)
+                    elif tgt_fmt in ["xlsx", "xls"]:
+                        df.to_excel(output_path, index=False)
+                    elif tgt_fmt == "json":
+                        df.to_json(output_path, orient="records", indent=2)
+                    elif tgt_fmt == "html":
+                        df.to_html(output_path, index=False)
+                    elif tgt_fmt in ["sql", "sqlite", "sqlite3"]:
+                        sql_script = [f"-- Table: {first_table}\nCREATE TABLE {first_table} ({', '.join([f'{col} TEXT' for col in df.columns])});\n"]
+                        for _, row in df.iterrows():
+                            vals = ", ".join([f"'{str(v)}'" for v in row.values])
+                            sql_script.append(f"INSERT INTO {first_table} VALUES ({vals});")
+                        with open(output_path, "w", encoding="utf-8") as f_sql:
+                            f_sql.write("\n".join(sql_script))
+                    if os.path.exists(output_path):
+                        self.report_progress(100.0, f"Export Base de données vers {tgt_fmt.upper()} réussi !")
+                        return output_path
+            except Exception as e:
+                logger.warning(f"Bascule Base de données SQLite: {e}")
+
         # 1. Utilisation de Pandoc pour Markdown / HTML / DOCX / TXT / EPUB
         if self.has_pandoc and (src_fmt in ["md", "markdown", "html", "docx", "txt", "epub"]):
             self.report_progress(40.0, "Conversion avec Pandoc Engine...")
@@ -204,8 +239,10 @@ class DocumentEngine(BaseConversionEngine):
             raise RuntimeError(f"Échec de conversion document: {e}")
 
     def _extract_text(self, input_path: str, src_fmt: str) -> str:
-        """Extrait le texte lisible de divers formats de documents"""
+        """Extrait le texte lisible de tous formats de documents (Docx, PPTX, eBooks, XML, DB, etc.)"""
         src = src_fmt.lower().lstrip(".")
+        import re
+
         if src in ["docx", "doc"]:
             try:
                 import docx
@@ -229,6 +266,34 @@ class DocumentEngine(BaseConversionEngine):
                             for elem in tree.iter():
                                 if elem.tag.endswith("}t") and elem.text:
                                     text_runs.append(elem.text.strip())
+                if text_runs:
+                    return "\n\n".join(text_runs)
+            except Exception:
+                pass
+
+        if src in ["epub", "mobi", "fb2", "cbz"]:
+            try:
+                import zipfile
+                extracted_texts = []
+                if zipfile.is_zipfile(input_path):
+                    with zipfile.ZipFile(input_path, "r") as z:
+                        for fn in z.namelist():
+                            if fn.endswith((".html", ".xhtml", ".xml", ".txt")) and not fn.startswith("__MACOSX"):
+                                content = z.read(fn).decode("utf-8", errors="ignore")
+                                text_clean = re.sub(r'<[^>]+>', ' ', content)
+                                text_clean = re.sub(r'\s+', ' ', text_clean).strip()
+                                if len(text_clean) > 30:
+                                    extracted_texts.append(text_clean)
+                if extracted_texts:
+                    return "\n\n".join(extracted_texts)
+            except Exception:
+                pass
+
+        if src in ["opml", "enex", "xml", "fb2", "dxf", "svg"]:
+            try:
+                import xml.etree.ElementTree as ET
+                tree = ET.parse(input_path)
+                text_runs = [elem.text.strip() for elem in tree.iter() if elem.text and len(elem.text.strip()) > 2]
                 if text_runs:
                     return "\n\n".join(text_runs)
             except Exception:

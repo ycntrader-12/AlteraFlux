@@ -6,6 +6,13 @@ from workers.engines.base import BaseConversionEngine
 
 logger = logging.getLogger(__name__)
 
+try:
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+    pillow_heif.register_avif_opener()
+except Exception:
+    pass
+
 class ImageEngine(BaseConversionEngine):
     def __init__(self, progress_callback: Optional[Callable[[float, str], None]] = None):
         super().__init__(progress_callback)
@@ -22,8 +29,8 @@ class ImageEngine(BaseConversionEngine):
         src_fmt = source_format.lower().lstrip(".")
         self.report_progress(10.0, "Chargement de la source...")
 
-        # Support PDF vers Image (PNG / JPG / WEBP) via PyMuPDF (fitz)
-        if src_fmt == "pdf":
+        # Support PDF et SVG vers Image (PNG / JPG / WEBP) via PyMuPDF (fitz)
+        if src_fmt in ["pdf", "svg"]:
             try:
                 import fitz
                 doc = fitz.open(input_path)
@@ -32,10 +39,10 @@ class ImageEngine(BaseConversionEngine):
                     pix = page.get_pixmap(dpi=150)
                     pix.save(output_path)
                     doc.close()
-                    self.report_progress(100.0, f"Rendu du PDF vers {target_fmt.upper()} réussi !")
+                    self.report_progress(100.0, f"Rendu du {src_fmt.upper()} vers {target_fmt.upper()} réussi !")
                     return output_path
             except Exception as e:
-                logger.warning(f"Bascule PyMuPDF PDF->Image: {e}")
+                logger.warning(f"Bascule PyMuPDF {src_fmt}->Image: {e}")
 
         with Image.open(input_path) as img:
             self.report_progress(30.0, f"Analyse dimensions ({img.width}x{img.height})...")
