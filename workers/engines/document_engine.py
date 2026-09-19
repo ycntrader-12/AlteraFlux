@@ -28,6 +28,56 @@ class DocumentEngine(BaseConversionEngine):
         tgt_fmt = target_format.lower().lstrip(".")
         self.report_progress(15.0, f"Traitement du document {src_fmt.upper()} vers {tgt_fmt.upper()}...")
 
+        # 0. Conversion directe PDF vers DOCX via pdf2docx (sans dépendance externe LibreOffice)
+        if src_fmt == "pdf" and tgt_fmt in ["docx", "doc"]:
+            self.report_progress(30.0, "Extraction de la structure PDF et conversion en Word DOCX...")
+            try:
+                from pdf2docx import Converter
+                cv = Converter(input_path)
+                cv.convert(output_path, start=0, end=None)
+                cv.close()
+                if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                    self.report_progress(100.0, "Conversion PDF vers DOCX réussie !")
+                    return output_path
+            except Exception as e:
+                logger.warning(f"Bascule pdf2docx: {e}. Tentative via moteurs secondaires...")
+
+        # 0.b Extraction textuelle native PDF (pypdf) vers TXT / MD / HTML / DOCX
+        if src_fmt == "pdf" and tgt_fmt in ["txt", "md", "html", "docx", "doc"]:
+            self.report_progress(35.0, f"Extraction sémantique du texte PDF vers {tgt_fmt.upper()}...")
+            try:
+                from pypdf import PdfReader
+                reader = PdfReader(input_path)
+                extracted_pages = []
+                for page in reader.pages:
+                    t = page.extract_text()
+                    if t:
+                        extracted_pages.append(t.strip())
+                full_text = "\n\n".join(extracted_pages)
+
+                if tgt_fmt in ["docx", "doc"]:
+                    import docx
+                    doc = docx.Document()
+                    doc.add_heading("Document Converti AlteraFlux", level=1)
+                    for para in full_text.split("\n\n"):
+                        if para.strip():
+                            doc.add_paragraph(para.strip())
+                    doc.save(output_path)
+                    self.report_progress(100.0, "Document Word DOCX généré avec succès !")
+                    return output_path
+                elif tgt_fmt == "html":
+                    paragraphs = "".join([f"<p>{p}</p>" for p in full_text.split("\n\n") if p])
+                    html_content = f"<!DOCTYPE html><html><head><meta charset='utf-8'><title>Document AlteraFlux</title></head><body>{paragraphs}</body></html>"
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        f.write(html_content)
+                    return output_path
+                else:
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        f.write(full_text)
+                    return output_path
+            except Exception as e:
+                logger.warning(f"Bascule extraction pypdf: {e}")
+
         # 1. Utilisation de Pandoc pour Markdown / HTML / DOCX / TXT / EPUB
         if self.has_pandoc and (src_fmt in ["md", "markdown", "html", "docx", "txt", "epub"]):
             self.report_progress(40.0, "Conversion avec Pandoc Engine...")

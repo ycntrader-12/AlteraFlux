@@ -1290,8 +1290,8 @@ export default function Home() {
                               <span>{getCategoryIcon(job.category)}</span>
                             </div>
                             <div className="truncate">
-                              <h4 className="font-extrabold text-sm sm:text-base text-[#0B1021] truncate max-w-md" title={job.filename}>
-                                {job.filename}
+                              <h4 className="font-extrabold text-sm sm:text-base text-[#0B1021] truncate max-w-md" title={job.result_filename || job.filename}>
+                                {job.result_filename || (job.filename.includes(".") ? `${job.filename.substring(0, job.filename.lastIndexOf("."))}.${job.target_format.toLowerCase()}` : `${job.filename}.${job.target_format.toLowerCase()}`)}
                               </h4>
                               <div className="text-xs text-[#475569] font-semibold flex items-center gap-2 flex-wrap mt-0.5">
                                 <span className="font-bold text-[#1A7A86] bg-teal-50 px-2 py-0.5 rounded border border-teal-200/60">
@@ -1306,11 +1306,14 @@ export default function Home() {
                                 }`}>
                                   {job.status === "COMPLETED" ? "Traité" : job.status}
                                 </span>
-                                {job.source_size_bytes > 0 && (
+                                {(job.result_size_bytes || job.source_size_bytes) ? (
                                   <span className="text-slate-400 text-[11px]">
-                                    {(job.source_size_bytes / (1024 * 1024)).toFixed(1)} MB
+                                    {(((job.result_size_bytes || job.source_size_bytes) || 0) / (1024 * 1024)).toFixed(1)} MB
                                   </span>
-                                )}
+                                ) : null}
+                                <span className="text-slate-400 text-[11px] italic">
+                                  (Source: {job.filename})
+                                </span>
                               </div>
                             </div>
                           </div>
