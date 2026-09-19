@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import Column, String, Integer, Float, DateTime, Text, JSON
