@@ -9,8 +9,7 @@ interface ThreeFluxPreviewProps {
 }
 
 export default function ThreeFluxPreview({
-  status = "READY",
-  fileName
+  status = "READY"
 }: ThreeFluxPreviewProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
 

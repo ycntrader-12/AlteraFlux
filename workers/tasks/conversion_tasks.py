@@ -15,8 +15,7 @@ import shutil
 import tempfile
 import asyncio
 import logging
-from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from sqlalchemy import select
 from app.database import AsyncSessionLocal
 from app.models.job import ConversionJob

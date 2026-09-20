@@ -8,7 +8,6 @@ import {
   Play,
   Check,
   Search,
-  Sparkles,
   X,
   AlertCircle,
   AlertTriangle,
@@ -18,7 +17,6 @@ import {
   Clock
 } from "lucide-react";
 import {
-  fetchPresets,
   requestUploadUrl,
   uploadFileDirect,
   createConversionJob,
@@ -1390,7 +1388,7 @@ export default function Home() {
             </div>
 
             <div className="vectra-progress-card p-5 text-[#F8FAFC] font-mono text-xs overflow-x-auto">
-              <p className="text-[#00E5FF] font-bold mb-2">// Exemple de requête cURL</p>
+              <p className="text-[#00E5FF] font-bold mb-2">{"// Exemple de requête cURL"}</p>
               <code>curl -X POST http://localhost:8000/api/v1/conversions -H &quot;Content-Type: application/json&quot; -d &apos;&#123;&quot;filename&quot;: &quot;demo.mp4&quot;, &quot;target_format&quot;: &quot;webm&quot;&#125;&apos;</code>
             </div>
 
@@ -1735,7 +1733,7 @@ export default function Home() {
             {/* Détails techniques / Rapport d'erreur (si présent) */}
             {dialog.details && (
               <div className="w-full vectra-progress-card p-3 rounded-xl text-left font-mono text-[11px] text-[#00E5FF] border border-white/10 shadow-inner overflow-x-auto select-all">
-                <span className="text-slate-400 block text-[10px] mb-1 font-sans font-bold">// Rapport technique :</span>
+                <span className="text-slate-400 block text-[10px] mb-1 font-sans font-bold">{"// Rapport technique :"}</span>
                 <code>{dialog.details}</code>
               </div>
             )}

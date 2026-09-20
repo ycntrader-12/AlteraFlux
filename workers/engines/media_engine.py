@@ -3,7 +3,6 @@ import re
 import shutil
 import subprocess
 import logging
-import time
 from typing import Dict, Any, Optional, Callable
 from workers.engines.base import BaseConversionEngine
 

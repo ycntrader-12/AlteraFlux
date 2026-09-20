@@ -2,7 +2,7 @@ import uuid
 import os
 from typing import Optional
 from fastapi import APIRouter, HTTPException, UploadFile, File, Query
-from fastapi.responses import FileResponse, Response, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from app.schemas.job import PresignedUrlRequest, PresignedUrlResponse
 from app.storage import get_storage_provider
 from app.security.validator import sanitize_filename, detect_category, get_content_type

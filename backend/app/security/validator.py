@@ -1,5 +1,6 @@
 import re
 import os
+import json
 from typing import Tuple, Optional
 
 # Table des catégories et extensions autorisées
@@ -295,7 +296,6 @@ def validate_file_integrity(file_path: str, expected_format: str) -> Tuple[bool,
 
     # 9. JSON : syntaxe JSON valide
     elif fmt == "json":
-        import json
         try:
             with open(file_path, "r", encoding="utf-8") as jf:
                 json.load(jf)
@@ -306,7 +306,7 @@ def validate_file_integrity(file_path: str, expected_format: str) -> Tuple[bool,
 
 
 def sanitize_filename(filename: str) -> str:
-    """
+    r"""
     Nettoie et valide rigoureusement le nom de fichier contre les cyberattaques :
     - Bloque l'injection de null bytes (\0, %00)
     - Bloque les attaques par Directory Traversal / Path Traversal (../, ..\)

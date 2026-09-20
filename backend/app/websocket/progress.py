@@ -13,7 +13,6 @@ class ConnectionManager:
         # Map: job_id -> Set[WebSocket]
         self.active_connections: Dict[str, Set[WebSocket]] = {}
         self.redis_client = None
-        self._listener_task = None
 
     async def init_redis(self):
         try:

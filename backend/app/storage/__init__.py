@@ -1,15 +1,14 @@
+import socket
+import logging
+from urllib.parse import urlparse
 from app.storage.base import StorageProvider
 from app.storage.s3 import S3StorageProvider
 from app.storage.local import LocalStorageProvider
 from app.config import settings
-import logging
 
 logger = logging.getLogger(__name__)
 
 _storage_instance = None
-
-import socket
-from urllib.parse import urlparse
 
 def _is_s3_available(endpoint_url: str) -> bool:
     if not endpoint_url:

@@ -2,9 +2,7 @@ import sys
 import os
 import uuid
 import logging
-import asyncio
-from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 # Résolution globale du chemin racine pour l'importation dynamique du module workers
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
@@ -37,7 +35,6 @@ def dispatch_celery_task(job_id: str):
     """Essaie de déléguer la tâche au Worker Celery"""
     try:
         from celery import Celery
-        from app.config import settings
         celery_client = Celery(broker=settings.CELERY_BROKER_URL)
         celery_client.send_task("workers.tasks.conversion_tasks.execute_conversion", args=[job_id])
         logger.info(f"Tâche {job_id} envoyée à Celery.")

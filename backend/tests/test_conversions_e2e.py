@@ -1,5 +1,4 @@
 import os
-import io
 import json
 import zipfile
 import tarfile
@@ -13,15 +12,13 @@ from app.database import init_db
 from app.security.validator import (
     is_conversion_compatible,
     get_compatible_targets,
-    validate_file_integrity,
-    detect_category
+    validate_file_integrity
 )
 from workers.engines import (
     ImageEngine,
     DocumentEngine,
     ArchiveEngine,
-    CodeEngine,
-    get_engine_for_category
+    CodeEngine
 )
 
 @pytest.fixture(scope="module")

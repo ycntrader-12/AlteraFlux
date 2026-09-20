@@ -2,7 +2,6 @@ import time
 import logging
 from typing import Tuple, Dict
 from fastapi import Request
-from app.config import settings
 
 logger = logging.getLogger("alteraflux.rate_limiter")
 

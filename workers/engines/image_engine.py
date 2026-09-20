@@ -1,4 +1,3 @@
-import os
 import logging
 from typing import Dict, Any, Optional, Callable
 from PIL import Image, ImageOps
