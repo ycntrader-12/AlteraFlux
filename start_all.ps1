@@ -14,6 +14,7 @@ if ($dockerAvailable) {
     Write-Host "  -> MinIO S3 Console  : http://localhost:9001" -ForegroundColor Yellow
 } else {
     Write-Host "Docker non disponible. Lancement local des serveurs..." -ForegroundColor Yellow
+    $env:Path = "$env:Path;C:\Program Files\LibreOffice\program;$env:LOCALAPPDATA\Microsoft\WinGet\Links;$env:LOCALAPPDATA\Pandoc"
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot/backend'; ../.venv/Scripts/python -m uvicorn app.main:app --reload --port 8000"
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot/frontend'; npm run dev"
     Write-Host "Serveurs locaux lances dans des fenetres dediees !" -ForegroundColor Green

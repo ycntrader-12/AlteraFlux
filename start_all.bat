@@ -22,6 +22,7 @@ if %errorlevel% equ 0 (
 )
 
 echo [INFO] Demarrage direct des serveurs locaux...
+set "PATH=%PATH%;C:\Program Files\LibreOffice\program;%LOCALAPPDATA%\Microsoft\WinGet\Links;%LOCALAPPDATA%\Pandoc"
 
 echo Demarrage du Backend FastAPI sur le port 8000...
 start "AlteraFlux Backend" cmd /k "cd /d "%~dp0backend" && ..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000 --host 0.0.0.0"

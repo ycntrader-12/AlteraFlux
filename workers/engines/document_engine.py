@@ -8,13 +8,45 @@ from workers.engines.base import BaseConversionEngine
 logger = logging.getLogger(__name__)
 
 class DocumentEngine(BaseConversionEngine):
+    @classmethod
+    def _find_pandoc(cls) -> Optional[str]:
+        found = shutil.which("pandoc")
+        if found:
+            return found
+        candidates = [
+            os.path.expandvars(r"%LOCALAPPDATA%\Pandoc\pandoc.exe"),
+            os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\WinGet\Links\pandoc.exe"),
+            r"C:\Program Files\Pandoc\pandoc.exe",
+            r"C:\Program Files (x86)\Pandoc\pandoc.exe",
+            r"C:\ProgramData\chocolatey\bin\pandoc.exe",
+        ]
+        for p in candidates:
+            if os.path.exists(p):
+                return p
+        return None
+
+    @classmethod
+    def _find_libreoffice(cls) -> Optional[str]:
+        found = shutil.which("libreoffice") or shutil.which("soffice")
+        if found:
+            return found
+        candidates = [
+            r"C:\Program Files\LibreOffice\program\soffice.exe",
+            r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Programs\LibreOffice\program\soffice.exe"),
+            r"C:\Program Files\LibreOffice\program\soffice.com",
+        ]
+        for p in candidates:
+            if os.path.exists(p):
+                return p
+        return None
+
     def __init__(self, progress_callback: Optional[Callable[[float, str], None]] = None):
         super().__init__(progress_callback)
-        self.has_pandoc = shutil.which("pandoc") is not None
-        self.has_libreoffice = (
-            shutil.which("libreoffice") is not None or
-            shutil.which("soffice") is not None
-        )
+        self.pandoc_bin = self._find_pandoc()
+        self.has_pandoc = self.pandoc_bin is not None
+        self.lo_bin = self._find_libreoffice()
+        self.has_libreoffice = self.lo_bin is not None
 
     def convert(
         self,
@@ -193,7 +225,7 @@ class DocumentEngine(BaseConversionEngine):
         # 1. Utilisation de Pandoc pour Markdown / HTML / DOCX / TXT / EPUB
         if self.has_pandoc and (src_fmt in ["md", "markdown", "html", "docx", "txt", "epub"]):
             self.report_progress(40.0, "Conversion avec Pandoc Engine...")
-            cmd = ["pandoc", input_path, "-o", output_path]
+            cmd = [self.pandoc_bin or "pandoc", input_path, "-o", output_path]
             if options.get("include_toc"):
                 cmd.append("--toc")
 
@@ -208,7 +240,7 @@ class DocumentEngine(BaseConversionEngine):
         supported_lo_targets = ["pdf", "pdfa", "docx", "doc", "odt", "rtf", "txt", "html", "xlsx", "xls", "ods", "csv", "tsv", "pptx", "ppt", "odp"]
         if self.has_libreoffice and (tgt_fmt in supported_lo_targets or src_fmt in ["doc", "docx", "docm", "dot", "dotx", "dotm", "odt", "ott", "rtf", "xls", "xlsx", "xlsm", "xlsb", "xlt", "xltx", "xltm", "ods", "ots", "ppt", "pptx", "pptm", "pps", "ppsx", "ppsm", "pot", "potx", "potm", "odp", "otp", "vsd", "vsdx"]):
             self.report_progress(45.0, f"Conversion bureautique avec LibreOffice Headless vers {tgt_fmt.upper()}...")
-            lo_bin = "libreoffice" if shutil.which("libreoffice") else "soffice"
+            lo_bin = self.lo_bin or "soffice"
             out_dir = os.path.dirname(output_path)
             lo_target = "pdf" if tgt_fmt == "pdfa" else tgt_fmt
             cmd = [lo_bin, "--headless", "--convert-to", lo_target, "--outdir", out_dir, input_path]

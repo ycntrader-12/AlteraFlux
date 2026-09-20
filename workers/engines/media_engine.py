@@ -10,10 +10,36 @@ from workers.engines.base import BaseConversionEngine
 logger = logging.getLogger(__name__)
 
 class MediaEngine(BaseConversionEngine):
+    @classmethod
+    def _find_binary(cls, name: str) -> Optional[str]:
+        found = shutil.which(name)
+        if found:
+            return found
+        candidates = {
+            "ffmpeg": [
+                os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe"),
+                r"C:\ffmpeg\bin\ffmpeg.exe",
+                r"C:\Program Files\ffmpeg\bin\ffmpeg.exe",
+                r"C:\ProgramData\chocolatey\bin\ffmpeg.exe",
+            ],
+            "ffprobe": [
+                os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\WinGet\Links\ffprobe.exe"),
+                r"C:\ffmpeg\bin\ffprobe.exe",
+                r"C:\Program Files\ffmpeg\bin\ffprobe.exe",
+                r"C:\ProgramData\chocolatey\bin\ffprobe.exe",
+            ],
+        }
+        for path in candidates.get(name.lower(), []):
+            if os.path.exists(path):
+                return path
+        return None
+
     def __init__(self, progress_callback: Optional[Callable[[float, str], None]] = None):
         super().__init__(progress_callback)
-        self.has_ffmpeg = shutil.which("ffmpeg") is not None
-        self.has_ffprobe = shutil.which("ffprobe") is not None
+        self.ffmpeg_bin = self._find_binary("ffmpeg")
+        self.ffprobe_bin = self._find_binary("ffprobe")
+        self.has_ffmpeg = self.ffmpeg_bin is not None
+        self.has_ffprobe = self.ffprobe_bin is not None
 
     def get_duration_seconds(self, input_path: str) -> float:
         """Détermine la durée totale du fichier média via ffprobe"""
@@ -21,7 +47,7 @@ class MediaEngine(BaseConversionEngine):
             return 10.0
         try:
             cmd = [
-                "ffprobe", "-v", "error",
+                self.ffprobe_bin or "ffprobe", "-v", "error",
                 "-show_entries", "format=duration",
                 "-of", "default=noprint_wrappers=1:nokey=1",
                 input_path
@@ -77,7 +103,7 @@ class MediaEngine(BaseConversionEngine):
         self.report_progress(10.0, f"Démarrage de l'encodage vers {target_fmt.upper()}...")
 
         # Construction des arguments FFmpeg selon le type de cible
-        cmd = ["ffmpeg", "-y", "-i", input_path]
+        cmd = [self.ffmpeg_bin or "ffmpeg", "-y", "-i", input_path]
 
         # 1. Vidéo vers GIF
         if target_fmt == "gif":
