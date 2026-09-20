@@ -66,7 +66,7 @@ class DocumentEngine(BaseConversionEngine):
             try:
                 from pdf2docx import Converter
                 cv = Converter(input_path)
-                cv.convert(output_path, start=0, end=None)
+                cv.convert(output_path)
                 cv.close()
                 if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
                     self.report_progress(100.0, "Conversion PDF vers DOCX réussie !")
@@ -159,7 +159,7 @@ class DocumentEngine(BaseConversionEngine):
 
                         # Limiter à 250 lignes et 20 colonnes pour garder un rendu lisible et performant
                         preview_df = df.iloc[:250, :20]
-                        headers = [str(c) for c in preview_df.columns]
+                        headers = [f"{c}" for c in preview_df.columns]
                         data_rows = [headers]
                         for _, row in preview_df.iterrows():
                             data_rows.append([str(v) if pd.notna(v) else "" for v in row.values])
